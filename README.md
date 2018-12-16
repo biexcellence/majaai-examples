@@ -2,6 +2,93 @@
 
 This repository contains examples for using [maja.ai](https://maja.ai).
 
+- [maja.AI Chat JS](#majaai-chat-js)
+- [maja.AI Action Examples](#majaai-action-examples)
+
+## maja.AI Chat JS
+
+Here are the options for embedding maja.AI into your homepage.
+
+### JavaScript options
+
+| Name | Type | Default Value | Description |
+|-----------|-----------|-----------|-----------|
+| apiKey | `string` | **required** | The API key |
+| title | `string` | `"maja.AI"` | The title of the chat box |
+| teaserTitle | `string` | `"Frag maja.AI"` | The title of the teaser |
+| teaserImage | `string` | `"//cdn.biexcellence.com/majaai/img/maja_head.png"` | The image of the teaser |
+| language | `string` | `"de"` | The primary chat language |
+| visible | `boolean` | `false` | If the chat box should be visible on start |
+| welcomeText | `string` | `undefined` | The welcome chat text |
+| theme | `string` | `undefined` | Additional css file which is loaded dynamically |
+| hidePoweredBy | `boolean` | `false` | If the powered by text should be displayed |
+| majaAvatar | `string` | `"//cdn.biexcellence.com/majaai/img/MajaAI_AI_120px.png"` | The avatar for Maja.AI answers |
+| onInit | `function` | `undefined` | Callback after chat initilization |
+| onResult | `function` | `undefined` | Callback for answers |
+| onError | `function` | `undefined` | Callback for server errors |
+| bubblePopupTime| `Integer` | `20000` | Time after the help bubble shows up |
+| tabs | `Array` | `undefined` | QuickTabs on the left side of Maja |
+
+### JavaScript Tab options
+
+| Name | Type | Default Value | Description |
+|-----------|-----------|-----------|-----------|
+| html | `string` | `undefined` | Html which is displayed in the tab button |
+| link | `string` | `undefined` | A link to a different page |
+| contentHtml | `string` | `undefined` | Html which gets appended in the chat window if the user clicks on the tab |
+| toggle | `boolean` | `false` | If the chat window should slide in or not (this does not work with `link`) |
+
+### JavaScript functions
+
+| Name | Description |
+|-----------|-----------|
+| send(query) | Sends a query to Maja.AI |
+| destroy() | Destroys the Maja.AI chat UI |
+
+### Usage Example
+
+```html
+<script src="//cdn.biexcellence.com/majaai/js/chat.js"></script>
+<script>
+var majaAi = new MajaAi({
+    protocol: "https",
+    hostname: "hallomeinebank.de",
+    port: 443,
+    apiKey: "123",
+    welcomeText: "Hallo, Mein Name ist Maja, wie kann ich behilflich sein?",
+    title: "maja.AI rocks",
+    teaserTitle: "maja.AI",
+    teaserImage: "//cdn.biexcellence.com/majaai/img/maja_head.png",
+    language: "de",
+    theme: "mytheme.css",
+    hidePoweredBy: true,
+    visible: true,
+    majaAvatar: "//cdn.biexcellence.com/majaai/img/MajaAI_AI_120px.png",
+    onInit: function() { /* ... */ },
+    onResult: function(query, answers) { /* ... */ },
+    onError: function(error) { /* ... */ },
+    bubblePopupTime: 10000,
+    tabs: [{
+        html: '<i class="fas fa-question-circle"></i><span>Hilfe</span>',
+        toggle: true,
+        contentHtml: '<h3>Häufig gestellte Fragen</h3><ul><li><a href="#" class="majaai-question">Wo finde ich den nächsten Geldautomaten?</a></li></ul>'
+    }, {
+        html: '<i class="fas fa-question-circle"></i><span>Help</span>',
+        link: 'http://biexcellence.com/help'
+    }, {
+        html: '<i class="fas fa-envelope"></i><span>Contact</span>',
+        link: 'http://biexcellence.com/contact'
+    }]
+});
+
+// send query to MajaAI
+majaAi.send("Hello MajaAI");
+
+// destroys the chat UI
+majaAi.destroy();
+</script>
+```
+
 ## maja.AI Action Examples
 
 You can create custom actions for maja.ai to return custom answers for user queries.
