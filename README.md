@@ -1,6 +1,7 @@
 # maja.AI Examples
 
 This repository contains examples for using [maja.ai](https://maja.ai).
+If you want to make use of Maja.ai simply fill out the contact at https://www.maja.ai.
 
 - [maja.AI Chat JS](#majaai-chat-js)
 - [maja.AI Action Examples](#majaai-action-examples)
