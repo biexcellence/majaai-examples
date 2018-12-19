@@ -52,9 +52,6 @@ Here are the options for embedding maja.AI into your homepage.
 <script src="//cdn.biexcellence.com/majaai/js/chat.js"></script>
 <script>
 var majaAi = new MajaAi({
-    protocol: "https",
-    hostname: "hallomeinebank.de",
-    port: 443,
     apiKey: "123",
     welcomeText: "Hallo, Mein Name ist Maja, wie kann ich behilflich sein?",
     title: "maja.AI rocks",
