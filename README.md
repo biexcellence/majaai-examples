@@ -9,6 +9,7 @@ If you want to make use of Maja.ai simply fill out the contact at https://www.ma
 ## maja.AI Chat JS
 
 Here are the options for embedding maja.AI into your homepage.
+Please note that the maja.AI Chat JS currently requires jQuery and Bootstrap.
 
 ### JavaScript options
 
@@ -49,6 +50,16 @@ Here are the options for embedding maja.AI into your homepage.
 ### Usage Example
 
 ```html
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!-- Bootstrap library -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+<!-- maja.AI Chat JS -->
 <script src="//cdn.biexcellence.com/majaai/js/chat.js"></script>
 <script>
 var majaAi = new MajaAi({
