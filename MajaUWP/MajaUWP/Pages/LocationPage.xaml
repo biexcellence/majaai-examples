@@ -1,0 +1,14 @@
+﻿<pages:MajaPage
+    x:Class="MajaUWP.Pages.LocationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+    xmlns:pages="using:MajaUWP.Pages">
+    <Grid>
+        <maps:MapControl Name="Map" Style="Road" ZoomInteractionMode="GestureAndControl" TiltInteractionMode="GestureAndControl" LandmarksVisible="True"
+                         MapServiceToken="hOqfx6oGzmKC6sLmS55G~WnmYUVMLbdxh-0o6o-K0Rw~AmRoBL4C5JpDLv4Chu1Bo2-QUHkfWGGDVUXdp6ZIk_ohIjkHxkH7LHaSYAy97Ggp"/>
+    </Grid>
+</pages:MajaPage>

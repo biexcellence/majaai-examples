@@ -1,0 +1,73 @@
+﻿<Application
+    x:Class="MajaUWP.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <LinearGradientBrush x:Key="RainbowBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="Red" Offset="0.0"/>
+                <GradientStop Color="Orange" Offset="0.17"/>
+                <GradientStop Color="Yellow" Offset="0.33"/>
+                <GradientStop Color="Green" Offset="0.5"/>
+                <GradientStop Color="Blue" Offset="0.67"/>
+                <GradientStop Color="Indigo" Offset="0.83"/>
+                <GradientStop Color="Violet" Offset="1.0"/>
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="GrayBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="LightGray" Offset="0"/>
+                <GradientStop Color="Gray" Offset="0.7"/>
+                <GradientStop Color="DarkGray" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="WhiteBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="White" Offset="0"/>
+                <GradientStop Color="WhiteSmoke" Offset="0.5"/>
+                <GradientStop Color="LightGray" Offset="0.7"/>
+                <GradientStop Color="White" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="LightningBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="Orange" Offset="0"/>
+                <GradientStop Color="Yellow" Offset="0.25"/>
+                <GradientStop Color="Orange" Offset="0.4"/>
+                <GradientStop Color="Yellow" Offset="0.65"/>
+                <GradientStop Color="Orange" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="LightningBrush2" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="Yellow" Offset="0"/>
+                <GradientStop Color="White" Offset="0.25"/>
+                <GradientStop Color="Yellow" Offset="0.4"/>
+                <GradientStop Color="White" Offset="0.65"/>
+                <GradientStop Color="Yellow" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="RaindropBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="DodgerBlue" Offset="0"/>
+                <GradientStop Color="LightBlue" Offset="0.7"/>
+                <GradientStop Color="LightBlue" Offset="0.95"/>
+                <GradientStop Color="DodgerBlue" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="SunBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="LightGoldenrodYellow" Offset="0"/>
+                <GradientStop Color="Yellow" Offset="0.4"/>
+                <GradientStop Color="Orange" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="FogBrush" StartPoint="0,0.5" EndPoint="1,0.5">
+                <GradientStop Color="DarkGray" Offset="0.0"/>
+                <GradientStop Color="LightGray" Offset="0.25"/>
+                <GradientStop Color="DarkGray" Offset="0.5"/>
+                <GradientStop Color="LightGray" Offset="0.75"/>
+                <GradientStop Color="DarkGray" Offset="1.0"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="MoonBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="White" Offset="0"/>
+                <GradientStop Color="White" Offset="0.1"/>
+                <GradientStop Color="LightYellow" Offset="0.2"/>
+                <GradientStop Color="Beige" Offset="0.25"/>
+                <GradientStop Color="PaleGoldenrod" Offset="0.45"/>
+                <GradientStop Color="PaleGoldenrod" Offset="0.55"/>
+                <GradientStop Color="Beige" Offset="0.75"/>
+                <GradientStop Color="LightYellow" Offset="0.85"/>
+                <GradientStop Color="White" Offset="1.0"/>
+            </LinearGradientBrush>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

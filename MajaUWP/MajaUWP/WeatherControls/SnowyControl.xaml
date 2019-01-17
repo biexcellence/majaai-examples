@@ -1,0 +1,145 @@
+﻿<UserControl
+    x:Class="MajaUWP.WeatherControls.SnowyControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MajaUWP.WeatherControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="200"
+    d:DesignWidth="200">
+    <Grid>
+        <Viewbox>
+            <Canvas Width="200" Height="200">
+                <local:CloudWhiteControl Height="200"/>
+
+                <Ellipse Fill="White" Stroke="CadetBlue" StrokeThickness="1" Height="15" Width="15" Canvas.Top="140" Canvas.Left="20">
+                    <Ellipse.RenderTransform>
+                        <TransformGroup>
+                            <TranslateTransform x:Name="Snowflake1Transform"/>
+                        </TransformGroup>
+                    </Ellipse.RenderTransform>
+                    <Ellipse.Triggers>
+                        <EventTrigger>
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="Snowflake1Transform" Storyboard.TargetProperty="Y" To="50" Duration="0:0:3"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="Snowflake1Transform" Storyboard.TargetProperty="X" To="5" Duration="0:0:0.5" AutoReverse="True"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Ellipse.Triggers>
+                </Ellipse>
+                <Ellipse Fill="White" Stroke="CadetBlue" StrokeThickness="1" Height="15" Width="15" Canvas.Top="130" Canvas.Left="40">
+                    <Ellipse.RenderTransform>
+                        <TransformGroup>
+                            <TranslateTransform x:Name="Snowflake2Transform"/>
+                        </TransformGroup>
+                    </Ellipse.RenderTransform>
+                    <Ellipse.Triggers>
+                        <EventTrigger>
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="Snowflake2Transform" Storyboard.TargetProperty="Y" To="50" Duration="0:0:1.5"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="Snowflake2Transform" Storyboard.TargetProperty="X" To="5" Duration="0:0:0.5" AutoReverse="True"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Ellipse.Triggers>
+                </Ellipse>
+                <Ellipse Fill="White" Stroke="CadetBlue" StrokeThickness="1" Height="15" Width="15" Canvas.Top="150" Canvas.Left="70">
+                    <Ellipse.RenderTransform>
+                        <TransformGroup>
+                            <TranslateTransform x:Name="Snowflake3Transform"/>
+                        </TransformGroup>
+                    </Ellipse.RenderTransform>
+                    <Ellipse.Triggers>
+                        <EventTrigger>
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="Snowflake3Transform" Storyboard.TargetProperty="Y" To="50" Duration="0:0:2.5"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="Snowflake3Transform" Storyboard.TargetProperty="X" To="5" Duration="0:0:0.5" AutoReverse="True"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Ellipse.Triggers>
+                </Ellipse>
+                <Ellipse Fill="White" Stroke="CadetBlue" StrokeThickness="1" Height="15" Width="15" Canvas.Top="130" Canvas.Left="110">
+                    <Ellipse.RenderTransform>
+                        <TransformGroup>
+                            <TranslateTransform x:Name="Snowflake4Transform"/>
+                        </TransformGroup>
+                    </Ellipse.RenderTransform>
+                    <Ellipse.Triggers>
+                        <EventTrigger>
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="Snowflake4Transform" Storyboard.TargetProperty="Y" To="50" Duration="0:0:3.5"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="Snowflake4Transform" Storyboard.TargetProperty="X" To="5" Duration="0:0:0.5" AutoReverse="True"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Ellipse.Triggers>
+                </Ellipse>
+                <Ellipse Fill="White" Stroke="CadetBlue" StrokeThickness="1" Height="15" Width="15" Canvas.Top="150" Canvas.Left="140">
+                    <Ellipse.RenderTransform>
+                        <TransformGroup>
+                            <TranslateTransform x:Name="Snowflake5Transform"/>
+                        </TransformGroup>
+                    </Ellipse.RenderTransform>
+                    <Ellipse.Triggers>
+                        <EventTrigger>
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="Snowflake5Transform" Storyboard.TargetProperty="Y" To="50" Duration="0:0:4"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="Snowflake5Transform" Storyboard.TargetProperty="X" To="5" Duration="0:0:0.5" AutoReverse="True"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Ellipse.Triggers>
+                </Ellipse>
+                <Ellipse Fill="White" Stroke="CadetBlue" StrokeThickness="1" Height="15" Width="15" Canvas.Top="140" Canvas.Left="190">
+                    <Ellipse.RenderTransform>
+                        <TransformGroup>
+                            <TranslateTransform x:Name="Snowflake6Transform"/>
+                        </TransformGroup>
+                    </Ellipse.RenderTransform>
+                    <Ellipse.Triggers>
+                        <EventTrigger>
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="Snowflake6Transform" Storyboard.TargetProperty="Y" To="50" Duration="0:0:2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="Snowflake6Transform" Storyboard.TargetProperty="X" To="5" Duration="0:0:0.5" AutoReverse="True"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Ellipse.Triggers>
+                </Ellipse>
+            </Canvas>
+        </Viewbox>
+    </Grid>
+</UserControl>
