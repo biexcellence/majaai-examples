@@ -274,7 +274,7 @@ namespace MajaUWP.Utilities
                     case MajaQueryAnswerProposalType.VideoFile:
                     case MajaQueryAnswerProposalType.Location:
                     case MajaQueryAnswerProposalType.ImmoSuche:
-                    case MajaQueryAnswerProposalType.Simple when (string.Equals(answer.Action, "weather", StringComparison.OrdinalIgnoreCase)):
+                    case MajaQueryAnswerProposalType.Simple when (string.Equals(answer.Action, MajaQueryAnswerAction.Weather, StringComparison.OrdinalIgnoreCase)):
                         break;
                     default:
                         if (speak && string.IsNullOrEmpty(answer.Url) && !string.IsNullOrEmpty(answer.Response))

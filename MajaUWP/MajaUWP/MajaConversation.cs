@@ -13,8 +13,8 @@ namespace MajaUWP
 {
     public class MajaConversation : PropertyChangedOnMainThread
     {
-        private const string MajaApiKey = "MajaAPP";
-        private const string MajaApiSecret = "KAUMISTPHILLIPIMURLAUBGEHTNICHTSMEHR";
+        private const string MajaApiKey = "";
+        private const string MajaApiSecret = "";
         private IOpenBiSession _openbiSession;
         private SpeechRecognitionService _speechRecognitionService;
         private static IOpenBiConfiguration _openBiConfiguration = new OpenBiConfiguration(Protocol.HTTPS, "maja.ai", 443, "Maja UWP");

@@ -125,9 +125,8 @@ namespace MajaUWP
                         ContentFrame.Navigate(typeof(ImmoPage), answer, new DrillInNavigationTransitionInfo());
                         return;
                     default:
-                        if (string.Equals(answer.Action, "weather", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(answer.Data) && answer.DeserializeData() is WeatherForecast forecast)
+                        if (string.Equals(answer.Action, MajaQueryAnswerAction.Weather, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(answer.Data) && answer.DeserializeData() is WeatherForecast forecast)
                         {
-                            //forecast = new WeatherForecast(answer.Data);
                             ContentFrame.Navigate(typeof(WeatherPage), forecast);
                             return;
                         }
