@@ -19,6 +19,7 @@ Please note that the maja.AI Chat JS currently requires jQuery and Bootstrap.
 | title | `string` | `"maja.AI"` | The title of the chat box |
 | teaserTitle | `string` | `"Frag maja.AI"` | The title of the teaser |
 | teaserImage | `string` | `"//cdn.biexcellence.com/majaai/img/maja_head.png"` | The image of the teaser |
+| placeholderText | `string` | `"Ihre Frage..."` | The default placeholder for the input field |
 | language | `string` | `"de"` | The primary chat language |
 | visible | `boolean` | `false` | If the chat box should be visible on start |
 | welcomeText | `string` | `undefined` | The welcome chat text |
