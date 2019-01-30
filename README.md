@@ -69,6 +69,7 @@ var majaAi = new MajaAi({
     title: "maja.AI rocks",
     teaserTitle: "maja.AI",
     teaserImage: "//cdn.biexcellence.com/majaai/img/maja_head.png",
+    placeholderText: "Deine Frage...",
     language: "de",
     theme: "mytheme.css",
     hidePoweredBy: true,
