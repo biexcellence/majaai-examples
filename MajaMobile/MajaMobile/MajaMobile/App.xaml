@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Application xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MajaMobile.App">
+    <Application.Resources>
+        <ResourceDictionary>
+
+            <OnPlatform x:TypeArguments="x:String" Android="segoeui.ttf#segoeui" iOS="SegoeUI" x:Key="UiFontNormal"/>
+            <OnPlatform x:TypeArguments="x:String" Android="seguisli.ttf#seguisli" iOS="SegoeUI-SemilightItalic" x:Key="UiFontSemiLightItalic"/>
+            <OnPlatform x:TypeArguments="x:String" Android="seguisbi.ttf#seguisbi" iOS="SegoeUI-SemiboldItalic" x:Key="UiFontSemiBoldItalic"/>
+            <OnPlatform x:TypeArguments="x:String" Android="segoeuiz.ttf#segoeuiz" iOS="SegoeUI-BoldItalic" x:Key="UiFontBoldItalic"/>
+            <OnPlatform x:TypeArguments="Color" Android="#706F6F" iOS="#706F6F" x:Key="InputTextColor"/>
+            <OnPlatform x:TypeArguments="Color" Android="#64706F6F" iOS="#64706F6F" x:Key="InputHintColor"/>
+
+            <x:Double x:Key="XXXLargeFontSize">32</x:Double>
+            <x:Double x:Key="XXLargeFontSize">28</x:Double>
+            <x:Double x:Key="XLargeFontSize">24</x:Double>
+            <x:Double x:Key="LargeFontSize">20</x:Double>
+            <x:Double x:Key="MediumFontSize">16</x:Double>
+            <x:Double x:Key="StandardFontSize">14</x:Double>
+            <x:Double x:Key="SmallFontSize">10</x:Double>
+
+            <x:String x:Key="PageTitle">majaAI</x:String>
+
+            <Style TargetType="ContentPage" x:Key="ContentPageStyle">
+                <Setter Property="BackgroundColor" Value="#f3f3f3"/>
+            </Style>
+
+            <Style TargetType="Entry">
+                <Setter Property="HorizontalOptions" Value="FillAndExpand"/>
+                <Setter Property="VerticalOptions" Value="Center"/>
+                <Setter Property="HorizontalTextAlignment" Value="Center"/>
+                <Setter Property="TextColor" Value="{StaticResource InputTextColor}"/>
+                <Setter Property="PlaceholderColor" Value="{StaticResource InputHintColor}"/>
+            </Style>
+
+            <Style TargetType="Picker">
+                <Setter Property="HorizontalOptions" Value="FillAndExpand"/>
+                <Setter Property="VerticalOptions" Value="Center"/>
+                <Setter Property="TextColor" Value="{StaticResource InputTextColor}"/>
+            </Style>
+
+            <Style TargetType="Label">
+                <Setter Property="HorizontalOptions" Value="Start"/>
+                <Setter Property="VerticalOptions" Value="Center"/>
+                <Setter Property="HorizontalTextAlignment" Value="Start"/>
+                <Setter Property="TextColor" Value="#706F6F"/>
+                <Setter Property="FontFamily" Value="{StaticResource UiFontNormal}"/>
+                <Setter Property="FontSize" Value="{StaticResource StandardFontSize}"/>
+            </Style>
+
+            <Style TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#1E8FCC"/>
+                <Setter Property="TextColor" Value="White"/>
+                <Setter Property="HorizontalOptions" Value="Center"/>
+                <Setter Property="BorderRadius" Value="5"/>
+                <Setter Property="FontFamily" Value="{StaticResource UiFontBoldItalic}"/>
+                <Setter Property="FontSize" Value="{StaticResource StandardFontSize}"/>
+            </Style>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
