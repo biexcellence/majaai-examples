@@ -6,8 +6,7 @@
              xmlns:effects="clr-namespace:MajaMobile.Effects"
              xmlns:gestures="clr-namespace:MajaMobile.GestureRecognizers"
              xmlns:pages="clr-namespace:MajaMobile.Pages"
-             xmlns:util="clr-namespace:MajaMobile.Utilities"
-             x:Class="MajaMobile.MainPage" Title="majaAI">
+             x:Class="MajaMobile.Pages.MainPage" Title="majaAI">
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:SpeakerToAlignmentConverter x:Key="AlignmentConverter"/>
@@ -16,7 +15,21 @@
             <converters:SpeakerToMarginConverter x:Key="MarginConverter"/>
             <converters:NotNullConverter x:Key="NotNullConverter"/>
             <converters:ObjectFromListConverter x:Key="ListConverter"/>
-            <converters:WeatherDetailsConverter x:Key="WeatherDetailsConverter"/>
+            <converters:PrefixSuffixConverter x:Key="PrefixSuffixConverter"/>
+
+            <ControlTemplate x:Key="RealEstateControlTemplate">
+                <Frame CornerRadius="10" Padding="5" HasShadow="False" BorderColor="Transparent" BackgroundColor="White">
+                    <Grid x:Name="RealEstateGrid" HeightRequest="{Binding Width, Source={x:Reference RealEstateGrid}}" BindingContext="{TemplateBinding BindingContext}" RowSpacing="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Image HorizontalOptions="FillAndExpand" VerticalOptions="Start" Aspect="AspectFill" Source="{Binding Image}" Grid.Row="0"/>
+                        <controls:MultiLineLabel Lines="3" Text="{Binding Name}" FontSize="{StaticResource SmallFontSize}" Grid.Row="1"/>
+                    </Grid>
+                </Frame>
+            </ControlTemplate>
+
             <DataTemplate x:Key="TextTemplate">
                 <ContentView ControlTemplate="{StaticResource MessageTemplate}">
                     <Grid>
@@ -43,18 +56,31 @@
                     </Grid>
                 </ContentView>
             </DataTemplate>
-            <DataTemplate x:Key="PhotoTemplate">
-                <ContentView ControlTemplate="{StaticResource MessageTemplate}">
-                    <Grid>
-                        <Image HorizontalOptions="FillAndExpand" Source="{Binding Source}"/>
-                    </Grid>
-                </ContentView>
-            </DataTemplate>
             <DataTemplate x:Key="RealEstateTemplate">
                 <!--TODO-->
                 <ContentView ControlTemplate="{StaticResource MessageTemplate}">
                     <Grid>
-                        <Label Text="{Binding Text}" TextColor="{Binding Speaker, Converter={StaticResource TextColorConverter}}"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <TemplatedView ControlTemplate="{StaticResource RealEstateControlTemplate}" BindingContext="{Binding Immos, Converter={StaticResource ListConverter}, ConverterParameter=0}" IsVisible="{Binding ., Converter={StaticResource NotNullConverter}}" Grid.Row="0" Grid.Column="0"/>
+                        <TemplatedView ControlTemplate="{StaticResource RealEstateControlTemplate}" BindingContext="{Binding Immos, Converter={StaticResource ListConverter}, ConverterParameter=1}" IsVisible="{Binding ., Converter={StaticResource NotNullConverter}}" Grid.Row="0" Grid.Column="1"/>
+                        <TemplatedView ControlTemplate="{StaticResource RealEstateControlTemplate}" BindingContext="{Binding Immos, Converter={StaticResource ListConverter}, ConverterParameter=2}" IsVisible="{Binding ., Converter={StaticResource NotNullConverter}}" Grid.Row="1" Grid.Column="0"/>
+                        <TemplatedView ControlTemplate="{StaticResource RealEstateControlTemplate}" BindingContext="{Binding Immos, Converter={StaticResource ListConverter}, ConverterParameter=3}" IsVisible="{Binding ., Converter={StaticResource NotNullConverter}}" Grid.Row="1" Grid.Column="1"/>
+                        <Label Text="{Binding ImmoLinkText}" TextColor="#1fb8dd" Grid.Row="2" Grid.ColumnSpan="2">
+                            <Label.Effects>
+                                <effects:UnderlineEffect/>
+                            </Label.Effects>
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ImmosTappedCommand}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
                     </Grid>
                 </ContentView>
             </DataTemplate>
@@ -83,14 +109,14 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <controls:WeatherSymbol Weather="{Binding}" HeightRequest="50" WidthRequest="50"/>
-                            <Label Text="{Binding CurrentTemperature, Converter={StaticResource WeatherDetailsConverter}, ConverterParameter=°C}" TextColor="{x:Static util:ColorScheme.MajaMessageTextColor}"
+                            <Label Text="{Binding CurrentTemperature, Converter={StaticResource PrefixSuffixConverter}, ConverterParameter=°C}"
                                FontSize="{StaticResource XLargeFontSize}" FontFamily="{StaticResource UiFontSemiBoldItalic}" Grid.Column="1"/>
                             <StackLayout Orientation="Vertical" Grid.Row="1" Grid.ColumnSpan="2" Spacing="0">
-                                <Label Text="{Binding Humidity, Converter={StaticResource WeatherDetailsConverter}, ConverterParameter=Luftfeuchtigkeit;%}" TextColor="{x:Static util:ColorScheme.MajaMessageTextColor}"/>
-                                <Label Text="{Binding Pressure, Converter={StaticResource WeatherDetailsConverter}, ConverterParameter=Luftdruck;hPa}" TextColor="{x:Static util:ColorScheme.MajaMessageTextColor}"/>
-                                <Label Text="{Binding Wind, Converter={StaticResource WeatherDetailsConverter}, ConverterParameter=Wind;km/h;N0}" TextColor="{x:Static util:ColorScheme.MajaMessageTextColor}"/>
-                                <Label Text="{Binding Rain, Converter={StaticResource WeatherDetailsConverter}, ConverterParameter=Niederschlagsmenge;mm;N2}" TextColor="{x:Static util:ColorScheme.MajaMessageTextColor}"/>
-                                <Label Text="{Binding Snow, Converter={StaticResource WeatherDetailsConverter}, ConverterParameter=Schnee;mm;N2}" TextColor="{x:Static util:ColorScheme.MajaMessageTextColor}"/>
+                                <Label Text="{Binding Humidity, Converter={StaticResource PrefixSuffixConverter}, ConverterParameter=Luftfeuchtigkeit;%}"/>
+                                <Label Text="{Binding Pressure, Converter={StaticResource PrefixSuffixConverter}, ConverterParameter=Luftdruck;hPa}"/>
+                                <Label Text="{Binding Wind, Converter={StaticResource PrefixSuffixConverter}, ConverterParameter=Wind;km/h;N0}"/>
+                                <Label Text="{Binding Rain, Converter={StaticResource PrefixSuffixConverter}, ConverterParameter=Niederschlagsmenge;mm;N2}"/>
+                                <Label Text="{Binding Snow, Converter={StaticResource PrefixSuffixConverter}, ConverterParameter=Schnee;mm;N2}"/>
                             </StackLayout>
                         </Grid>
                         <Label Text="Wettervorhersage" TextColor="#1fb8dd" Grid.Row="1">
@@ -106,24 +132,8 @@
             </DataTemplate>
             <DataTemplate x:Key="AudioTemplate">
                 <ContentView ControlTemplate="{StaticResource MessageTemplate}">
-                    <Grid ColumnSpacing="0" RowSpacing="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <controls:AudioButton IsPlaying="{Binding IsPlaying}" HeightRequest="20" WidthRequest="20" VerticalOptions="Center" Grid.Row="1">
-                            <controls:AudioButton.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding AudioTappedCommand}"/>
-                            </controls:AudioButton.GestureRecognizers>
-                        </controls:AudioButton>
-                        <Label Text="{Binding Text}" TextColor="{Binding Speaker, Converter={StaticResource TextColorConverter}}" Grid.Column="1" Margin="5,0,0,0" IsVisible="{Binding Text, Converter={StaticResource NotNullConverter}}"/>
-                        <Slider Maximum="{Binding Duration}" Value="{Binding CurrentPosition}" VerticalOptions="Center" WidthRequest="200" Grid.Column="1" Grid.Row="1"/>
-                        <Label Text="{Binding CurrentPositionDisplay}" TextColor="{Binding Speaker, Converter={StaticResource TextColorConverter}}" FontSize="{StaticResource SmallFontSize}" Grid.Column="1" Grid.Row="2" Margin="5,0,0,0"/>
+                    <Grid>
+                        <Label Text="{Binding Text}" TextColor="{Binding Speaker, Converter={StaticResource TextColorConverter}}" Margin="5,0,0,0" IsVisible="{Binding Text, Converter={StaticResource NotNullConverter}}"/>
                     </Grid>
                 </ContentView>
             </DataTemplate>
@@ -137,54 +147,43 @@
             </DataTemplate>
             <DataTemplate x:Key="LocationTemplate">
                 <ContentView ControlTemplate="{StaticResource MessageTemplate}">
-                    <Image Source="{Binding Image}">
-                        <Image.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding LocationTappedCommand}"/>
-                        </Image.GestureRecognizers>
-                    </Image>
-                </ContentView>
-            </DataTemplate>
-            <DataTemplate x:Key="ImageTemplate">
-                <ContentView ControlTemplate="{StaticResource MessageTemplate}">
-                    <Image Source="{Binding Image}" HeightRequest="200" Aspect="AspectFit"/>
-                </ContentView>
-            </DataTemplate>
-            <DataTemplate x:Key="MultipleChoiceTemplate">
-                <ContentView ControlTemplate="{StaticResource MessageTemplate}">
-                    <controls:MultipleChoiceControl Margin="0,5" ItemsSource="{Binding PossibleReplies}"/>
+                    <Label Text="{Binding Text}" TextColor="{Binding Speaker, Converter={StaticResource TextColorConverter}}" Margin="5,0,0,0" IsVisible="{Binding Text, Converter={StaticResource NotNullConverter}}"/>
                 </ContentView>
             </DataTemplate>
 
             <controls:MessageDataTemplateSelector x:Key="TemplateSelector"
                                             TextTemplate="{StaticResource TextTemplate}"
-                                            PhotoTemplate="{StaticResource PhotoTemplate}"
                                             UrlTemplate="{StaticResource UrlTemplate}"
                                             WeatherTemplate="{StaticResource WeatherTemplate}"
                                             RealEstateTemplate="{StaticResource RealEstateTemplate}"
                                             NewsTemplate="{StaticResource NewsTemplate}"
                                             VideoTemplate="{StaticResource VideoTemplate}"
                                             LocationTemplate="{StaticResource LocationTemplate}"
-                                            AudioTemplate="{StaticResource AudioTemplate}"
-                                            ImageTemplate="{StaticResource ImageTemplate}"
-                                            MultipleChoiceTemplate="{StaticResource MultipleChoiceTemplate}"/>
+                                            AudioTemplate="{StaticResource AudioTemplate}"/>
             <ControlTemplate x:Key="MessageTemplate">
-                <Grid BindingContext="{TemplateBinding BindingContext}">
-                    <Frame HasShadow="False" OutlineColor="Transparent" CornerRadius="3" Padding="8" HorizontalOptions="{Binding Speaker, Converter={StaticResource AlignmentConverter}}"
+                <Frame BindingContext="{TemplateBinding BindingContext}" HasShadow="True" BorderColor="Transparent" CornerRadius="10" Padding="8" HorizontalOptions="{Binding Speaker, Converter={StaticResource AlignmentConverter}}"
                            Margin="{Binding Speaker, Converter={StaticResource MarginConverter}}" BackgroundColor="{Binding Speaker, Converter={StaticResource ColorConverter}}">
-                        <!--<Frame.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding TappedCommand}"/>
-                        </Frame.GestureRecognizers>-->
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding TappedCommand}"/>
+                    </Frame.GestureRecognizers>
+                    <Grid RowSpacing="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
                         <ContentPresenter/>
-                    </Frame>
-                </Grid>
+                        <Image IsVisible="{Binding HasImage}" Source="{Binding Image}" Grid.Row="1" HeightRequest="200" Aspect="AspectFill"/>
+                    </Grid>
+                </Frame>
             </ControlTemplate>
         </ResourceDictionary>
     </ContentPage.Resources>
     <Grid>
         <Image Source="background.png" Aspect="Fill"/>
-        <Grid RowSpacing="0" ColumnSpacing="0">
+        <Grid RowSpacing="0" ColumnSpacing="0" x:Name="MainGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -192,9 +191,10 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <controls:ItemsStack ItemsSource="{Binding Messages}" ItemTemplate="{StaticResource TemplateSelector}" Grid.Row="0" Grid.ColumnSpan="2"/>
-            <controls:EntryControl Margin="5,0,5,5" Grid.Row="1" VerticalOptions="End" HorizontalOptions="FillAndExpand" Text="{Binding Text}" x:Name="MessageEntry"
+            <controls:MultipleChoiceControl ItemsSource="{Binding PossibleUserReplies}" Command="{Binding PossibleUserReplyCommand}" Grid.Row="1" Grid.ColumnSpan="2"/>
+            <controls:ChatInputControl Margin="5,0,5,5" Grid.Row="2" VerticalOptions="End" HorizontalOptions="FillAndExpand" Text="{Binding Text}"
                              IsEnabled="{Binding IsIdle}" CompletedCommand="{Binding SendTextCommand}" CurrentUserInput="{Binding CurrentUserInput}"/>
-            <controls:ChatButton VerticalOptions="End" HorizontalOptions="End" Grid.Row="1" Grid.Column="1" HeightRequest="45" WidthRequest="45" Margin="0,0,5,5" DisplayMode="{Binding ChatButtonMode}" x:Name="ActionButton">
+            <controls:ChatButton VerticalOptions="End" HorizontalOptions="End" Grid.Row="2" Grid.Column="1" HeightRequest="45" WidthRequest="45" Margin="0,0,5,5" DisplayMode="{Binding ChatButtonMode}">
                 <controls:ChatButton.GestureRecognizers>
                     <gestures:PressedGestureRecognizer Command="{Binding LongPressedCommand}"/>
                     <gestures:ReleasedGestureRecognizer Command="{Binding ReleasedCommand}"/>

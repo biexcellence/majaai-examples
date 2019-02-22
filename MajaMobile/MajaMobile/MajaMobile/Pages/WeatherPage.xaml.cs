@@ -21,15 +21,10 @@ namespace MajaMobile.ViewModels
     {
         public WeatherForecast Forecast { get; }
 
-        private WeatherDetails _currentWeather;
         public WeatherDetails CurrentWeather
         {
-            get => _currentWeather;
-            set
-            {
-                _currentWeather = value;
-                OnPropertyChanged();
-            }
+            get => GetField<WeatherDetails>();
+            set { SetField(value); }
         }
         public string Time => DateTime.Now.ToString("HH:00");
         public WeatherPageViewModel(WeatherForecast forecast)

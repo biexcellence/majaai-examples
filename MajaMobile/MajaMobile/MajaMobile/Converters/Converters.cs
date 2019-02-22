@@ -9,11 +9,14 @@ namespace MajaMobile.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            var result = false;
             if (value == null)
-                return false;
-            if (value is string s && string.IsNullOrWhiteSpace(s))
-                return false;
-            return true;
+                result = false;
+            else if (value is string s && string.IsNullOrWhiteSpace(s))
+                result = false;
+            else
+                result = true;
+            return parameter == null ? result : !result;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -81,33 +81,5 @@ namespace MajaMobile.iOS
         {
             return File.Exists(getLocalFilePath(filename));
         }
-
-        public byte[] TakeScreenshot(int x, int y, int width, int height)
-        {
-            var image = UIScreen.MainScreen.Capture();
-
-            var imgSize = image.Size;
-            UIGraphics.BeginImageContext(new SizeF(width, height));
-            var context = UIGraphics.GetCurrentContext();
-            var clippedRect = new RectangleF(0, 0, width, height);
-            context.ClipToRect(clippedRect);
-            var drawRect = new RectangleF(-x, -(y + 20), (float)imgSize.Width, (float)imgSize.Height);
-            image.Draw(drawRect);
-            var modifiedImage = UIGraphics.GetImageFromCurrentImageContext();
-            UIGraphics.EndImageContext();
-
-            byte[] array;
-            using (var imageData = modifiedImage.AsJPEG())
-            {
-                array = new byte[imageData.Length];
-                System.Runtime.InteropServices.Marshal.Copy(imageData.Bytes, array, 0, Convert.ToInt32(imageData.Length));
-            }
-            return array;
-        }
-
-        public void Vibrate()
-        {
-            AudioToolbox.SystemSound.Vibrate.PlayAlertSound();
-        }
     }
 }

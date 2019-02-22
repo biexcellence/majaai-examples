@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:ContentPageBase xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MajaMobile.Controls"
+             xmlns:pages="clr-namespace:MajaMobile.Pages"
+             x:Class="MajaMobile.Pages.LoginPage" Title="Anmelden">
+    <controls:ActivityIndicatorLayout>
+        <Image Source="background.png" Aspect="Fill" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All"/>
+        <Grid RowSpacing="0" ColumnSpacing="0" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10*"/>
+                <ColumnDefinition Width="80*"/>
+                <ColumnDefinition Width="10*"/>
+            </Grid.ColumnDefinitions>
+            <Frame Margin="0,50,0,0" HasShadow="True" Grid.Column="1" VerticalOptions="Start" Padding="0">
+                <StackLayout Padding="15,20,15,40" VerticalOptions="Start" Orientation="Vertical" Spacing="20">
+                    <controls:CustomEntry CompletedCommand="{Binding SignInCommand}" Placeholder="Email" Text="{Binding UsernameInput}" Keyboard="Email"/>
+                    <controls:CustomEntry CompletedCommand="{Binding SignInCommand}" Placeholder="Passwort" Text="{Binding PasswordInput}" IsPassword="True"/>
+                    <Button Text="Anmelden" Command="{Binding SignInCommand}" IsEnabled="{Binding LoginValid}" HorizontalOptions="FillAndExpand"/>
+                </StackLayout>
+            </Frame>
+        </Grid>
+    </controls:ActivityIndicatorLayout>
+</pages:ContentPageBase>

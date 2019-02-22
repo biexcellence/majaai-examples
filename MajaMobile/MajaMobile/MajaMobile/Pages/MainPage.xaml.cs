@@ -1,82 +1,38 @@
-﻿using BiExcellence.OpenBi.Api;
-using BiExcellence.OpenBi.Api.Commands.Entities;
-using BiExcellence.OpenBi.Api.Commands.MajaAi;
+﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
 using MajaMobile.Controls;
-using MajaMobile.Extensions;
 using MajaMobile.Interfaces;
 using MajaMobile.Messages;
 using MajaMobile.Pages;
 using MajaMobile.Utilities;
 using MajaMobile.ViewModels;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
-namespace MajaMobile
+namespace MajaMobile.Pages
 {
     public partial class MainPage : ContentPageBase
     {
+        public bool IsIdle => ViewModel.IsIdle;
+
         public MainPage()
         {
             InitializeComponent();
             BindingContext = ViewModel = new MainPageViewModel();
-            MessagingCenter.Subscribe<MajaConversationMessageLink>(this, MajaConversationMessageLink.LinkTappedMessage, LinkTapped);
-            MessagingCenter.Subscribe<MajaConversationMessageLocation>(this, MajaConversationMessageLocation.LocationTappedMessage, LocationTapped);
-            MessagingCenter.Subscribe<MajaConversationMessageWeather>(this, MajaConversationMessageWeather.WeatherTappedMessage, WeatherTapped);
-        }
-
-        private async void WeatherTapped(MajaConversationMessageWeather message)
-        {
-            if (!ViewModel.IsBusy)
-                await Navigation.PushAsync(new WeatherPage(message.Weather));
-        }
-
-        private async void LocationTapped(MajaConversationMessageLocation message)
-        {
-            if (ViewModel.IsBusy)
-                return;
-            try
-            {
-                await Plugin.Share.CrossShare.Current.OpenBrowser(message.GetMapUrl(), new Plugin.Share.Abstractions.BrowserOptions() { ChromeToolbarColor = ColorScheme.UserMessageColor.ToShareColor() });
-            }
-            catch (Exception) { }
-        }
-
-        private async void LinkTapped(MajaConversationMessageLink message)
-        {
-            if (ViewModel.IsBusy)
-                return;
-            try
-            {
-                await Plugin.Share.CrossShare.Current.OpenBrowser(message.MajaQueryAnswer.Url, new Plugin.Share.Abstractions.BrowserOptions() { ChromeToolbarColor = ColorScheme.UserMessageColor.ToShareColor() });
-            }
-            catch (Exception) { }
         }
 
         public void ShiftEntryUp(double keyboardHeight)
         {
-            if (MessageEntry.IsVisible)
-            {
-                MessageEntry.TranslationY = keyboardHeight * -1;
-            }
-            ActionButton.TranslationY = keyboardHeight * -1;
+            MainGrid.TranslationY = keyboardHeight * -1;
         }
 
         public void ShiftEntryDown()
         {
-            if (MessageEntry.TranslationY != 0)
-            {
-                MessageEntry.TranslationY = 0;
-            }
-            ActionButton.TranslationY = 0;
+            MainGrid.TranslationY = 0;
         }
     }
 
@@ -98,23 +54,21 @@ namespace MajaMobile.ViewModels
         public ICommand LongPressedCommand { get; }
         public ICommand ReleasedCommand { get; }
         public ICommand SendTextCommand { get; }
+        public ICommand PossibleUserReplyCommand { get; }
 
         IAudioService _audioService;
         IDeviceInfo _deviceInfo;
 
-        private const string MajaApiKey = "TODO: APIKEY";
-        private const string MajaApiSecret = "TODO: APISECRET";
-        private IOpenBiSession _openbiSession;
-        private static IOpenBiConfiguration _openBiConfiguration = new OpenBiConfiguration(Protocol.HTTPS, "maja.ai", 443, "Maja UWP");
         private MajaConversationMessageThinking _thinkingMessage;
         private UserConversationMessage _speechRecognitionMessage;
         private bool _dialogActive;
         public IPossibleUserReply CurrentUserInput
         {
             get => GetField<IPossibleUserReply>();
-            private set { SetField(value); OnPropertyChanged(); }
+            private set { SetField(value); }
         }
         public ObservableCollection<ConversationMessage> Messages { get; } = new ObservableCollection<ConversationMessage>();
+        public ObservableCollection<IPossibleUserReply> PossibleUserReplies { get; } = new ObservableCollection<IPossibleUserReply>();
 
         public string Text
         {
@@ -123,7 +77,6 @@ namespace MajaMobile.ViewModels
             {
                 SetField(value);
                 UpdateChatButton();
-                UpdateEntityInfo();
             }
         }
 
@@ -147,20 +100,18 @@ namespace MajaMobile.ViewModels
         {
             _deviceInfo = DependencyService.Get<IDeviceInfo>();
             _audioService = DependencyService.Get<IAudioService>();
-            _openbiSession = new OpenBiSession(_openBiConfiguration);
 
             CurrentMajaState = MajaListeningStatus.Idle;
             ChatButtonMode = ChatButtonDisplayMode.Microphone;
             LongPressedCommand = new Command(LongPressed);
             ReleasedCommand = new Command(Released);
             SendTextCommand = new Command(SendTextCommandExecuted);
+            PossibleUserReplyCommand = new Command(PossibleUserReplyTapped);
 
             _audioService.CompletedAudio += _audioService_CompletedAudio;
             _audioService.StartedAudio += _audioService_StartedAudio;
             _audioService.SpeechRecognitionPartialResult += _audioService_SpeechRecognitionPartialResult;
             _audioService.SpeechRecognitionResult += _audioService_SpeechRecognitionResult;
-
-            MessagingCenter.Subscribe<UserConversationMessageMultipleChoice, IPossibleUserReply>(this, UserConversationMessageMultipleChoice.MultipleChoiceTappedMessage, MultipleChoiceMessageTapped);
         }
 
         private void SendTextCommandExecuted(object parameter)
@@ -170,6 +121,12 @@ namespace MajaMobile.ViewModels
                 var value = date.ToString(BiExcellence.OpenBi.Api.Internal.Utils.DateTimeOffsetToString(new DateTimeOffset(date)));
                 var text = date.ToString("D");
                 SendText(value, text);
+            }
+            else if (parameter is IMajaEntity entity)
+            {
+                var dict = new Dictionary<string, string>();
+                dict["ENTITY_ID"] = entity.Id;
+                SendText(entity.Name, parameters: dict);
             }
             else
             {
@@ -247,7 +204,7 @@ namespace MajaMobile.ViewModels
             if (_speechRecognitionMessage != null)
                 _speechRecognitionMessage.Text = text;
             if (!string.IsNullOrEmpty(_speechRecognitionMessage?.Text))
-                SendText(value, text, false);
+                SendText(value, text, addMessage: false);
         }
 
         private void _audioService_SpeechRecognitionPartialResult(object sender, SpeechRecognitionEventArgs e)
@@ -300,7 +257,7 @@ namespace MajaMobile.ViewModels
             UpdateChatButton();
         }
 
-        private void MultipleChoiceMessageTapped(UserConversationMessageMultipleChoice message, IPossibleUserReply possibleUserReply)
+        private void PossibleUserReplyTapped(object obj)
         {
             if (IsBusy)
                 return;
@@ -311,92 +268,8 @@ namespace MajaMobile.ViewModels
                 if (speechMessage != null)
                     Messages.Remove(speechMessage);
             }
-            SendText(possibleUserReply.Value, possibleUserReply.Text);
-        }
-
-        public ObservableCollection<IEntity> EntitySearchResults { get; } = new ObservableCollection<IEntity>();
-        private string _lastSearch = "";
-        private CancellationTokenSource _previousCts;
-        private async void UpdateEntityInfo()
-        {
-            var possibleUserReply = CurrentUserInput;
-            if (possibleUserReply == null || !string.Equals(possibleUserReply.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase))
-                return;
-            var text = Text;
-            if (text.Length >= 3 && !(_lastSearch == text))
-            {
-                _lastSearch = text;
-                try
-                {
-                    CancelRunningTask();
-
-                    var cts = _previousCts = new CancellationTokenSource();
-
-                    var values = new Dictionary<string, string>();
-                    values.Add("cms_item", "openbi:dblist");
-                    values.Add("data-columns", "NAME;ID");
-                    values.Add("data-items-per-page", "20");
-                    values.Add("data-table", "SHOP_PRODUCT_" + possibleUserReply.Value);
-
-                    var query = "NAME^=" + text;
-
-                    using (var content = new FormUrlEncodedContent(values))
-                    using (var response = await SendApiRequest(content, query, cts.Token))
-                    {
-                        if (!cts.IsCancellationRequested)
-                        {
-                            _previousCts = null;
-                            string result = await response.Content.ReadAsStringAsync();
-                            var jarray = JArray.Parse(result);
-
-                            EntitySearchResults.Clear();
-                            var searchresults = new List<IEntity>();
-                            foreach (var token in jarray)
-                            {
-                                var entity = new Entity((string)token["ID"]);
-                                entity.Name = (string)token["NAME"];
-                                searchresults.Add(entity);
-                            }
-                            foreach (var entity in searchresults.OrderBy(e => e.Name))
-                            {
-                                EntitySearchResults.Add(entity);
-                            }
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-
-                }
-            }
-        }
-
-        private static async Task<HttpResponseMessage> SendApiRequest(HttpContent content, string urlParameters, CancellationToken token = default(CancellationToken))
-        {
-            using (var handler = new HttpClientHandler())
-            using (var client = new HttpClient(handler))
-            {
-                client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
-                return await client.PostAsync("https://maja.ai?" + urlParameters, content, token);
-            }
-        }
-
-        private void CancelRunningTask()
-        {
-            try
-            {
-                var previousCts = _previousCts;
-                if (previousCts != null)
-                {
-                    try
-                    {
-                        previousCts.Cancel();
-                    }
-                    catch { }
-                }
-                _previousCts = null;
-            }
-            catch (Exception) { }
+            if (obj is IPossibleUserReply possibleUserReply)
+                SendText(possibleUserReply.Value, possibleUserReply.Text);
         }
 
         private void UpdateChatButton()
@@ -421,7 +294,7 @@ namespace MajaMobile.ViewModels
                 ChatButtonMode = buttonMode;
         }
 
-        private async void SendText(string value = null, string text = null, bool addMessage = true)
+        private async void SendText(string value = null, string text = null, IDictionary<string, string> parameters = null, bool addMessage = true)
         {
             _speechRecognitionMessage = null;
             if (IsBusy)
@@ -435,16 +308,7 @@ namespace MajaMobile.ViewModels
                 {
                     Messages.Clear();
                 }
-                else if (_dialogActive)
-                {
-                    foreach (var message in Messages.ToList())
-                    {
-                        if (message is UserConversationMessageMultipleChoice)
-                        {
-                            Messages.Remove(message);
-                        }
-                    }
-                }
+                PossibleUserReplies.Clear();
                 if (addMessage)
                     Messages.Add(new UserConversationMessage(text ?? value));
                 CurrentMajaState = MajaListeningStatus.Thinking;
@@ -452,17 +316,9 @@ namespace MajaMobile.ViewModels
                 try
                 {
                     IList<IMajaQueryAnswer> answers = null;
-                    try
-                    {
-                        //TODO:CancellationToken
-                        answers = await _openbiSession.QueryMajaForAnswers(value, MajaApiKey, MajaApiSecret);
-                    }
-                    catch (OpenBiServerErrorException requestEx) when (requestEx.Response.Code == -97)
-                    {
-                        _openbiSession = new OpenBiSession(_openBiConfiguration);
-                        //TODO:CancellationToken
-                        answers = await _openbiSession.QueryMajaForAnswers(value, MajaApiKey, MajaApiSecret);
-                    }
+                    //TODO:CancellationToken
+                    answers = await SessionHandler.Instance.ExecuteOpenbiCommand((s, t) => s.QueryMajaForAnswers(value, Utils.MajaApiKey, Utils.MajaApiSecret, Utils.Packages, parameters));
+
                     if (answers == null || answers.Count == 0)
                     {
                         _dialogActive = false;
@@ -474,26 +330,17 @@ namespace MajaMobile.ViewModels
                         foreach (var answer in answers)//TODO: only certain messages?
                         {
                             Messages.Add(MajaConversationMessage.Factory((answer)));
-                            if (!string.IsNullOrEmpty(answer.Image))
-                            {
-                                Messages.Add(new MajaConversationMessageImage(answer));
-                            }
-                            List<IPossibleUserReply> possibleUserReplies = null;
                             foreach (var possibleUserReply in answer.PossibleUserReplies)
                             {
                                 if (string.Equals(possibleUserReply.ControlType, PossibleUserReplyControlType.Button, StringComparison.OrdinalIgnoreCase) || (!(string.IsNullOrEmpty(possibleUserReply.Value)) && !string.Equals(possibleUserReply.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    if (possibleUserReplies == null)
-                                        possibleUserReplies = new List<IPossibleUserReply>();
-                                    possibleUserReplies.Add(possibleUserReply);
+                                    PossibleUserReplies.Add(possibleUserReply);
                                 }
                                 else
                                 {
                                     CurrentUserInput = possibleUserReply;
                                 }
                             }
-                            if (possibleUserReplies != null)
-                                Messages.Add(new UserConversationMessageMultipleChoice("", possibleUserReplies));
                             completed = completed && answer.Completed;
                         }
                         _dialogActive = !completed;
@@ -523,22 +370,23 @@ namespace MajaMobile.ViewModels
             {
                 _audioService.StopService();
                 ChatButtonMode = ChatButtonDisplayMode.Microphone;
-                _deviceInfo.Vibrate();
             }
             else if (ChatButtonMode == ChatButtonDisplayMode.Send)
                 SendText();
-            Console.WriteLine("MainPage_Released");
         }
-        
+
         private void LongPressed(object obj)
         {
             if (IsIdle && ChatButtonMode == ChatButtonDisplayMode.Microphone)
             {
                 _audioService.StartSpeechRecognition();
                 ChatButtonMode = ChatButtonDisplayMode.Listening;
-                _deviceInfo.Vibrate();
+                //try
+                //{
+                //    Vibration.Vibrate();
+                //}
+                //catch { }
             }
-            Console.WriteLine("MainPage_LongPressed");
         }
     }
 }

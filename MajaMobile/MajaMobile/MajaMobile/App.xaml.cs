@@ -1,4 +1,6 @@
 ﻿using MajaMobile.Pages;
+using MajaMobile.Utilities;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -11,12 +13,21 @@ namespace MajaMobile
         {
             InitializeComponent();
 
-            MainPage = new NavigationPageBase(new MainPage());
+            MainPage = new MainPageMasterDetail();
         }
 
-        protected override void OnStart()
+        private bool _started;
+        protected override async void OnStart()
         {
             // Handle when your app starts
+            if (_started)
+                return;
+            _started = true;
+            try
+            {
+                await SessionHandler.Instance.OpenbiUserLogin();
+            }
+            catch (Exception) { }
         }
 
         protected override void OnSleep()

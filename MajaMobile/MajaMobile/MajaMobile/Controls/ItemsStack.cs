@@ -78,9 +78,8 @@ namespace MajaMobile.Controls
             var view = sender as View;
             if (view != null)
             {
-                var message = view.BindingContext as ConversationMessage;
                 uint animationTime = 1000;
-                if (message != null)
+                if (view.BindingContext is ConversationMessage message)
                 {
                     if (message.Speaker == MajaConversationSpeaker.Maja)
                     {

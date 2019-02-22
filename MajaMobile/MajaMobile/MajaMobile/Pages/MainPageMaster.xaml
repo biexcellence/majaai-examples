@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:ContentPageBase xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:MajaMobile.Converters"
+             xmlns:pages="clr-namespace:MajaMobile.Pages"
+             xmlns:util="clr-namespace:MajaMobile.Utilities"
+             Title="MajaAI"
+             Icon="hamburger.png"
+             x:Class="MajaMobile.Pages.MainPageMaster">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:NotNullConverter x:Key="NotNullConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <StackLayout Orientation="Vertical" Spacing="10">
+        <StackLayout.Padding>
+            <OnPlatform x:TypeArguments="Thickness" Android="20,20,2,0" iOS="20,60,2,0"/>
+        </StackLayout.Padding>
+        <!--<Label Text="Einstellungen" FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontSemiLightItalic}" HorizontalOptions="Start" HorizontalTextAlignment="Start"/>
+        <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest="1" HorizontalOptions="FillAndExpand"/>
+        <Label Text="Meine Daten" FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontSemiLightItalic}" HorizontalOptions="Start" HorizontalTextAlignment="Start"/>
+        <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest="1" HorizontalOptions="FillAndExpand"/>-->
+        <Label Text="Meine Talente" FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontSemiLightItalic}" HorizontalOptions="Start" HorizontalTextAlignment="Start">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding SelectTalentsCommand}"/>
+            </Label.GestureRecognizers>
+        </Label>
+        <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest="1" HorizontalOptions="FillAndExpand"/>
+        <Label Text="Anmelden" FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontSemiLightItalic}" HorizontalOptions="Start" HorizontalTextAlignment="Start" IsVisible="{Binding User, Converter={StaticResource NotNullConverter}, ConverterParameter=invert}">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding LoginCommand}"/>
+            </Label.GestureRecognizers>
+        </Label>
+        <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest="1" HorizontalOptions="FillAndExpand" IsVisible="{Binding User, Converter={StaticResource NotNullConverter}, ConverterParameter=invert}"/>
+        <Label Text="Registrieren" FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontSemiLightItalic}" HorizontalOptions="Start" HorizontalTextAlignment="Start" IsVisible="{Binding User, Converter={StaticResource NotNullConverter}, ConverterParameter=invert}">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding RegisterCommand}"/>
+            </Label.GestureRecognizers>
+        </Label>
+        <Label Text="Abmelden" FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontSemiLightItalic}" HorizontalOptions="Start" HorizontalTextAlignment="Start" IsVisible="{Binding User, Converter={StaticResource NotNullConverter}}">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding LogoutCommand}"/>
+            </Label.GestureRecognizers>
+        </Label>
+        <!--<BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest="1" HorizontalOptions="FillAndExpand"/>-->
+    </StackLayout>
+</pages:ContentPageBase>

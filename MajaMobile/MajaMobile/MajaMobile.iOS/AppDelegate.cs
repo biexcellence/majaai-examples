@@ -2,6 +2,7 @@
 using Foundation;
 using Syncfusion.Licensing;
 using Syncfusion.ListView.XForms.iOS;
+using Syncfusion.SfAutoComplete.XForms.iOS;
 using UIKit;
 
 namespace MajaMobile.iOS
@@ -24,10 +25,13 @@ namespace MajaMobile.iOS
             global::Xamarin.Forms.Forms.Init();
 
             // SYNCFUSION
-            SyncfusionLicenseProvider.RegisterLicense("TODO: YOURLICENSEKEY");
+            SyncfusionLicenseProvider.RegisterLicense("TODO");
             SfListViewRenderer.Init();
+            SfAutoCompleteRenderer.Init();
 
             LoadApplication(new App());
+            
+          
 
             AVAudioSession.SharedInstance().SetCategory(AVAudioSessionCategory.PlayAndRecord, AVAudioSessionCategoryOptions.DefaultToSpeaker);
 

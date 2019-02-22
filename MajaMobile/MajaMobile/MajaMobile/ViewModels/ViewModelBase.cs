@@ -10,6 +10,7 @@ namespace MajaMobile.ViewModels
 {
     public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
     {
+        public const string OpenbirequestErrorMessage = "REQUEST_ERROR";
         public const string GoBackMessage = "GO_BACK";
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -82,7 +83,12 @@ namespace MajaMobile.ViewModels
         {
             MessagingCenter.Send(this, GoBackMessage);
         }
-        
+
+        protected void DisplayException(Exception ex)
+        {
+            MessagingCenter.Send(this, OpenbirequestErrorMessage, ex);
+        }
+
         public virtual void Dispose()
         {
 

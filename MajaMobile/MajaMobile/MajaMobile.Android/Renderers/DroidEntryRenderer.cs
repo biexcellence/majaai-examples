@@ -2,12 +2,12 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
-[assembly: ExportRenderer(typeof(MajaMobile.Controls.DroidEntry), typeof(MajaMobile.Droid.Renderers.CustomEntryRenderer))]
+[assembly: ExportRenderer(typeof(MajaMobile.Controls.DroidEntry), typeof(MajaMobile.Droid.Renderers.DroidEntryRenderer))]
 namespace MajaMobile.Droid.Renderers
 {
-    public class CustomEntryRenderer : EntryRenderer
+    public class DroidEntryRenderer : EntryRenderer
     {
-        public CustomEntryRenderer(Context context) : base(context)
+        public DroidEntryRenderer(Context context) : base(context)
         {
         }
 

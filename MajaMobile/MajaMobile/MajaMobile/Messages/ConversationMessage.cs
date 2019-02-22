@@ -2,18 +2,24 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
+using Xamarin.Forms;
 
 namespace MajaMobile.Messages
 {
     public abstract class ConversationMessage : INotifyPropertyChanged
     {
+        public const string ConversationMessageTappedMessage = "MESSAGE_TAPPED";
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public ICommand TappedCommand { get; }
         public MajaConversationSpeaker Speaker { get; }
+        public bool HasImage => !string.IsNullOrEmpty(Image);
+        public virtual string Image { get; }
 
         private string _text;
         public string Text
@@ -26,6 +32,12 @@ namespace MajaMobile.Messages
         {
             Text = text;
             Speaker = speaker;
+            TappedCommand = new Command(MessageTapped);
+        }
+
+        protected virtual void MessageTapped()
+        {
+
         }
     }
 
@@ -40,6 +52,16 @@ namespace MajaMobile.Messages
     public class MajaConversationMessage : ConversationMessage
     {
         public IMajaQueryAnswer MajaQueryAnswer { get; }
+        public override string Image
+        {
+            get
+            {
+                if (MajaQueryAnswer != null && !string.IsNullOrEmpty(MajaQueryAnswer.Image))
+                    return MajaQueryAnswer.Image;
+                return null;
+            }
+        }
+
         public MajaConversationMessage(IMajaQueryAnswer queryAnswer) : base(queryAnswer.Response, MajaConversationSpeaker.Maja)
         {
             MajaQueryAnswer = queryAnswer;

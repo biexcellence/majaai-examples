@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace MajaMobile.Messages
@@ -21,13 +20,11 @@ namespace MajaMobile.Messages
                 Name = name;
             }
         }
-
-        public const string LocationTappedMessage = "LOCATION_TAPPED";
-        public ICommand LocationTappedCommand { get; }
+        
         public List<Location> Locations { get; } = new List<Location>();
 
         private string _image;
-        public string Image
+        public override string Image
         {
             get
             {
@@ -41,12 +38,16 @@ namespace MajaMobile.Messages
         {
             foreach (var entity in queryAnswer.Entities)
             {
-                if (entity.CustomAttributes.TryGetValue("lat", out var lat) && entity.CustomAttributes.TryGetValue("lon", out var @long))
+                if (entity.DisplayAttributes.TryGetValue("lat", out var lat) && entity.DisplayAttributes.TryGetValue("lon", out var @long))
                 {
                     Locations.Add(new Location((double)lat, (double)@long, entity.Name));
                 }
             }
-            LocationTappedCommand = new Command(() => MessagingCenter.Send(this, LocationTappedMessage));
+        }
+
+        protected override void MessageTapped()
+        {
+            MessagingCenter.Send(this, ConversationMessageTappedMessage);
         }
 
         private string GetMapImageUrl()
@@ -72,24 +73,24 @@ namespace MajaMobile.Messages
             return url;
         }
 
-        public string GetMapUrl()
+        public Location GetLocation()
         {
-            CultureInfo info = new CultureInfo("en-US");
-            var url = "";
-            //TODO: other locations
-            var location = Locations[0];
-            var name = Uri.EscapeDataString(location.Name);
+            //CultureInfo info = new CultureInfo("en-US");
+            //var url = "";
+            ////TODO: other locations
+            //var location = Locations[0];
+            //var name = Uri.EscapeDataString(location.Name);
 
-            switch (Device.RuntimePlatform)
-            {
-                case Device.Android:
-                    url = $"geo:{location.Lat.ToString(info)},{location.Long.ToString(info)}?q={name}";
-                    break;
-                case Device.iOS:
-                    url = "http://maps.apple.com/?ll=" + location.Lat.ToString(info) + "," + location.Long.ToString(info) + "&q=" + name;
-                    break;
-            }
-            return url;
+            //switch (Device.RuntimePlatform)
+            //{
+            //    case Device.Android:
+            //        url = $"geo:{location.Lat.ToString(info)},{location.Long.ToString(info)}?q={name}";
+            //        break;
+            //    case Device.iOS:
+            //        url = "http://maps.apple.com/?ll=" + location.Lat.ToString(info) + "," + location.Long.ToString(info) + "&q=" + name;
+            //        break;
+            //}
+            return Locations[0];
         }
     }
 }

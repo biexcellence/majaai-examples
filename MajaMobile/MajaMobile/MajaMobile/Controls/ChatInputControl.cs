@@ -1,19 +1,26 @@
 ﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
+using MajaMobile.Utilities;
+using Syncfusion.SfAutoComplete.XForms;
 using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace MajaMobile.Controls
 {
-    public class EntryControl : ContentView
+    public class ChatInputControl : ContentView
     {
         private View _currentElement;
 
-        public static readonly BindableProperty CurrentUserInputProperty = BindableProperty.Create(nameof(CurrentUserInput), typeof(IPossibleUserReply), typeof(EntryControl));
-        public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(EntryControl), defaultBindingMode: BindingMode.TwoWay);
-        public static readonly BindableProperty CompletedCommandProperty = BindableProperty.Create(nameof(CompletedCommand), typeof(ICommand), typeof(EntryControl));
+        public static readonly BindableProperty CurrentUserInputProperty = BindableProperty.Create(nameof(CurrentUserInput), typeof(IPossibleUserReply), typeof(ChatInputControl));
+        public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(ChatInputControl), defaultBindingMode: BindingMode.TwoWay);
+        public static readonly BindableProperty CompletedCommandProperty = BindableProperty.Create(nameof(CompletedCommand), typeof(ICommand), typeof(ChatInputControl));
 
         public string Text
         {
@@ -58,6 +65,13 @@ namespace MajaMobile.Controls
             {
                 slider.RemoveBinding(Slider.ValueProperty);
                 slider.BindingContext = null;
+            }
+            else if (_currentElement is SfAutoComplete autoComplete)
+            {
+                autoComplete.SelectionChanged -= AutoComplete_SelectionChanged;
+                autoComplete.ValueChanged -= AutoComplete_ValueChanged;
+                autoComplete.RemoveBinding(SfAutoComplete.DataSourceProperty);
+                autoComplete.BindingContext = null;
             }
             _currentElement = null;
         }
@@ -115,6 +129,18 @@ namespace MajaMobile.Controls
                     picker.Unfocused += _datePicker_Unfocused;
                     _currentElement = element = picker;
                 }
+                else if (typeof(T) == typeof(SfAutoComplete))
+                {
+                    EntitySearchResults = new ObservableCollection<IMajaEntity>();
+                    var autoComplete = new SfAutoComplete() { AutoCompleteMode = AutoCompleteMode.Suggest, SuggestionMode = SuggestionMode.StartsWith };
+                    autoComplete.Watermark = CurrentUserInput.Text;
+                    autoComplete.DisplayMemberPath = nameof(IMajaEntity.Name);
+                    autoComplete.SelectionChanged += AutoComplete_SelectionChanged;
+                    autoComplete.ValueChanged += AutoComplete_ValueChanged;
+                    autoComplete.BindingContext = this;
+                    autoComplete.SetBinding(SfAutoComplete.DataSourceProperty, new Binding(nameof(EntitySearchResults)));
+                    _currentElement = element = autoComplete;
+                }
                 if (Device.RuntimePlatform == Device.iOS)
                     Content = element;
                 else
@@ -134,6 +160,11 @@ namespace MajaMobile.Controls
             else if (string.Equals(CurrentUserInput.Type, PossibleUserReplyType.Date, StringComparison.OrdinalIgnoreCase))
             {
                 GetControl<DatePicker>();
+            }
+            else if (string.Equals(CurrentUserInput.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase))
+            {
+                DisposeCurrentControl();
+                GetControl<SfAutoComplete>();
             }
             else
             {
@@ -164,16 +195,13 @@ namespace MajaMobile.Controls
             }
         }
 
-        public EntryControl()
+        public ChatInputControl()
         {
             if (!(Device.RuntimePlatform == Device.iOS))
             {
-                Content = new Frame() { HasShadow = true, CornerRadius = 5.0f, Padding = new Thickness(10, 5, 10, 0), BackgroundColor = Utilities.ColorScheme.EntryBackgroundColor };
+                Content = new Frame() { HasShadow = true, CornerRadius = 5.0f, Padding = new Thickness(10, 5, 10, 0), BackgroundColor = ColorScheme.EntryBackgroundColor };
             }
             SetControl();
-            //var behavior = new EventToCommandBehavior() { EventName = "Completed" };
-            //behavior.SetBinding(EventToCommandBehavior.CommandProperty, new Binding("CompletedCommand"));
-            //_entry.Behaviors.Add(behavior);
         }
 
         private void _datePicker_Unfocused(object sender, FocusEventArgs e)
@@ -196,6 +224,8 @@ namespace MajaMobile.Controls
         //{
         //    _entry.Unfocus();
         //}
+
+        #region Slider
 
         private class StringToIntConverter : IValueConverter
         {
@@ -230,6 +260,104 @@ namespace MajaMobile.Controls
                 return "";
             }
         }
+        #endregion
+
+        #region AutoComplete
+
+        private void AutoComplete_ValueChanged(object sender, Syncfusion.SfAutoComplete.XForms.ValueChangedEventArgs e)
+        {
+            UpdateEntityInfo(e.Value);
+        }
+
+        public ObservableCollection<IMajaEntity> EntitySearchResults { get; private set; }
+        private string _lastSearch = "";
+        private CancellationTokenSource _previousCts;
+        private async void UpdateEntityInfo(string text)
+        {
+            text = text.Trim();
+            var possibleUserReply = CurrentUserInput;
+            if (possibleUserReply == null || !string.Equals(possibleUserReply.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase) || !possibleUserReply.ControlOptions.TryGetValue("ENTITY_ID", out var entityId))
+                return;
+            if (text.Length < 3)
+            {
+                CancelRunningTask();
+                EntitySearchResults.Clear();
+                _lastSearch = "";
+                return;
+            }
+            if (!string.Equals(_lastSearch, text, StringComparison.OrdinalIgnoreCase))
+            {
+                _lastSearch = text;
+                try
+                {
+                    CancelRunningTask();
+
+                    var cts = _previousCts = new CancellationTokenSource();
+
+                    //values.Add("data-columns", "NAME;ID");
+                    //values.Add("data-items-per-page", "10");
+                    string filter = "";
+                    if (possibleUserReply.ControlOptions.TryGetValue("ENTITY_FILTER", out var entityFilter))
+                    {
+                        filter = (string)entityFilter;
+                    }
+
+                    var entities = await SessionHandler.Instance.ExecuteOpenbiCommand((s, t) => s.GetMajaEntities((string)entityId, filter, text, Utils.MajaApiKey, Utils.MajaApiSecret, Utils.Packages, null, t), cts.Token);
+                    if (!cts.IsCancellationRequested)
+                    {
+                        _previousCts = null;
+                        EntitySearchResults.Clear();
+                        foreach (var entity in entities.Take(10).OrderBy(e => e.Name))
+                        {
+                            EntitySearchResults.Add(entity);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+        }
+
+        private static async Task<HttpResponseMessage> SendApiRequest(HttpContent content, string urlParameters, CancellationToken token = default(CancellationToken))
+        {
+            using (var handler = new HttpClientHandler())
+            using (var client = new HttpClient(handler))
+            {
+                client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
+                return await client.PostAsync("https://maja.ai?" + urlParameters, content, token);
+            }
+        }
+
+        private void CancelRunningTask()
+        {
+            try
+            {
+                var previousCts = _previousCts;
+                _previousCts = null;
+                if (previousCts != null)
+                {
+                    try
+                    {
+                        previousCts.Cancel();
+                    }
+                    catch { }
+                }
+            }
+            catch (Exception) { }
+        }
+
+        private void AutoComplete_SelectionChanged(object sender, Syncfusion.SfAutoComplete.XForms.SelectionChangedEventArgs e)
+        {
+            if (e.Value != null)
+            {
+                CancelRunningTask();
+                CompletedCommand?.Execute(e.Value);
+            }
+        }
+
+        #endregion
     }
 
     public class IOSEntry : Entry

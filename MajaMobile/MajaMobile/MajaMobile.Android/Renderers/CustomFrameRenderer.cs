@@ -56,7 +56,7 @@ namespace MajaMobile.Droid.Renderers
         private void UpdateElevation()
         {
             if (Build.VERSION.SdkInt >= (BuildVersionCodes)21)
-                Elevation = Element.HasShadow ? 5 : 0;
+                Elevation = Element.HasShadow ? 20 : 0;
         }
     }
 }

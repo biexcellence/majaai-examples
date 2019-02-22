@@ -10,16 +10,31 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BiExcellence.OpenBi.Api.MajaAi" Version="0.0.11-ci-5411" />
-    <PackageReference Include="Plugin.Share" Version="7.1.1" />
+    <PackageReference Include="BiExcellence.OpenBi.Api.MajaAi" Version="0.0.11-ci-5558" />
+    <PackageReference Include="BiExcellence.OpenBi.Api.User" Version="0.0.11-ci-5558" />
     <PackageReference Include="SkiaSharp.Views.Forms" Version="1.68.0" />
-    <PackageReference Include="Syncfusion.Xamarin.SfListView" Version="16.4.0.52" />
+    <PackageReference Include="Syncfusion.Xamarin.SfAutoComplete" Version="16.4.0.54" />
+    <PackageReference Include="Syncfusion.Xamarin.SfListView" Version="16.4.0.54" />
     <PackageReference Include="Xam.Plugin.SimpleAudioPlayer" Version="1.3.0" />
-    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
+    <PackageReference Include="Xamarin.Auth" Version="1.6.0.4" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.0.1" />
+    <PackageReference Include="Xamarin.Forms" Version="3.5.0.169047" />
     <PackageReference Include="XLabs.Forms" Version="2.3.0-pre05" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Controls\ThinkingControl.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\ImmoPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\LoginPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\MainPageMaster.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Pages\WeatherPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

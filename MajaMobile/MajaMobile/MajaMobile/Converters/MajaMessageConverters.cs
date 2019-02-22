@@ -66,7 +66,7 @@ namespace MajaMobile.Converters
         }
     }
 
-    public class WeatherDetailsConverter : IValueConverter
+    public class PrefixSuffixConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -76,7 +76,10 @@ namespace MajaMobile.Converters
                 if (arr.Length == 1)
                     return value.ToString() + arr[0];
                 if (value is double d)
-                    return arr[0] + ": " + d.ToString(arr[2].ToString()) + " " + arr[1];
+                    if (arr.Length == 3)
+                        return arr[0] + ": " + d.ToString(arr[2].ToString()) + " " + arr[1];
+                    else
+                        return arr[0] + ": " + d.ToString("N0") + " " + arr[1];
                 return arr[0] + ": " + value.ToString() + " " + arr[1];
             }
             return "";

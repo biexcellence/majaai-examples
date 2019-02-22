@@ -2,7 +2,6 @@
 using Android.Graphics;
 using Android.OS;
 using MajaMobile.Interfaces;
-using Plugin.CurrentActivity;
 using System.IO;
 
 [assembly: Xamarin.Forms.Dependency(typeof(MajaMobile.Droid.AndroidDeviceInfo))]
@@ -77,44 +76,6 @@ namespace MajaMobile.Droid
         public bool FileExists(string filename)
         {
             return File.Exists(getLocalFilePath(filename));
-        }
-
-        public byte[] TakeScreenshot(int x, int y, int width, int height)
-        {
-            Activity activity = CrossCurrentActivity.Current.Activity;
-            var view = activity.Window.DecorView;
-            view.DrawingCacheEnabled = true;
-            view.BuildDrawingCache();
-            var bitmap = view.DrawingCache;
-            Rect rect = new Rect();
-            activity.Window.DecorView.GetWindowVisibleDisplayFrame(rect);
-            int statusBarHeight = rect.Top;
-            var density = Application.Context.Resources.DisplayMetrics.Density;
-            var screenShotBitmap = Bitmap.CreateBitmap(bitmap, (int)(x * density), (int)(y * density) + statusBarHeight, (int)(width * density), (int)(height * density));
-            var scaledScreenShotBitmap = Bitmap.CreateScaledBitmap(screenShotBitmap, screenShotBitmap.Width / 2, screenShotBitmap.Height / 2, true);
-            view.DestroyDrawingCache();
-            byte[] bitmapData;
-            using (var stream = new MemoryStream())
-            {
-                scaledScreenShotBitmap.Compress(Bitmap.CompressFormat.Webp, 100, stream);
-                bitmapData = stream.ToArray();
-            }
-            screenShotBitmap.Recycle();
-            if (screenShotBitmap != scaledScreenShotBitmap && !scaledScreenShotBitmap.IsRecycled)
-                scaledScreenShotBitmap.Recycle();
-            return bitmapData;
-        }
-
-        public void Vibrate()
-        {
-            var vib = CrossCurrentActivity.Current.Activity.GetSystemService(Android.Content.Context.VibratorService) as Vibrator;
-            if (vib != null)
-            {
-                if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-                    vib.Vibrate(VibrationEffect.CreateOneShot(50, VibrationEffect.DefaultAmplitude));
-                else
-                    vib.Vibrate(50);
-            }
         }
     }
 }

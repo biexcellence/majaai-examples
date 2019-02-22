@@ -65,7 +65,7 @@ namespace MajaMobile.Droid
         {
             try
             {
-                if (ContextCompat.CheckSelfPermission(CrossCurrentActivity.Current.Activity, Manifest.Permission.RecordAudio) != Android.Content.PM.Permission.Granted)
+                if (ContextCompat.CheckSelfPermission(Android.App.Application.Context, Manifest.Permission.RecordAudio) != Android.Content.PM.Permission.Granted)
                 {
                     ActivityCompat.RequestPermissions(CrossCurrentActivity.Current.Activity, new[] { Manifest.Permission.RecordAudio }, 0);
                 }

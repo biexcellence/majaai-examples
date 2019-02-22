@@ -11,7 +11,7 @@ namespace MajaMobile.Messages
             get
             {
                 if (_news == null && !string.IsNullOrEmpty(MajaQueryAnswer.Data))
-                    _news = (IList<News>)MajaQueryAnswer.DeserializeData();
+                    _news = BiExcellence.OpenBi.Api.Commands.MajaAi.News.GetListFromData(MajaQueryAnswer.Data);
                 return _news;
             }
         }
