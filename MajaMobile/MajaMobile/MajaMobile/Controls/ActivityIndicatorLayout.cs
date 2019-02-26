@@ -28,7 +28,7 @@ namespace MajaMobile.Controls
             SetLayoutFlags(layout, AbsoluteLayoutFlags.All);
             SetLayoutBounds(layout, new Rectangle(0, 0, 1, 1));
             layout.BackgroundColor = Color.FromHex("#33eeeeee");
-            layout.SetBinding(IsVisibleProperty, "IsBusy");
+            layout.SetBinding(IsVisibleProperty, nameof(ViewModels.ViewModelBase.IsBusy));
 
             var indicator = new ActivityIndicator();
             SetLayoutFlags(indicator, AbsoluteLayoutFlags.All);

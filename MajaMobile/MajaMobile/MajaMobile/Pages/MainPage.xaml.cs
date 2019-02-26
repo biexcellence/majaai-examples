@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -22,7 +23,14 @@ namespace MajaMobile.Pages
         public MainPage()
         {
             InitializeComponent();
-            BindingContext = ViewModel = new MainPageViewModel();
+            var viewmodel = new MainPageViewModel();
+            viewmodel.SendingText += Viewmodel_SendingText;
+            BindingContext = ViewModel = viewmodel;
+        }
+
+        private void Viewmodel_SendingText(object sender, EventArgs e)
+        {
+            ChatControl.UnfocusCurrentControl();
         }
 
         public void ShiftEntryUp(double keyboardHeight)
@@ -55,6 +63,8 @@ namespace MajaMobile.ViewModels
         public ICommand ReleasedCommand { get; }
         public ICommand SendTextCommand { get; }
         public ICommand PossibleUserReplyCommand { get; }
+
+        public event EventHandler SendingText;
 
         IAudioService _audioService;
         IDeviceInfo _deviceInfo;
@@ -242,7 +252,6 @@ namespace MajaMobile.ViewModels
             {
                 _thinkingMessage = new MajaConversationMessageThinking();
                 Messages.Add(_thinkingMessage);
-                _thinkingMessage.StartThinking();
             }
             else
             {
@@ -250,7 +259,7 @@ namespace MajaMobile.ViewModels
                 _thinkingMessage = null;
                 if (message != null)
                 {
-                    message.StopThinking();
+                    message.Dispose();
                     Messages.Remove(message);
                 }
             }
@@ -312,50 +321,53 @@ namespace MajaMobile.ViewModels
                 if (addMessage)
                     Messages.Add(new UserConversationMessage(text ?? value));
                 CurrentMajaState = MajaListeningStatus.Thinking;
+                CancellationTokenSource tokenSource = _thinkingMessage?.CancellationTokenSource;
                 Text = "";
+                SendingText?.Invoke(this, EventArgs.Empty);
                 try
                 {
                     IList<IMajaQueryAnswer> answers = null;
-                    //TODO:CancellationToken
-                    answers = await SessionHandler.Instance.ExecuteOpenbiCommand((s, t) => s.QueryMajaForAnswers(value, Utils.MajaApiKey, Utils.MajaApiSecret, Utils.Packages, parameters));
-
-                    if (answers == null || answers.Count == 0)
+                    var cancellationToken = tokenSource != null ? tokenSource.Token : default(CancellationToken);
+                    answers = await SessionHandler.Instance.ExecuteOpenbiCommand((s, t) => s.QueryMajaForAnswers(value, Utils.MajaApiKey, Utils.MajaApiSecret, SessionHandler.Packages, parameters, t), cancellationToken);
+                    if (tokenSource == null || !tokenSource.IsCancellationRequested)
                     {
-                        _dialogActive = false;
-                        Messages.Add(new MajaConversationMessage("Entschuldigung. Darauf habe ich keine Antwort."));
-                    }
-                    else
-                    {
-                        var completed = true;
-                        foreach (var answer in answers)//TODO: only certain messages?
+                        if (answers == null || answers.Count == 0)
                         {
-                            Messages.Add(MajaConversationMessage.Factory((answer)));
-                            foreach (var possibleUserReply in answer.PossibleUserReplies)
-                            {
-                                if (string.Equals(possibleUserReply.ControlType, PossibleUserReplyControlType.Button, StringComparison.OrdinalIgnoreCase) || (!(string.IsNullOrEmpty(possibleUserReply.Value)) && !string.Equals(possibleUserReply.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase)))
-                                {
-                                    PossibleUserReplies.Add(possibleUserReply);
-                                }
-                                else
-                                {
-                                    CurrentUserInput = possibleUserReply;
-                                }
-                            }
-                            completed = completed && answer.Completed;
+                            _dialogActive = false;
+                            Messages.Add(new MajaConversationMessage("Entschuldigung. Darauf habe ich keine Antwort."));
                         }
-                        _dialogActive = !completed;
+                        else
+                        {
+                            var completed = true;
+                            foreach (var answer in answers)//TODO: only certain messages?
+                            {
+                                Messages.Add(MajaConversationMessage.Factory((answer)));
+                                foreach (var possibleUserReply in answer.PossibleUserReplies)
+                                {
+                                    if (string.Equals(possibleUserReply.ControlType, PossibleUserReplyControlType.Button, StringComparison.OrdinalIgnoreCase) || (!(string.IsNullOrEmpty(possibleUserReply.Value)) && !string.Equals(possibleUserReply.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase)))
+                                    {
+                                        PossibleUserReplies.Add(possibleUserReply);
+                                    }
+                                    else
+                                    {
+                                        CurrentUserInput = possibleUserReply;
+                                    }
+                                }
+                                completed = completed && answer.Completed;
+                            }
+                            _dialogActive = !completed;
+                        }
                     }
                 }
                 catch (OperationCanceledException)
                 {
-                    //TODO
                     _dialogActive = false;
+                    Messages.Add(new MajaConversationMessage("Die Anfrage wurde abgebrochen"));
                 }
                 catch (Exception ex)
                 {
                     _dialogActive = false;
                     Messages.Add(new MajaConversationMessage(ex.Message));
-                    //TODO
                 }
                 finally
                 {

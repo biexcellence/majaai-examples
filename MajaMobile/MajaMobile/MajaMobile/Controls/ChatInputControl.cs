@@ -163,6 +163,7 @@ namespace MajaMobile.Controls
             }
             else if (string.Equals(CurrentUserInput.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase))
             {
+                //always dispose even if current control is SfAutoComplete because of binding to collection
                 DisposeCurrentControl();
                 GetControl<SfAutoComplete>();
             }
@@ -214,16 +215,12 @@ namespace MajaMobile.Controls
         {
             CompletedCommand?.Execute(null);
         }
-
-        //public void FocusEntry()
-        //{
-        //    _entry.Focus();
-        //}
-
-        //public void UnfocusEntry()
-        //{
-        //    _entry.Unfocus();
-        //}
+        
+        public void UnfocusCurrentControl()
+        {
+            if (_currentElement != null)
+                _currentElement.Unfocus();
+        }
 
         #region Slider
 
@@ -291,7 +288,6 @@ namespace MajaMobile.Controls
                 try
                 {
                     CancelRunningTask();
-
                     var cts = _previousCts = new CancellationTokenSource();
 
                     //values.Add("data-columns", "NAME;ID");
@@ -302,7 +298,7 @@ namespace MajaMobile.Controls
                         filter = (string)entityFilter;
                     }
 
-                    var entities = await SessionHandler.Instance.ExecuteOpenbiCommand((s, t) => s.GetMajaEntities((string)entityId, filter, text, Utils.MajaApiKey, Utils.MajaApiSecret, Utils.Packages, null, t), cts.Token);
+                    var entities = await SessionHandler.Instance.ExecuteOpenbiCommand((s, t) => s.GetMajaEntities((string)entityId, filter, text, Utils.MajaApiKey, Utils.MajaApiSecret, SessionHandler.Packages, null, t), cts.Token);
                     if (!cts.IsCancellationRequested)
                     {
                         _previousCts = null;

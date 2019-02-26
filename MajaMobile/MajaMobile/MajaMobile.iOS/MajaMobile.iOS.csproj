@@ -31,6 +31,9 @@
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <CodesignKey>iPhone Developer: Kai Wachter (BJE2D3VZ79)</CodesignKey>
     <CodesignProvision>VS: WildCard Development</CodesignProvision>
+    <CodesignExtraArgs />
+    <CodesignResourceRules />
+    <CodesignEntitlements />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
@@ -213,5 +216,14 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\hamburger%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\maja%403x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\maja.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\maja%402x.png" />
   </ItemGroup>
 </Project>

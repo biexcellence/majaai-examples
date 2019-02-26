@@ -7,8 +7,10 @@ using Xamarin.Forms;
 
 namespace MajaMobile.Messages
 {
-    public abstract class ConversationMessage : INotifyPropertyChanged
+    public abstract class ConversationMessage : INotifyPropertyChanged, IDisposable
     {
+        public bool Disposed { get; private set; }
+
         public const string ConversationMessageTappedMessage = "MESSAGE_TAPPED";
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -38,6 +40,11 @@ namespace MajaMobile.Messages
         protected virtual void MessageTapped()
         {
 
+        }
+
+        public virtual void Dispose()
+        {
+            Disposed = true;
         }
     }
 

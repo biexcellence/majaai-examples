@@ -1,10 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MajaMobile.Controls.ThinkingControl">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            
-        </Grid.ColumnDefinitions>
-    </Grid>
+    <skia:SKCanvasView x:Name="Canvas" PaintSurface="Canvas_PaintSurface" HeightRequest="25" WidthRequest="60" VerticalOptions="Center"/>
 </ContentView>

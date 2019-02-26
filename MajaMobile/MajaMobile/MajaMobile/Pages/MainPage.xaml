@@ -16,6 +16,7 @@
             <converters:NotNullConverter x:Key="NotNullConverter"/>
             <converters:ObjectFromListConverter x:Key="ListConverter"/>
             <converters:PrefixSuffixConverter x:Key="PrefixSuffixConverter"/>
+            <converters:MessageToImageRowSpacingConverter x:Key="ImageRowSpacingConverter"/>
 
             <ControlTemplate x:Key="RealEstateControlTemplate">
                 <Frame CornerRadius="10" Padding="5" HasShadow="False" BorderColor="Transparent" BackgroundColor="White">
@@ -150,6 +151,25 @@
                     <Label Text="{Binding Text}" TextColor="{Binding Speaker, Converter={StaticResource TextColorConverter}}" Margin="5,0,0,0" IsVisible="{Binding Text, Converter={StaticResource NotNullConverter}}"/>
                 </ContentView>
             </DataTemplate>
+            <DataTemplate x:Key="ThinkingTemplate">
+                <ContentView ControlTemplate="{StaticResource MessageTemplate}">
+                    <Grid RowSpacing="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <controls:ThinkingControl/>
+                        <Label Text="Abbrechen" TextColor="#1fb8dd" Grid.Row="1" Margin="0,0,20,0">
+                            <Label.Effects>
+                                <effects:UnderlineEffect/>
+                            </Label.Effects>
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding CancelTappedCommand}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Grid>
+                </ContentView>
+            </DataTemplate>
 
             <controls:MessageDataTemplateSelector x:Key="TemplateSelector"
                                             TextTemplate="{StaticResource TextTemplate}"
@@ -159,14 +179,15 @@
                                             NewsTemplate="{StaticResource NewsTemplate}"
                                             VideoTemplate="{StaticResource VideoTemplate}"
                                             LocationTemplate="{StaticResource LocationTemplate}"
-                                            AudioTemplate="{StaticResource AudioTemplate}"/>
+                                            AudioTemplate="{StaticResource AudioTemplate}"
+                                            ThinkingTemplate="{StaticResource ThinkingTemplate}"/>
             <ControlTemplate x:Key="MessageTemplate">
                 <Frame BindingContext="{TemplateBinding BindingContext}" HasShadow="True" BorderColor="Transparent" CornerRadius="10" Padding="8" HorizontalOptions="{Binding Speaker, Converter={StaticResource AlignmentConverter}}"
                            Margin="{Binding Speaker, Converter={StaticResource MarginConverter}}" BackgroundColor="{Binding Speaker, Converter={StaticResource ColorConverter}}">
                     <Frame.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding TappedCommand}"/>
                     </Frame.GestureRecognizers>
-                    <Grid RowSpacing="5">
+                    <Grid RowSpacing="{Binding HasImage, Converter={StaticResource ImageRowSpacingConverter}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="auto"/>
@@ -193,7 +214,7 @@
             <controls:ItemsStack ItemsSource="{Binding Messages}" ItemTemplate="{StaticResource TemplateSelector}" Grid.Row="0" Grid.ColumnSpan="2"/>
             <controls:MultipleChoiceControl ItemsSource="{Binding PossibleUserReplies}" Command="{Binding PossibleUserReplyCommand}" Grid.Row="1" Grid.ColumnSpan="2"/>
             <controls:ChatInputControl Margin="5,0,5,5" Grid.Row="2" VerticalOptions="End" HorizontalOptions="FillAndExpand" Text="{Binding Text}"
-                             IsEnabled="{Binding IsIdle}" CompletedCommand="{Binding SendTextCommand}" CurrentUserInput="{Binding CurrentUserInput}"/>
+                             IsEnabled="{Binding IsIdle}" CompletedCommand="{Binding SendTextCommand}" CurrentUserInput="{Binding CurrentUserInput}" x:Name="ChatControl"/>
             <controls:ChatButton VerticalOptions="End" HorizontalOptions="End" Grid.Row="2" Grid.Column="1" HeightRequest="45" WidthRequest="45" Margin="0,0,5,5" DisplayMode="{Binding ChatButtonMode}">
                 <controls:ChatButton.GestureRecognizers>
                     <gestures:PressedGestureRecognizer Command="{Binding LongPressedCommand}"/>

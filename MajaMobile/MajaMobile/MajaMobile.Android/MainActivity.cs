@@ -16,7 +16,7 @@ namespace MajaMobile.Droid
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
-            SyncfusionLicenseProvider.RegisterLicense("TODO");
+            SyncfusionLicenseProvider.RegisterLicense("");//TODO: Your Syncfusion License
 
             base.OnCreate(savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);

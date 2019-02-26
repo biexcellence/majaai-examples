@@ -3,6 +3,7 @@ using BiExcellence.OpenBi.Api.Commands;
 using BiExcellence.OpenBi.Api.Commands.Users;
 using MajaMobile.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -17,16 +18,10 @@ namespace MajaMobile.Utilities
 
         private static SessionHandler _instance;
         public static SessionHandler Instance => _instance ?? new SessionHandler();
+        public static IOpenBiSession Session { get; private set; }
+        private static List<string> _packages = new List<string>();
+        public static IReadOnlyList<string> Packages => _packages;
 
-        private static IOpenBiSession _openbiSession;
-        public static IOpenBiSession Session
-        {
-            get => _openbiSession;
-            set
-            {
-                _openbiSession = value;
-            }
-        }
         private static IOpenBiConfiguration _openBiConfiguration = new OpenBiConfiguration(Protocol.HTTPS, "maja.ai", 443, "MajaApp");
 
         public const string UserChangedMessage = "USER_CHANGED";
@@ -45,8 +40,24 @@ namespace MajaMobile.Utilities
         private SessionHandler()
         {
             _instance = this;
+            using (var db = new AppDatabase())
+            {
+                var ids = db.GetTalentIds();
+                _packages.AddRange(ids);
+                if (_packages.Count == 0)
+                    _packages.AddRange(Utils.DefaultPackages);
+            }
         }
 
+        public static void SetPackages(IEnumerable<string> packages)
+        {
+            _packages.Clear();
+            _packages.AddRange(packages);
+            using (var db = new AppDatabase())
+            {
+                db.SetMajaTalentData(_packages);
+            }
+        }
 
         private Task _currentUserLoginTask;
         private const string _accountStoreServiceId = "MajaAiAccount";

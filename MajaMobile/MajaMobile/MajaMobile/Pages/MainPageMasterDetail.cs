@@ -52,7 +52,11 @@ namespace MajaMobile.Pages
             MessagingCenter.Subscribe<MajaConversationMessageWeather>(this, ConversationMessage.ConversationMessageTappedMessage, WeatherTapped);
             MessagingCenter.Subscribe<MajaConversationMessageImmo>(this, ConversationMessage.ConversationMessageTappedMessage, ImmoTapped);
             MessagingCenter.Subscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.RegisterMessage, Register);
-            MessagingCenter.Subscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.SelectTalentsMessage, SelectTalents);
+            MessagingCenter.Subscribe(this, MainPageMasterViewModel.SelectTalentsMessage, async (MainPageMasterViewModel viewmodel) =>
+            {
+                if (CanNavigate())
+                    await Detail.Navigation.PushAsync(new TalentsPage());
+            });
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.LoginMessage, async (MainPageMasterViewModel viewmodel) =>
             {
                 if (CanNavigate())
@@ -73,11 +77,6 @@ namespace MajaMobile.Pages
         }
 
         private void Register(MainPageMasterViewModel viewmodel)
-        {
-            //TODO
-        }
-
-        private void SelectTalents(MainPageMasterViewModel viewmodel)
         {
             //TODO
         }
@@ -104,8 +103,9 @@ namespace MajaMobile.Pages
             {
                 try
                 {
-                    var location = message.GetLocation();
-                    await Map.OpenAsync(location.Lat, location.Long);
+                    var location = message.Locations.FirstOrDefault();
+                    if (location != null)
+                        await Map.OpenAsync(location.Lat, location.Long, new MapLaunchOptions() { Name = location.Name });
                 }
                 catch (Exception) { }
             }
@@ -163,6 +163,21 @@ namespace MajaMobile.ViewModels
             SelectTalentsCommand = new Command(() => MessagingCenter.Send(this, SelectTalentsMessage));
             LogoutCommand = new Command(() => SessionHandler.Instance.Logout());
             MessagingCenter.Subscribe(this, SessionHandler.UserChangedMessage, (SessionHandler s, IUser user) => User = user);
+            Login();
+        }
+
+        private async void Login()
+        {
+            IsBusy = true;
+            try
+            {
+                await SessionHandler.Instance.OpenbiUserLogin();
+            }
+            catch (Exception) { }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 }

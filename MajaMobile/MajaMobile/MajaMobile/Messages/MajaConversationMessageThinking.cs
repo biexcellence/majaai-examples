@@ -1,33 +1,25 @@
-﻿using System;
+﻿using System.Threading;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace MajaMobile.Messages
 {
     public class MajaConversationMessageThinking : MajaConversationMessage
     {
-        private bool _isThinking;
+        public ICommand CancelTappedCommand { get; }
+        public CancellationTokenSource CancellationTokenSource { get; }
+
         public MajaConversationMessageThinking() : base("")
         {
-
-        }
-        public void StartThinking()
-        {
-            _isThinking = true;
-            Device.StartTimer(TimeSpan.FromMilliseconds(350), TimerCallback);
-        }
-
-        private bool TimerCallback()
-        {
-            if (_isThinking)
+            CancellationTokenSource = new CancellationTokenSource();
+            CancelTappedCommand = new Command(() =>
             {
-                Text = Text == "..." ? "." : Text + ".";
-            }
-            return _isThinking;
-        }
-
-        public void StopThinking()
-        {
-            _isThinking = false;
+                try
+                {
+                    CancellationTokenSource.Cancel();
+                }
+                catch { }
+            });
         }
     }
 }

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:ContentPageBase xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MajaMobile.Controls"
+             xmlns:pages="clr-namespace:MajaMobile.Pages"
+             xmlns:sync="clr-namespace:Syncfusion.ListView.XForms;assembly=Syncfusion.SfListView.XForms"
+             xmlns:data="clr-namespace:Syncfusion.DataSource;assembly=Syncfusion.DataSource.Portable"
+             x:Class="MajaMobile.Pages.TalentsPage" Title="Meine Talente">
+    <controls:ActivityIndicatorLayout>
+        <Image Source="background.png" Aspect="Fill" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All"/>
+        <Grid AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="10,0">
+            <sync:SfListView ItemsSource="{Binding Talents}" SelectionMode="Multiple" SelectedItems="{Binding SelectedTalents}"  x:Name="TalentList">
+                <sync:SfListView.DataSource>
+                    <data:DataSource>
+                        <data:DataSource.GroupDescriptors>
+                            <data:GroupDescriptor PropertyName="Category"/>
+                        </data:DataSource.GroupDescriptors>
+                    </data:DataSource>
+                </sync:SfListView.DataSource>
+                <sync:SfListView.GroupHeaderTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Label Text="{Binding Key.Name}" FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontBoldItalic}"/>
+                        </Grid>
+                    </DataTemplate>
+                </sync:SfListView.GroupHeaderTemplate>
+                <sync:SfListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Source="{Binding Image}"/>
+                            <Label Text="{Binding Name}" Grid.Column="1"/>
+                        </Grid>
+                    </DataTemplate>
+                </sync:SfListView.ItemTemplate>
+                <sync:SfListView.SelectedItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Source="{Binding Image}"/>
+                            <Label Text="{Binding Name}" Grid.Column="1"/>
+                            <Image Grid.Column="2" Source="maja.png"/>
+                        </Grid>
+                    </DataTemplate>
+                </sync:SfListView.SelectedItemTemplate>
+            </sync:SfListView>
+        </Grid>
+    </controls:ActivityIndicatorLayout>
+</pages:ContentPageBase>

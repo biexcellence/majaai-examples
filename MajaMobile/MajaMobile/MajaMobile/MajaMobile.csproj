@@ -10,9 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BiExcellence.OpenBi.Api.MajaAi" Version="0.0.11-ci-5558" />
-    <PackageReference Include="BiExcellence.OpenBi.Api.User" Version="0.0.11-ci-5558" />
+    <PackageReference Include="BiExcellence.OpenBi.Api.MajaAi" Version="0.0.11-ci-5584" />
+    <PackageReference Include="BiExcellence.OpenBi.Api.User" Version="0.0.11-ci-5584" />
     <PackageReference Include="SkiaSharp.Views.Forms" Version="1.68.0" />
+    <PackageReference Include="sqlite-net-pcl" Version="1.6.258-beta" />
     <PackageReference Include="Syncfusion.Xamarin.SfAutoComplete" Version="16.4.0.54" />
     <PackageReference Include="Syncfusion.Xamarin.SfListView" Version="16.4.0.54" />
     <PackageReference Include="Xam.Plugin.SimpleAudioPlayer" Version="1.3.0" />
@@ -20,6 +21,12 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.0.1" />
     <PackageReference Include="Xamarin.Forms" Version="3.5.0.169047" />
     <PackageReference Include="XLabs.Forms" Version="2.3.0-pre05" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Pages\TalentsPage.xaml.cs">
+      <DependentUpon>TalentsPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +40,9 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Pages\MainPageMaster.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\TalentsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Pages\WeatherPage.xaml">

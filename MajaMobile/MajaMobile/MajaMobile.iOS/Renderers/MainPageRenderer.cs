@@ -1,5 +1,5 @@
 ﻿using Foundation;
-using MajaMobile;
+using MajaMobile.Pages;
 using SoftInput.iOS.Render;
 using UIKit;
 using Xamarin.Forms;

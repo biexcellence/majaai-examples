@@ -14,6 +14,7 @@ namespace MajaMobile.Controls
         public DataTemplate LocationTemplate { get; set; }
         public DataTemplate AudioTemplate { get; set; }
         public DataTemplate VideoTemplate { get; set; }
+        public DataTemplate ThinkingTemplate { get; set; }
 
         protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
         {
@@ -32,6 +33,8 @@ namespace MajaMobile.Controls
                 return NewsTemplate;
             if (message is MajaConversationMessageWeather)
                 return WeatherTemplate;
+            if (message is MajaConversationMessageThinking)
+                return ThinkingTemplate;
             return TextTemplate;
         }
     }

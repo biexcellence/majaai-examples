@@ -66,31 +66,11 @@ namespace MajaMobile.Messages
             parameters.Add("format=png");
             if (Locations.Count == 1)
             {
-                parameters.Add("zoom=7");
+                parameters.Add("zoom=9");
             }
-            parameters.Add("key=AIzaSyA8So_RPU4ipGFa1Qc9GZv3JaZjYlxHG5k");
+            parameters.Add("key="); //TODO:Your Google Maps key
             url += string.Join("&", parameters);
             return url;
-        }
-
-        public Location GetLocation()
-        {
-            //CultureInfo info = new CultureInfo("en-US");
-            //var url = "";
-            ////TODO: other locations
-            //var location = Locations[0];
-            //var name = Uri.EscapeDataString(location.Name);
-
-            //switch (Device.RuntimePlatform)
-            //{
-            //    case Device.Android:
-            //        url = $"geo:{location.Lat.ToString(info)},{location.Long.ToString(info)}?q={name}";
-            //        break;
-            //    case Device.iOS:
-            //        url = "http://maps.apple.com/?ll=" + location.Lat.ToString(info) + "," + location.Long.ToString(info) + "&q=" + name;
-            //        break;
-            //}
-            return Locations[0];
         }
     }
 }

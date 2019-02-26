@@ -25,7 +25,7 @@ namespace MajaMobile.iOS
             global::Xamarin.Forms.Forms.Init();
 
             // SYNCFUSION
-            SyncfusionLicenseProvider.RegisterLicense("TODO");
+            SyncfusionLicenseProvider.RegisterLicense("");//TODO: Your Syncfusion License
             SfListViewRenderer.Init();
             SfAutoCompleteRenderer.Init();
 
