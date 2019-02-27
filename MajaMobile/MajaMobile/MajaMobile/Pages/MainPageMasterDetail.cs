@@ -50,7 +50,6 @@ namespace MajaMobile.Pages
             base.OnAppearing();
             MessagingCenter.Subscribe<MajaConversationMessageLink>(this, ConversationMessage.ConversationMessageTappedMessage, LinkTapped);
             MessagingCenter.Subscribe<MajaConversationMessageLocation>(this, ConversationMessage.ConversationMessageTappedMessage, LocationTapped);
-            MessagingCenter.Subscribe<MajaConversationMessageWeather>(this, ConversationMessage.ConversationMessageTappedMessage, WeatherTapped);
             MessagingCenter.Subscribe<MajaConversationMessageImmo>(this, ConversationMessage.ConversationMessageTappedMessage, ImmoMessageTapped);
             MessagingCenter.Subscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.RegisterMessage, Register);
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.SelectTalentsMessage, async (MainPageMasterViewModel viewmodel) =>
@@ -80,7 +79,6 @@ namespace MajaMobile.Pages
             base.OnDisappearing();
             MessagingCenter.Unsubscribe<MajaConversationMessageLink>(this, ConversationMessage.ConversationMessageTappedMessage);
             MessagingCenter.Unsubscribe<MajaConversationMessageLocation>(this, ConversationMessage.ConversationMessageTappedMessage);
-            MessagingCenter.Unsubscribe<MajaConversationMessageWeather>(this, ConversationMessage.ConversationMessageTappedMessage);
             MessagingCenter.Unsubscribe<MajaConversationMessageImmo>(this, ConversationMessage.ConversationMessageTappedMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.RegisterMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.SelectTalentsMessage);
@@ -100,15 +98,7 @@ namespace MajaMobile.Pages
                 await Detail.Navigation.PushAsync(new ImmoPage(message));
             }
         }
-
-        private async void WeatherTapped(MajaConversationMessageWeather message)
-        {
-            if (CanNavigate())
-            {
-                await Detail.Navigation.PushAsync(new WeatherPage(message.Weather));
-            }
-        }
-
+        
         private async void LocationTapped(MajaConversationMessageLocation message)
         {
             if (CanNavigate())

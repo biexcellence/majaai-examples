@@ -1,27 +1,25 @@
 ﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
-using System.Windows.Input;
-using Xamarin.Forms;
+using System;
+using System.Linq;
 
 namespace MajaMobile.Messages
 {
     public class MajaConversationMessageWeather : MajaConversationMessage
     {
-        public ICommand WeatherTappedCommand { get; }
+        public WeatherForecast Forecast { get; }
 
-        private WeatherForecast _forecast;
-        public WeatherForecast Weather
+        private WeatherDetails _currentWeather;
+        public WeatherDetails CurrentWeather
         {
-            get
-            {
-                if (_forecast == null && !string.IsNullOrEmpty(MajaQueryAnswer.Data))
-                    _forecast = new WeatherForecast(MajaQueryAnswer.Data);
-                return _forecast;
-            }
+            get => _currentWeather;
+            set { _currentWeather = value; OnPropertyChanged(); }
         }
+        public string Time => DateTime.Now.ToString("HH:00");
 
         public MajaConversationMessageWeather(IMajaQueryAnswer queryAnswer) : base(queryAnswer)
         {
-            WeatherTappedCommand = new Command(() => MessagingCenter.Send(this, ConversationMessageTappedMessage));
+            Forecast = new WeatherForecast(queryAnswer.Data);
+            CurrentWeather = Forecast.FirstOrDefault();
         }
     }
 }
