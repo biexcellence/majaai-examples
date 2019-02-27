@@ -12,11 +12,7 @@
     </ContentPage.Resources>
     <Grid>
         <Image Source="background.png" Aspect="Fill"/>
-        <Grid RowSpacing="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
+        <Grid>
             <Grid.Resources>
                 <ResourceDictionary>
                     <converters:ImmoItemSizeConverter x:Key="ItemSizeConverter"/>
@@ -25,7 +21,7 @@
                 </ResourceDictionary>
             </Grid.Resources>
             <ScrollView Orientation="Vertical">
-                <StackLayout Spacing="0" BindableLayout.ItemsSource="{Binding Immos}" Orientation="Vertical">
+                <StackLayout Spacing="0" BindableLayout.ItemsSource="{Binding Message.Immos}" Orientation="Vertical">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
                             <Frame CornerRadius="10" Padding="10" Margin="20,10" HasShadow="True" BorderColor="Transparent" BackgroundColor="{x:Static utils:ColorScheme.MajaMessageColor}">
@@ -38,18 +34,18 @@
                                         <RowDefinition Height="auto"/>
                                         <RowDefinition Height="auto"/>
                                     </Grid.RowDefinitions>
-                                    <Image HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Aspect="AspectFill" Source="{Binding Immo.Image}" Grid.Row="0"/>
+                                    <Image HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Aspect="AspectFill" Source="{Binding Image}" Grid.Row="0"/>
                                     <Frame HasShadow="True" CornerRadius="5" Grid.Row="1" Padding="5" BackgroundColor="#1396E2" HorizontalOptions="Start">
                                         <Label Text="{Binding PurchasePrice}" FontFamily="{StaticResource UiFontBoldItalic}" TextColor="White"/>
                                     </Frame>
                                     <StackLayout Orientation="Vertical" Grid.Row="2" Spacing="0">
                                         <StackLayout Spacing="0" Orientation="Horizontal">
                                             <Label Text="Wohnfläche: "/>
-                                            <Label Text="{Binding Immo.LivingSpace, Converter={StaticResource PrefixSuffixConverter}, ConverterParameter=m²}" FontFamily="{StaticResource UiFontSemiBoldItalic}"/>
+                                            <Label Text="{Binding LivingSpace, Converter={StaticResource PrefixSuffixConverter}, ConverterParameter=m²}" FontFamily="{StaticResource UiFontSemiBoldItalic}"/>
                                         </StackLayout>
                                         <StackLayout Spacing="0" Orientation="Horizontal">
                                             <Label Text="Zimmer: "/>
-                                            <Label Text="{Binding Immo.Rooms}" FontFamily="{StaticResource UiFontSemiBoldItalic}"/>
+                                            <Label Text="{Binding Rooms}" FontFamily="{StaticResource UiFontSemiBoldItalic}"/>
                                         </StackLayout>
                                     </StackLayout>
                                 </Grid>
@@ -58,7 +54,6 @@
                     </BindableLayout.ItemTemplate>
                 </StackLayout>
             </ScrollView>
-            <Button Grid.Row="1" Margin="20,10" Text="Weitere" Command="{Binding ShowAllCommand}" IsVisible="{Binding Immos.Count, Converter={StaticResource GreaterThanConverter}, ConverterParameter={StaticResource ItemLimit}}" HorizontalOptions="FillAndExpand"/>
         </Grid>
     </Grid>
 </pages:ContentPageBase>

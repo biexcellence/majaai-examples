@@ -1,11 +1,7 @@
-﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
-using MajaMobile.Messages;
+﻿using MajaMobile.Messages;
 using MajaMobile.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Windows.Input;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace MajaMobile.Pages
@@ -24,76 +20,11 @@ namespace MajaMobile.ViewModels
 {
     public class ImmoPageViewModel : ViewModelBase
     {
-        public ICommand ShowAllCommand { get; }
-        public List<ImmoWrapper> Immos { get; } = new List<ImmoWrapper>();
-        private string _url;
+        public MajaConversationMessageImmo Message { get; }
 
         public ImmoPageViewModel(MajaConversationMessageImmo message)
         {
-            foreach (var obj in message.Immos)
-            {
-                Immos.Add(new ImmoWrapper(obj));
-            }
-            _url = message.MajaQueryAnswer.Url;
-            ShowAllCommand = new Command(ShowAll);
-        }
-
-        public override void SendAppearing()
-        {
-            base.SendAppearing();
-            MessagingCenter.Subscribe<ImmoWrapper>(this, ImmoWrapper.TappedMessage, ImmoTapped);
-        }
-
-        public override void SendDisappearing()
-        {
-            base.SendDisappearing();
-            MessagingCenter.Unsubscribe<ImmoWrapper>(this, ImmoWrapper.TappedMessage);
-        }
-
-        private async void ShowAll()
-        {
-            if (!string.IsNullOrEmpty(_url))
-            {
-                try
-                {
-                    await Browser.OpenAsync(_url, BrowserLaunchMode.SystemPreferred);
-                }
-                catch (Exception) { }
-            }
-        }
-
-        private async void ImmoTapped(ImmoWrapper wrapper)
-        {
-            try
-            {
-                await Browser.OpenAsync(wrapper.Immo.Href, BrowserLaunchMode.SystemPreferred);
-            }
-            catch (Exception) { }
-        }
-
-        public class ImmoWrapper
-        {
-            public const string TappedMessage = "OBJECT_TAPPED";
-
-            public ICommand TappedCommand { get; }
-
-            public RealEstateObject Immo { get; }
-
-            public string PurchasePrice
-            {
-                get
-                {
-                    if (Immo.PurchasePrice == 0)
-                        return "Preis auf Anfrage";
-                    return string.Format("{0:N0} €", Immo.PurchasePrice);
-                }
-            }
-
-            public ImmoWrapper(RealEstateObject obj)
-            {
-                Immo = obj;
-                TappedCommand = new Command(() => MessagingCenter.Send(this, TappedMessage));
-            }
+            Message = message;
         }
     }
 }

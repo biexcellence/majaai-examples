@@ -1,5 +1,6 @@
 ﻿using BiExcellence.OpenBi.Api.Commands.Users;
 using MajaMobile.Messages;
+using MajaMobile.Models;
 using MajaMobile.Utilities;
 using MajaMobile.ViewModels;
 using System;
@@ -50,7 +51,7 @@ namespace MajaMobile.Pages
             MessagingCenter.Subscribe<MajaConversationMessageLink>(this, ConversationMessage.ConversationMessageTappedMessage, LinkTapped);
             MessagingCenter.Subscribe<MajaConversationMessageLocation>(this, ConversationMessage.ConversationMessageTappedMessage, LocationTapped);
             MessagingCenter.Subscribe<MajaConversationMessageWeather>(this, ConversationMessage.ConversationMessageTappedMessage, WeatherTapped);
-            MessagingCenter.Subscribe<MajaConversationMessageImmo>(this, ConversationMessage.ConversationMessageTappedMessage, ImmoTapped);
+            MessagingCenter.Subscribe<MajaConversationMessageImmo>(this, ConversationMessage.ConversationMessageTappedMessage, ImmoMessageTapped);
             MessagingCenter.Subscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.RegisterMessage, Register);
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.SelectTalentsMessage, async (MainPageMasterViewModel viewmodel) =>
             {
@@ -62,6 +63,16 @@ namespace MajaMobile.Pages
                 if (CanNavigate())
                     await Detail.Navigation.PushAsync(new LoginPage());
             });
+            MessagingCenter.Subscribe<ImmoObject>(this, ImmoObject.TappedMessage, ImmoTapped);
+        }
+
+        private async void ImmoTapped(ImmoObject immo)
+        {
+            try
+            {
+                await Browser.OpenAsync(immo.Link, BrowserLaunchMode.SystemPreferred);
+            }
+            catch (Exception) { }
         }
 
         protected override void OnDisappearing()
@@ -74,6 +85,7 @@ namespace MajaMobile.Pages
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.RegisterMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.SelectTalentsMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.LoginMessage);
+            MessagingCenter.Unsubscribe<ImmoObject>(this, ImmoObject.TappedMessage);
         }
 
         private void Register(MainPageMasterViewModel viewmodel)
@@ -81,7 +93,7 @@ namespace MajaMobile.Pages
             //TODO
         }
 
-        private async void ImmoTapped(MajaConversationMessageImmo message)
+        private async void ImmoMessageTapped(MajaConversationMessageImmo message)
         {
             if (CanNavigate())
             {

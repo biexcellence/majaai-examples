@@ -21,6 +21,9 @@
             <ControlTemplate x:Key="RealEstateControlTemplate">
                 <Frame CornerRadius="10" Padding="5" HasShadow="False" BorderColor="Transparent" BackgroundColor="White">
                     <Grid x:Name="RealEstateGrid" HeightRequest="{Binding Width, Source={x:Reference RealEstateGrid}}" BindingContext="{TemplateBinding BindingContext}" RowSpacing="2">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TappedCommand}"/>
+                        </Grid.GestureRecognizers>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="auto"/>

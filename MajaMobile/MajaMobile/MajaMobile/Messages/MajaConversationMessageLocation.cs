@@ -1,5 +1,4 @@
 ﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Xamarin.Forms;
@@ -20,7 +19,7 @@ namespace MajaMobile.Messages
                 Name = name;
             }
         }
-        
+
         public List<Location> Locations { get; } = new List<Location>();
 
         private string _image;

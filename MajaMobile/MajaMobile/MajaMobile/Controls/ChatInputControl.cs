@@ -290,8 +290,6 @@ namespace MajaMobile.Controls
                     CancelRunningTask();
                     var cts = _previousCts = new CancellationTokenSource();
 
-                    //values.Add("data-columns", "NAME;ID");
-                    //values.Add("data-items-per-page", "10");
                     string filter = "";
                     if (possibleUserReply.ControlOptions.TryGetValue("ENTITY_FILTER", out var entityFilter))
                     {
