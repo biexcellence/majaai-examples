@@ -245,7 +245,7 @@
     </ContentPage.Resources>
     <Grid>
         <Image Source="background.png" Aspect="Fill"/>
-        <Grid RowSpacing="0" ColumnSpacing="0" x:Name="MainGrid">
+        <Grid RowSpacing="0" ColumnSpacing="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
@@ -256,10 +256,10 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <controls:ItemsStack ItemsSource="{Binding Messages}" ItemTemplate="{StaticResource TemplateSelector}" Grid.Row="0" Grid.ColumnSpan="2"/>
-            <controls:MultipleChoiceControl ItemsSource="{Binding PossibleUserReplies}" Command="{Binding PossibleUserReplyCommand}" Grid.Row="1" Grid.ColumnSpan="2"/>
+            <controls:MultipleChoiceControl ItemsSource="{Binding PossibleUserReplies}" Command="{Binding PossibleUserReplyCommand}" Grid.Row="1" Grid.ColumnSpan="2" x:Name="MultipleChoiceControl"/>
             <controls:ChatInputControl Margin="5,0,5,5" Grid.Row="2" VerticalOptions="End" HorizontalOptions="FillAndExpand" Text="{Binding Text}"
                              IsEnabled="{Binding IsIdle}" CompletedCommand="{Binding SendTextCommand}" CurrentUserInput="{Binding CurrentUserInput}" x:Name="ChatControl"/>
-            <controls:ChatButton VerticalOptions="End" HorizontalOptions="End" Grid.Row="2" Grid.Column="1" HeightRequest="45" WidthRequest="45" Margin="0,0,5,5" DisplayMode="{Binding ChatButtonMode}">
+            <controls:ChatButton VerticalOptions="End" HorizontalOptions="End" Grid.Row="2" Grid.Column="1" HeightRequest="45" WidthRequest="45" Margin="0,0,5,5" DisplayMode="{Binding ChatButtonMode}" x:Name="ChatButton">
                 <controls:ChatButton.GestureRecognizers>
                     <gestures:PressedGestureRecognizer Command="{Binding LongPressedCommand}"/>
                     <gestures:ReleasedGestureRecognizer Command="{Binding ReleasedCommand}"/>

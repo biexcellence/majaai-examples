@@ -132,7 +132,7 @@ namespace MajaMobile.Controls
                 else if (typeof(T) == typeof(SfAutoComplete))
                 {
                     EntitySearchResults = new ObservableCollection<IMajaEntity>();
-                    var autoComplete = new SfAutoComplete() { AutoCompleteMode = AutoCompleteMode.Suggest, SuggestionMode = SuggestionMode.StartsWith };
+                    var autoComplete = new SfAutoComplete() { AutoCompleteMode = AutoCompleteMode.Suggest, SuggestionMode = SuggestionMode.StartsWith, SuggestionBoxPlacement = SuggestionBoxPlacement.Top, ShowBorder = false };
                     autoComplete.Watermark = CurrentUserInput.Text;
                     autoComplete.DisplayMemberPath = nameof(IMajaEntity.Name);
                     autoComplete.SelectionChanged += AutoComplete_SelectionChanged;
@@ -140,6 +140,10 @@ namespace MajaMobile.Controls
                     autoComplete.BindingContext = this;
                     autoComplete.SetBinding(SfAutoComplete.DataSourceProperty, new Binding(nameof(EntitySearchResults)));
                     _currentElement = element = autoComplete;
+                    if (Device.RuntimePlatform == Device.iOS)
+                    {
+                        element = new Frame() { HasShadow = false, CornerRadius = 5.0f, Padding = new Thickness(0, 6), BackgroundColor = ColorScheme.EntryBackgroundColor, Content = autoComplete };
+                    }
                 }
                 if (Device.RuntimePlatform == Device.iOS)
                     Content = element;
@@ -215,7 +219,7 @@ namespace MajaMobile.Controls
         {
             CompletedCommand?.Execute(null);
         }
-        
+
         public void UnfocusCurrentControl()
         {
             if (_currentElement != null)

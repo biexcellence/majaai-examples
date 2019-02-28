@@ -35,12 +35,12 @@ namespace MajaMobile.Pages
 
         public void ShiftEntryUp(double keyboardHeight)
         {
-            MainGrid.TranslationY = keyboardHeight * -1;
+            ChatButton.TranslationY = ChatControl.TranslationY = MultipleChoiceControl.TranslationY = keyboardHeight * -1;
         }
 
         public void ShiftEntryDown()
         {
-            MainGrid.TranslationY = 0;
+            ChatButton.TranslationY = ChatControl.TranslationY = MultipleChoiceControl.TranslationY = 0;
         }
     }
 

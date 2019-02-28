@@ -85,7 +85,8 @@ namespace MajaMobile.ViewModels
                 Id = talent.Id;
                 Name = talent.Name;
                 Image = talent.ImagePath;
-                Image = "maja.png";
+                if (string.IsNullOrEmpty(Image))
+                    Image = "maja.png";
                 Category = category;
             }
         }
