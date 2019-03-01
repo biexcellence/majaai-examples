@@ -3,6 +3,7 @@ using Foundation;
 using MajaMobile.Interfaces;
 using Speech;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 [assembly: Xamarin.Forms.Dependency(typeof(MajaMobile.iOS.iOSAudioService))]
@@ -10,6 +11,7 @@ namespace MajaMobile.iOS
 {
     class iOSAudioService : IAudioService
     {
+        private Timer _recognizerTimer;
         private string _recognizerText;
         private SFSpeechRecognizer _recognizer = new SFSpeechRecognizer(NSLocale.FromLocaleIdentifier("de-DE"));
         private SFSpeechRecognitionTask _task;
@@ -27,8 +29,7 @@ namespace MajaMobile.iOS
 
         public void StartSpeechRecognition()
         {
-
-            StopRecognizer();
+            StopSpeechRecognizer(false);
             _recognizerText = "";
             AVAudioSession.SharedInstance().SetActive(true, AVAudioSessionSetActiveOptions.NotifyOthersOnDeactivation);
 
@@ -42,20 +43,26 @@ namespace MajaMobile.iOS
                 if (result != null)
                 {
                     _recognizerText = result.BestTranscription.FormattedString;
+                    if (_recognizerTimer == null)
+                    {
+                        _recognizerTimer = new Timer(RecognizeTimerElapsed, this, TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan);
+                    }
+                    else
+                    {
+                        _recognizerTimer.Change(TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan);
+                    }
                     if (result.Final)
                     {
-                        System.Diagnostics.Debug.WriteLine("RESULT FINAL: " + _recognizerText);
                         SpeechRecognitionResult?.Invoke(this, new SpeechRecognitionEventArgs(_recognizerText));
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("RESULT PARTIAL: " + _recognizerText);
                         SpeechRecognitionPartialResult?.Invoke(this, new SpeechRecognitionEventArgs(_recognizerText));
                     }
                 }
                 if (error != null || result?.Final == true)
                 {
-                    //   StopRecognizer();
+                    StopSpeechRecognizer(false);
                 }
             });
 
@@ -73,40 +80,38 @@ namespace MajaMobile.iOS
             }
         }
 
+        private void RecognizeTimerElapsed(object state)
+        {
+            StopSpeechRecognizer(false);
+            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => SpeechRecognitionResult?.Invoke(this, new SpeechRecognitionEventArgs(_recognizerText)));//Necessary to run on UI thread
+        }
+
         private void SpeechRecognizerAuthChanged(SFSpeechRecognizerAuthorizationStatus status)
         {
 
         }
 
-        private async void StopRecognizer()
+        private async void StopSpeechRecognizer(bool waitForSpeech)
         {
-            var text = _recognizerText;
-            var task = _task;
-            _task = null;
-            _recognizerText = "";
-            if (!string.IsNullOrEmpty(text))
-            {
-                await Task.Delay(1000);
-                text = _recognizerText;
-            }
-            System.Diagnostics.Debug.WriteLine("STOP RECOGNIZER: " + _recognizerText);
             try
             {
+                var task = _task;
+                _task = null;
                 if (task != null)
                 {
+                    if (waitForSpeech)
+                    {
+                        await Task.Delay(1000);
+                    }
                     task.Cancel();
                     engine.Stop();
                     engine.InputNode.RemoveTapOnBus(0);
-                    _task = null;
                 }
             }
             catch (Exception e)
             {
 
             }
-            _recognizerText = "";
-            if (!string.IsNullOrEmpty(text))
-                Xamarin.Forms.Device.BeginInvokeOnMainThread(() => SpeechRecognitionResult?.Invoke(this, new SpeechRecognitionEventArgs(text)));//Necessary to run on UI thread
         }
 
         AVSpeechSynthesizer _speechSynthesizer;
@@ -150,7 +155,7 @@ namespace MajaMobile.iOS
                 }
                 catch (Exception) { }
             }
-            StopRecognizer();
+            StopSpeechRecognizer(true);
         }
     }
 }

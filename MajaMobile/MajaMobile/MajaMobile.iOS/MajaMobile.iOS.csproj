@@ -108,7 +108,6 @@
     <Compile Include="iOSDeviceInfo.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="Renderers\ChatButtonRenderer.cs" />
     <Compile Include="Renderers\IOSEntryRenderer.cs" />
     <Compile Include="Renderers\CustomFrameRenderer.cs" />
     <Compile Include="Renderers\MainPageRenderer.cs" />

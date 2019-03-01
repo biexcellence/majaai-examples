@@ -16,7 +16,6 @@ namespace MajaMobile.Controls
         private int _currentDot;
         private readonly double _cycleTime = 2000;
 
-
         public ThinkingControl()
         {
             InitializeComponent();

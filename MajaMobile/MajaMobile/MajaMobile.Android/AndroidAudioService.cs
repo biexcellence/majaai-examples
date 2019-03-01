@@ -85,7 +85,7 @@ namespace MajaMobile.Droid
                     intent.PutExtra(RecognizerIntent.ExtraMaxResults, 2);
                     intent.PutExtra(RecognizerIntent.ExtraSpeechInputCompleteSilenceLengthMillis, 1500);
                     intent.PutExtra(RecognizerIntent.ExtraSpeechInputPossiblyCompleteSilenceLengthMillis, 1500);
-                    intent.PutExtra(RecognizerIntent.ExtraSpeechInputMinimumLengthMillis, 15000);
+                    intent.PutExtra(RecognizerIntent.ExtraSpeechInputMinimumLengthMillis, 1500);
 
                     _speechRecognizer.StartListening(intent);
                 }
@@ -96,11 +96,12 @@ namespace MajaMobile.Droid
         private void _speechRecognizer_Error(object sender, ErrorEventArgs e)
         {
             //Evaluate e.Error?
-            //try
-            //{
-            //    SpeechRecognitionResult?.Invoke(this, new SpeechRecognitionEventArgs(""));
-            //}
-            //catch (Exception) { }
+            try
+            {
+                if (e.Error == SpeechRecognizerError.NoMatch || e.Error == SpeechRecognizerError.SpeechTimeout)
+                    SpeechRecognitionResult?.Invoke(this, new SpeechRecognitionEventArgs(""));
+            }
+            catch (Exception) { }
         }
 
         private void _speechRecognizer_Results(object sender, ResultsEventArgs e)

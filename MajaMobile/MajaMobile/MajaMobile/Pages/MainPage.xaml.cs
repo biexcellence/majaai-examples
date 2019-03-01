@@ -26,7 +26,7 @@ namespace MajaMobile.Pages
             var viewmodel = new MainPageViewModel();
             BindingContext = ViewModel = viewmodel;
         }
-        
+
         public void ShiftEntryUp(double keyboardHeight)
         {
             ChatButton.TranslationY = ChatControl.TranslationY = MultipleChoiceControl.TranslationY = keyboardHeight * -1;
@@ -53,11 +53,10 @@ namespace MajaMobile.ViewModels
 {
     public class MainPageViewModel : ViewModelBase
     {
-        public ICommand LongPressedCommand { get; }
-        public ICommand ReleasedCommand { get; }
+        public ICommand SpeechRecognitionCommand { get; }
         public ICommand SendTextCommand { get; }
         public ICommand PossibleUserReplyCommand { get; }
-        
+
         IAudioService _audioService;
         IDeviceInfo _deviceInfo;
 
@@ -105,8 +104,7 @@ namespace MajaMobile.ViewModels
 
             CurrentMajaState = MajaListeningStatus.Idle;
             ChatButtonMode = ChatButtonDisplayMode.Microphone;
-            LongPressedCommand = new Command(LongPressed);
-            ReleasedCommand = new Command(Released);
+            SpeechRecognitionCommand = new Command(SpeechRecognition);
             SendTextCommand = new Command(SendTextCommandExecuted);
             PossibleUserReplyCommand = new Command(PossibleUserReplyTapped);
 
@@ -275,30 +273,27 @@ namespace MajaMobile.ViewModels
 
         private void UpdateChatButton()
         {
-            ChatButtonDisplayMode buttonMode = ChatButtonDisplayMode.Undefined;
-            if (CurrentMajaState != MajaListeningStatus.Listening)
+            if (CurrentMajaState == MajaListeningStatus.Listening)
             {
-                if (string.IsNullOrEmpty(Text))
-                {
-                    buttonMode = ChatButtonDisplayMode.Microphone;
-                }
-                else
-                {
-                    buttonMode = ChatButtonDisplayMode.Send;
-                }
+                ChatButtonMode = ChatButtonDisplayMode.Listening;
             }
             else
             {
-                buttonMode = ChatButtonDisplayMode.Listening;
+                if (string.IsNullOrEmpty(Text))
+                {
+                    ChatButtonMode = ChatButtonDisplayMode.Microphone;
+                }
+                else
+                {
+                    ChatButtonMode = ChatButtonDisplayMode.Send;
+                }
             }
-            if (buttonMode != ChatButtonMode)
-                ChatButtonMode = buttonMode;
         }
 
         private async void SendText(string value = null, string text = null, IDictionary<string, string> parameters = null, bool addMessage = true)
         {
             _speechRecognitionMessage = null;
-            if (IsBusy)
+            if (IsBusy && CurrentMajaState != MajaListeningStatus.Listening)
                 return;
             if (string.IsNullOrEmpty(value))
                 value = Text;
@@ -367,23 +362,21 @@ namespace MajaMobile.ViewModels
             }
         }
 
-        private void Released(object obj)
+        private void SpeechRecognition()
         {
-            if (IsIdle && ChatButtonMode == ChatButtonDisplayMode.Listening)
+            switch (ChatButtonMode)
             {
-                _audioService.StopService();
-                ChatButtonMode = ChatButtonDisplayMode.Microphone;
-            }
-            else if (ChatButtonMode == ChatButtonDisplayMode.Send)
-                SendText();
-        }
-
-        private void LongPressed(object obj)
-        {
-            if (IsIdle && ChatButtonMode == ChatButtonDisplayMode.Microphone)
-            {
-                _audioService.StartSpeechRecognition();
-                ChatButtonMode = ChatButtonDisplayMode.Listening;
+                case ChatButtonDisplayMode.Send:
+                    SendText();
+                    break;
+                case ChatButtonDisplayMode.Listening:
+                    CurrentMajaState = MajaListeningStatus.Idle;
+                    _audioService.StopService();
+                    break;
+                case ChatButtonDisplayMode.Microphone:
+                    _audioService.StartSpeechRecognition();
+                    CurrentMajaState = MajaListeningStatus.Listening;
+                    break;
             }
         }
     }

@@ -81,7 +81,6 @@
     <Compile Include="AndroidAudioService.cs" />
     <Compile Include="AndroidDeviceInfo.cs" />
     <Compile Include="Effects\AndroidUnderlineEffect.cs" />
-    <Compile Include="Renderers\ChatButtonRenderer.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Renderers\DroidEntryRenderer.cs" />
     <Compile Include="Renderers\CustomFrameRenderer.cs" />

@@ -1,6 +1,8 @@
 ﻿using MajaMobile.Utilities;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
+using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms;
 
@@ -25,13 +27,48 @@ namespace MajaMobile.Controls
             set { SetValue(DisplayModeProperty, value); }
         }
 
+
+        private readonly Stopwatch _stopwatch = new Stopwatch();
+        private double _alpha;
+        private readonly double _cycleTime = 1500;
+
         protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             base.OnPropertyChanged(propertyName);
             if (propertyName == DisplayModeProperty.PropertyName && _currentDisplayMode != DisplayMode)
             {
-                InvalidateSurface();
+                _currentDisplayMode = DisplayMode;
+                if (DisplayMode == ChatButtonDisplayMode.Listening)
+                {
+                    StartListening();
+                }
+                else
+                {
+                    InvalidateSurface();
+                }
             }
+        }
+
+        private void StartListening()
+        {
+            _alpha = 0;
+            _stopwatch.Restart();
+            Device.StartTimer(TimeSpan.FromMilliseconds(50), () =>
+            {
+                var oldAlpha = _alpha = (_stopwatch.Elapsed.TotalMilliseconds % _cycleTime) / _cycleTime;
+                if (_alpha <= 1.0 / 3)
+                {
+                    _alpha = _alpha / (1.0 / 3);
+                }
+                else
+                {
+                    _alpha = 1 - ((_alpha - (1.0 / 3)) / (2.0 / 3));
+                }
+                InvalidateSurface();
+                if (DisplayMode != ChatButtonDisplayMode.Listening)
+                    _stopwatch.Reset();
+                return DisplayMode == ChatButtonDisplayMode.Listening;
+            });
         }
 
         public ChatButton()
@@ -39,28 +76,24 @@ namespace MajaMobile.Controls
 
         }
 
-        protected override async void OnPaintSurface(SKPaintSurfaceEventArgs e)
+        protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
         {
             base.OnPaintSurface(e);
-            var currentDisplayMode = _currentDisplayMode;
-            _currentDisplayMode = DisplayMode;
-
             var height = e.Info.Height;
             var width = e.Info.Width;
             var canvas = e.Surface.Canvas;
+            canvas.Clear();
 
             using (var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = ColorScheme.ChatButtonBackground.ToSKColor(), StrokeWidth = 0 })
             {
-
+                canvas.DrawCircle(width / 2, height / 2, width / 2, paint);
                 switch (DisplayMode)
                 {
                     case ChatButtonDisplayMode.Listening:
-                        await this.ScaleTo(2, 250, Easing.SpringOut);
+                        paint.Color = Color.FromRgba(255.0, 255.0, 255.0, _alpha).ToSKColor();
+                        canvas.DrawCircle(width / 2, height / 2, width * 0.4f, paint);
                         break;
                     case ChatButtonDisplayMode.Send:
-                        canvas.Clear();
-
-                        canvas.DrawCircle(width / 2, height / 2, width / 2, paint);
 
                         paint.Style = SKPaintStyle.StrokeAndFill;
                         paint.Color = ColorScheme.ChatButtonForeground.ToSKColor();
@@ -79,30 +112,19 @@ namespace MajaMobile.Controls
                         break;
                     default:
 
-                        if (currentDisplayMode == ChatButtonDisplayMode.Listening)
+                        using (var paint2 = new SKPaint { Style = SKPaintStyle.Stroke, Color = ColorScheme.ChatButtonForeground.ToSKColor(), StrokeWidth = width * 0.135f, StrokeCap = SKStrokeCap.Round })
                         {
-                            await this.ScaleTo(1, 250, Easing.SpringOut);
-                        }
-                        else
-                        {
+                            canvas.DrawLine(width * 0.5f, height * 0.34f, width * 0.5f, height * 0.51f, paint2);
 
-                            canvas.Clear();
-                            canvas.DrawCircle(width / 2, height / 2, width / 2, paint);
+                            paint2.StrokeWidth = paint2.StrokeWidth * 0.33f;
 
-                            using (var paint2 = new SKPaint { Style = SKPaintStyle.Stroke, Color = ColorScheme.ChatButtonForeground.ToSKColor(), StrokeWidth = width * 0.135f, StrokeCap = SKStrokeCap.Round })
+                            using (var path = new SKPath())
                             {
-                                canvas.DrawLine(width * 0.5f, height * 0.34f, width * 0.5f, height * 0.51f, paint2);
-
-                                paint2.StrokeWidth = paint2.StrokeWidth * 0.33f;
-
-                                using (var path = new SKPath())
-                                {
-                                    path.MoveTo(width * 0.35f, height * 0.5f);
-                                    path.AddArc(new SKRect(width * 0.35f, height * 0.4f, width * 0.65f, height * 0.65f), 0, 180);
-                                    path.MoveTo(width * 0.5f, height * 0.65f);
-                                    path.LineTo(width * 0.5f, height * 0.735f);
-                                    canvas.DrawPath(path, paint2);
-                                }
+                                path.MoveTo(width * 0.35f, height * 0.5f);
+                                path.AddArc(new SKRect(width * 0.35f, height * 0.4f, width * 0.65f, height * 0.65f), 0, 180);
+                                path.MoveTo(width * 0.5f, height * 0.65f);
+                                path.LineTo(width * 0.5f, height * 0.735f);
+                                canvas.DrawPath(path, paint2);
                             }
                         }
                         break;
