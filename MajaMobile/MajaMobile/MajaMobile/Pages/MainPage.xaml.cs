@@ -24,15 +24,9 @@ namespace MajaMobile.Pages
         {
             InitializeComponent();
             var viewmodel = new MainPageViewModel();
-            viewmodel.SendingText += Viewmodel_SendingText;
             BindingContext = ViewModel = viewmodel;
         }
-
-        private void Viewmodel_SendingText(object sender, EventArgs e)
-        {
-            ChatControl.UnfocusCurrentControl();
-        }
-
+        
         public void ShiftEntryUp(double keyboardHeight)
         {
             ChatButton.TranslationY = ChatControl.TranslationY = MultipleChoiceControl.TranslationY = keyboardHeight * -1;
@@ -63,9 +57,7 @@ namespace MajaMobile.ViewModels
         public ICommand ReleasedCommand { get; }
         public ICommand SendTextCommand { get; }
         public ICommand PossibleUserReplyCommand { get; }
-
-        public event EventHandler SendingText;
-
+        
         IAudioService _audioService;
         IDeviceInfo _deviceInfo;
 
@@ -323,7 +315,6 @@ namespace MajaMobile.ViewModels
                 CurrentMajaState = MajaListeningStatus.Thinking;
                 CancellationTokenSource tokenSource = _thinkingMessage?.CancellationTokenSource;
                 Text = "";
-                SendingText?.Invoke(this, EventArgs.Empty);
                 try
                 {
                     IList<IMajaQueryAnswer> answers = null;
@@ -393,11 +384,6 @@ namespace MajaMobile.ViewModels
             {
                 _audioService.StartSpeechRecognition();
                 ChatButtonMode = ChatButtonDisplayMode.Listening;
-                //try
-                //{
-                //    Vibration.Vibrate();
-                //}
-                //catch { }
             }
         }
     }

@@ -51,6 +51,8 @@ namespace MajaMobile.Controls
 
         private void DisposeCurrentControl()
         {
+            if (_currentElement != null)
+                _currentElement.Unfocus();
             if (_currentElement is Entry entry)
             {
                 entry.RemoveBinding(Entry.TextProperty);
@@ -219,13 +221,7 @@ namespace MajaMobile.Controls
         {
             CompletedCommand?.Execute(null);
         }
-
-        public void UnfocusCurrentControl()
-        {
-            if (_currentElement != null)
-                _currentElement.Unfocus();
-        }
-
+        
         #region Slider
 
         private class StringToIntConverter : IValueConverter

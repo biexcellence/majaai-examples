@@ -21,6 +21,9 @@
             <x:Double x:Key="SemiSmallFontSize">12</x:Double>
             <x:Double x:Key="SmallFontSize">10</x:Double>
 
+            <x:String x:Key="StringFormatDecimalZeroPlaces">{0:0}</x:String>
+            <x:String x:Key="StringFormatDecimalTwoPlaces">{0:0.00}</x:String>
+
             <x:String x:Key="PageTitle">majaAI</x:String>
 
             <Style TargetType="ContentPage" x:Key="ContentPageStyle">

@@ -2,7 +2,6 @@
 using MajaMobile.GestureRecognizers;
 using SkiaSharp.Views.Forms;
 using System.Linq;
-using System.Threading;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 

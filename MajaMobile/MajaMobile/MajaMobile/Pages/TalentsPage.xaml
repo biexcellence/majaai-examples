@@ -9,7 +9,7 @@
     <controls:ActivityIndicatorLayout>
         <Image Source="background.png" Aspect="Fill" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All"/>
         <Grid AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="10,0">
-            <sync:SfListView ItemsSource="{Binding Talents}" SelectionMode="Multiple" SelectedItems="{Binding SelectedTalents}"  x:Name="TalentList">
+            <sync:SfListView ItemsSource="{Binding Talents}" SelectionMode="Multiple" SelectedItems="{Binding SelectedTalents}" x:Name="TalentList">
                 <sync:SfListView.DataSource>
                     <data:DataSource>
                         <data:DataSource.GroupDescriptors>
@@ -30,7 +30,6 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="40"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
                             <Image Source="{Binding Image}"/>
                             <Label Text="{Binding Name}" Grid.Column="1"/>
@@ -43,11 +42,11 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="40"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="25"/>
                             </Grid.ColumnDefinitions>
                             <Image Source="{Binding Image}"/>
                             <Label Text="{Binding Name}" Grid.Column="1"/>
-                            <Image Grid.Column="2" Source="maja.png"/>
+                            <Image Grid.Column="2" Source="checkmark.png"/>
                         </Grid>
                     </DataTemplate>
                 </sync:SfListView.SelectedItemTemplate>
