@@ -1,4 +1,5 @@
-﻿using MajaMobile.Interfaces;
+﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
+using MajaMobile.Interfaces;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace MajaMobile.Utilities
 {
     internal class AppDatabase : IDisposable
     {
-        public const int DatabaseVersionNr = 1;
+        public const int DatabaseVersionNr = 2;
         private const string _databaseName = "majamobileappdatabase.db3";
 
         private SQLiteConnection _Connection;
@@ -86,12 +87,12 @@ namespace MajaMobile.Utilities
             return Connection.Table<MajaTalentData>().Select(t => t.Id);
         }
 
-        public bool SetMajaTalentData(IEnumerable<string> talentIds)
+        public bool SetMajaTalentData(IEnumerable<IMajaTalent> talent)
         {
             try
             {
                 Connection.DeleteAll<MajaTalentData>();
-                foreach (var id in talentIds)
+                foreach (var id in talent)
                 {
                     Connection.Insert(new MajaTalentData(id));
                 }
@@ -102,6 +103,24 @@ namespace MajaMobile.Utilities
                 return false;
             }
         }
+
+        public IEnumerable<string> DeletePrivateTalentData()
+        {
+            try
+            {
+                Connection.Table<MajaTalentData>().Delete(t => !t.IsPublic);
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    //delete everything
+                    Connection.DeleteAll<MajaTalentData>();
+                }
+                catch (Exception) { }
+            }
+            return GetTalentIds();
+        }
     }
 
     [Table("MajaTalent")]
@@ -109,13 +128,15 @@ namespace MajaMobile.Utilities
     {
         [PrimaryKey, Unique, Column("Id")]
         public string Id { get; set; }
+        public bool IsPublic { get; set; }
         public MajaTalentData()
         {
 
         }
-        public MajaTalentData(string id)
+        public MajaTalentData(IMajaTalent talent)
         {
-            Id = id;
+            Id = talent.Id;
+            IsPublic = talent.IsPublic;
         }
     }
 

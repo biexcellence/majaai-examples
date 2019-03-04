@@ -31,7 +31,7 @@
                                 <ColumnDefinition Width="40"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Image Source="{Binding Image}"/>
+                            <Image Source="{Binding ImagePath}"/>
                             <Label Text="{Binding Name}" Grid.Column="1"/>
                         </Grid>
                     </DataTemplate>
@@ -44,7 +44,7 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="25"/>
                             </Grid.ColumnDefinitions>
-                            <Image Source="{Binding Image}"/>
+                            <Image Source="{Binding ImagePath}"/>
                             <Label Text="{Binding Name}" Grid.Column="1"/>
                             <Image Grid.Column="2" Source="checkmark.png"/>
                         </Grid>

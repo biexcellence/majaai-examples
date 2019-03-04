@@ -18,6 +18,9 @@ namespace MajaMobile.Pages
 
         public MainPageMasterDetail()
         {
+            var style = (Style)Application.Current.Resources["ContentPageStyle"];
+            Style = style;
+
             var binding = new Binding(nameof(MainPageMasterViewModel.IsPresented), BindingMode.TwoWay);
             SetBinding(IsPresentedProperty, binding);
             BindingContext = _viewModel = new MainPageMasterViewModel();

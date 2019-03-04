@@ -1,5 +1,6 @@
 ﻿using BiExcellence.OpenBi.Api;
 using BiExcellence.OpenBi.Api.Commands;
+using BiExcellence.OpenBi.Api.Commands.MajaAi;
 using BiExcellence.OpenBi.Api.Commands.Users;
 using MajaMobile.Extensions;
 using System;
@@ -49,13 +50,13 @@ namespace MajaMobile.Utilities
             }
         }
 
-        public static void SetPackages(IEnumerable<string> packages)
+        public static void SetPackages(IEnumerable<IMajaTalent> talents)
         {
             _packages.Clear();
-            _packages.AddRange(packages);
+            _packages.AddRange(talents.Select(t => t.Id));
             using (var db = new AppDatabase())
             {
-                db.SetMajaTalentData(_packages);
+                db.SetMajaTalentData(talents);
             }
         }
 
@@ -80,7 +81,6 @@ namespace MajaMobile.Utilities
 
             var oldsession = Session;
             var sess = new OpenBiSession(_openBiConfiguration);
-            OpenBiUser = null;
 
             try
             {
@@ -115,6 +115,14 @@ namespace MajaMobile.Utilities
             Session = null;
             session?.Dispose();
             OpenBiUser = null;
+
+            using (var db = new AppDatabase())
+            {
+                _packages.Clear();
+                _packages.AddRange(db.DeletePrivateTalentData());
+            }
+            if (_packages.Count == 0)
+                _packages.AddRange(Utils.DefaultPackages);
         }
 
         private AccountStore DeleteAccountFromAccountStore()
