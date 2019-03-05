@@ -4,7 +4,6 @@
              xmlns:controls="clr-namespace:MajaMobile.Controls"
              xmlns:converters="clr-namespace:MajaMobile.Converters"
              xmlns:effects="clr-namespace:MajaMobile.Effects"
-             xmlns:gestures="clr-namespace:MajaMobile.GestureRecognizers"
              xmlns:pages="clr-namespace:MajaMobile.Pages"
              xmlns:sync="clr-namespace:Syncfusion.ListView.XForms;assembly=Syncfusion.SfListView.XForms"
              x:Class="MajaMobile.Pages.MainPage" Title="majaAI">
@@ -18,7 +17,8 @@
             <converters:ObjectFromListConverter x:Key="ListConverter"/>
             <converters:MessageToImageRowSpacingConverter x:Key="ImageRowSpacingConverter"/>
             <converters:DateToDayOfWeekConverter x:Key="DayConverter"/>
-
+            <converters:MajaSpeakingEnabledIconConverter x:Key="SpeakingImageConverter"/>
+            
             <ControlTemplate x:Key="RealEstateControlTemplate">
                 <Frame CornerRadius="10" Padding="5" HasShadow="False" BorderColor="Transparent" BackgroundColor="White">
                     <Grid x:Name="RealEstateGrid" HeightRequest="{Binding Width, Source={x:Reference RealEstateGrid}}" BindingContext="{TemplateBinding BindingContext}" RowSpacing="2">
@@ -316,6 +316,18 @@
             </ControlTemplate>
         </ResourceDictionary>
     </ContentPage.Resources>
+    <NavigationPage.TitleView>
+        <Grid VerticalOptions="Center">
+            <Image Source="{Binding MajaSpeakingEnabled, Converter={StaticResource SpeakingImageConverter}}" HorizontalOptions="End" HeightRequest="30" WidthRequest="30">
+                <Image.Margin>
+                    <OnPlatform x:DataType="Thickness" Android="0,0,10,0" Default="0"/>
+                </Image.Margin>
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding MajaSpeakingEnabledCommand}"/>
+                </Image.GestureRecognizers>
+            </Image>
+        </Grid>
+    </NavigationPage.TitleView>
     <Grid>
         <Image Source="background.png" Aspect="Fill"/>
         <Grid RowSpacing="0" ColumnSpacing="0">

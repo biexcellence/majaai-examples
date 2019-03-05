@@ -6,8 +6,7 @@ namespace MajaMobile.Interfaces
     public interface IAudioService
     {
         void PlayAudio(string text);
-        event EventHandler<EventArgs> StartedAudio;
-        event EventHandler<EventArgs> CompletedAudio;
+        void StopAudio();
         event EventHandler<SpeechRecognitionEventArgs> SpeechRecognitionPartialResult;
         event EventHandler<SpeechRecognitionEventArgs> SpeechRecognitionResult;
         void StartSpeechRecognition();

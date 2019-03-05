@@ -17,8 +17,6 @@ namespace MajaMobile.iOS
         private SFSpeechRecognitionTask _task;
         private AVAudioEngine engine = new AVAudioEngine();
 
-        public event EventHandler<EventArgs> StartedAudio;
-        public event EventHandler<EventArgs> CompletedAudio;
         public event EventHandler<SpeechRecognitionEventArgs> SpeechRecognitionPartialResult;
         public event EventHandler<SpeechRecognitionEventArgs> SpeechRecognitionResult;
 
@@ -30,6 +28,7 @@ namespace MajaMobile.iOS
         public void StartSpeechRecognition()
         {
             StopSpeechRecognizer(false);
+            StopAudio();
             _recognizerText = "";
             AVAudioSession.SharedInstance().SetActive(true, AVAudioSessionSetActiveOptions.NotifyOthersOnDeactivation);
 
@@ -121,8 +120,6 @@ namespace MajaMobile.iOS
             if (_speechSynthesizer == null)
             {
                 _speechSynthesizer = new AVSpeechSynthesizer();
-                _speechSynthesizer.DidFinishSpeechUtterance += _speechSynthesizer_DidFinishSpeechUtterance;
-                _speechSynthesizer.DidStartSpeechUtterance += _speechSynthesizer_DidStartSpeechUtterance;
             }
             var speechUtterance = new AVSpeechUtterance(text)
             {
@@ -135,17 +132,7 @@ namespace MajaMobile.iOS
             _speechSynthesizer.SpeakUtterance(speechUtterance);
         }
 
-        private void _speechSynthesizer_DidStartSpeechUtterance(object sender, AVSpeechSynthesizerUteranceEventArgs e)
-        {
-            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => StartedAudio?.Invoke(this, EventArgs.Empty));
-        }
-
-        private void _speechSynthesizer_DidFinishSpeechUtterance(object sender, AVSpeechSynthesizerUteranceEventArgs e)
-        {
-            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => CompletedAudio?.Invoke(this, EventArgs.Empty));
-        }
-
-        public void StopService()
+        public void StopAudio()
         {
             if (_speechSynthesizer != null && _speechSynthesizer.Speaking)
             {
@@ -155,6 +142,11 @@ namespace MajaMobile.iOS
                 }
                 catch (Exception) { }
             }
+        }
+
+        public void StopService()
+        {
+            StopAudio();
             StopSpeechRecognizer(true);
         }
     }

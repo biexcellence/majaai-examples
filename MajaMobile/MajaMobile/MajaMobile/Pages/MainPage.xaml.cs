@@ -43,9 +43,7 @@ namespace MajaMobile.Pages
         Unknown,
         Idle,
         Thinking,
-        Speaking,
         Listening,
-        Processing,
     }
 }
 
@@ -56,6 +54,7 @@ namespace MajaMobile.ViewModels
         public ICommand SpeechRecognitionCommand { get; }
         public ICommand SendTextCommand { get; }
         public ICommand PossibleUserReplyCommand { get; }
+        public ICommand MajaSpeakingEnabledCommand { get; }
 
         IAudioService _audioService;
         IDeviceInfo _deviceInfo;
@@ -97,6 +96,12 @@ namespace MajaMobile.ViewModels
             }
         }
 
+        public bool MajaSpeakingEnabled
+        {
+            get => GetField<bool>();
+            set { SetField(value); }
+        }
+
         public MainPageViewModel()
         {
             _deviceInfo = DependencyService.Get<IDeviceInfo>();
@@ -107,11 +112,12 @@ namespace MajaMobile.ViewModels
             SpeechRecognitionCommand = new Command(SpeechRecognition);
             SendTextCommand = new Command(SendTextCommandExecuted);
             PossibleUserReplyCommand = new Command(PossibleUserReplyTapped);
+            MajaSpeakingEnabledCommand = new Command(SwitchMajaSpeakingEnabled);
 
-            _audioService.CompletedAudio += _audioService_CompletedAudio;
-            _audioService.StartedAudio += _audioService_StartedAudio;
             _audioService.SpeechRecognitionPartialResult += _audioService_SpeechRecognitionPartialResult;
             _audioService.SpeechRecognitionResult += _audioService_SpeechRecognitionResult;
+
+            MajaSpeakingEnabled = true;
         }
 
         private void SendTextCommandExecuted(object parameter)
@@ -225,16 +231,6 @@ namespace MajaMobile.ViewModels
             }
         }
 
-        private void _audioService_StartedAudio(object sender, EventArgs e)
-        {
-            System.Diagnostics.Debug.WriteLine("_audioService_StartedAudio");
-        }
-
-        private void _audioService_CompletedAudio(object sender, EventArgs e)
-        {
-            System.Diagnostics.Debug.WriteLine("_audioService_StartedAudio");
-        }
-
         private void MajaStateChanged(MajaListeningStatus state)
         {
             IsIdle = state == MajaListeningStatus.Idle;
@@ -310,6 +306,8 @@ namespace MajaMobile.ViewModels
                 CurrentMajaState = MajaListeningStatus.Thinking;
                 CancellationTokenSource tokenSource = _thinkingMessage?.CancellationTokenSource;
                 Text = "";
+                _audioService.StopAudio();
+                string speakingText = "";
                 try
                 {
                     IList<IMajaQueryAnswer> answers = null;
@@ -320,11 +318,13 @@ namespace MajaMobile.ViewModels
                         if (answers == null || answers.Count == 0)
                         {
                             _dialogActive = false;
-                            Messages.Add(new MajaConversationMessage("Entschuldigung. Darauf habe ich keine Antwort."));
+                            speakingText = "Entschuldigung. Darauf habe ich keine Antwort.";
+                            Messages.Add(new MajaConversationMessage(speakingText));
                         }
                         else
                         {
                             var completed = true;
+                            speakingText = answers.First().Response;
                             foreach (var answer in answers)//TODO: only certain messages?
                             {
                                 Messages.Add(MajaConversationMessage.Factory((answer)));
@@ -340,6 +340,9 @@ namespace MajaMobile.ViewModels
                                     }
                                 }
                                 completed = completed && answer.Completed;
+                                //don't speak when answer is AudioFile
+                                if (answer.ProposalType == MajaQueryAnswerProposalType.AudioFile)
+                                    speakingText = "";
                             }
                             _dialogActive = !completed;
                         }
@@ -348,7 +351,8 @@ namespace MajaMobile.ViewModels
                 catch (OperationCanceledException)
                 {
                     _dialogActive = false;
-                    Messages.Add(new MajaConversationMessage("Die Anfrage wurde abgebrochen"));
+                    speakingText = "Die Anfrage wurde abgebrochen";
+                    Messages.Add(new MajaConversationMessage(speakingText));
                 }
                 catch (Exception ex)
                 {
@@ -358,7 +362,20 @@ namespace MajaMobile.ViewModels
                 finally
                 {
                     CurrentMajaState = MajaListeningStatus.Idle;
+                    if (MajaSpeakingEnabled && !string.IsNullOrEmpty(speakingText))
+                    {
+                        _audioService.PlayAudio(speakingText);
+                    }
                 }
+            }
+        }
+
+        private void SwitchMajaSpeakingEnabled()
+        {
+            MajaSpeakingEnabled = !MajaSpeakingEnabled;
+            if (!MajaSpeakingEnabled)
+            {
+                _audioService.StopAudio();
             }
         }
 
@@ -370,8 +387,7 @@ namespace MajaMobile.ViewModels
                     SendText();
                     break;
                 case ChatButtonDisplayMode.Listening:
-                    CurrentMajaState = MajaListeningStatus.Idle;
-                    _audioService.StopService();
+                    StopAudioService();
                     break;
                 case ChatButtonDisplayMode.Microphone:
                     _audioService.StartSpeechRecognition();

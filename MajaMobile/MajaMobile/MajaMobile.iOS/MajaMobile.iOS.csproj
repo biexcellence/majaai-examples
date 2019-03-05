@@ -251,4 +251,22 @@
   <ItemGroup>
     <BundleResource Include="Resources\checkmark%402x.png" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\mute.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\mute%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\mute%403x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\sound.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\sound%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\sound%403x.png" />
+  </ItemGroup>
 </Project>

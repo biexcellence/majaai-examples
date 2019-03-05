@@ -16,8 +16,6 @@ namespace MajaMobile.Droid
     {
         private SpeechRecognizer _speechRecognizer;
 
-        public event EventHandler<EventArgs> StartedAudio;
-        public event EventHandler<EventArgs> CompletedAudio;
         public event EventHandler<SpeechRecognitionEventArgs> SpeechRecognitionPartialResult;
         public event EventHandler<SpeechRecognitionEventArgs> SpeechRecognitionResult;
 
@@ -40,17 +38,17 @@ namespace MajaMobile.Droid
         }
         public override void OnDone(string utteranceId)
         {
-            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => CompletedAudio?.Invoke(this, EventArgs.Empty));
+
         }
 
         public override void OnError(string utteranceId)
         {
-            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => CompletedAudio?.Invoke(this, EventArgs.Empty));
+
         }
 
         public override void OnStart(string utteranceId)
         {
-            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => StartedAudio?.Invoke(this, EventArgs.Empty));
+
         }
 
         public void OnInit([GeneratedEnum] OperationResult status)
@@ -63,6 +61,7 @@ namespace MajaMobile.Droid
 
         public void StartSpeechRecognition()
         {
+            StopService();
             try
             {
                 if (ContextCompat.CheckSelfPermission(Android.App.Application.Context, Manifest.Permission.RecordAudio) != Android.Content.PM.Permission.Granted)
@@ -122,7 +121,7 @@ namespace MajaMobile.Droid
             catch (Exception) { }
         }
 
-        public void StopService()
+        public void StopAudio()
         {
             if (_speaker != null && _speaker.IsSpeaking)
             {
@@ -132,6 +131,10 @@ namespace MajaMobile.Droid
                 }
                 catch (Exception) { }
             }
+        }
+
+        public void StopService()
+        {
             if (_speechRecognizer != null)
             {
                 try
@@ -140,6 +143,7 @@ namespace MajaMobile.Droid
                 }
                 catch (Exception) { }
             }
+            StopAudio();
         }
     }
 }

@@ -6269,26 +6269,26 @@ namespace MajaMobile.Droid
 			// aapt resource value: 0x7f020054
 			public const int avd_hide_password = 2130837588;
 			
-			// aapt resource value: 0x7f02013b
-			public const int avd_hide_password_1 = 2130837819;
-			
-			// aapt resource value: 0x7f02013c
-			public const int avd_hide_password_2 = 2130837820;
-			
 			// aapt resource value: 0x7f02013d
-			public const int avd_hide_password_3 = 2130837821;
+			public const int avd_hide_password_1 = 2130837821;
+			
+			// aapt resource value: 0x7f02013e
+			public const int avd_hide_password_2 = 2130837822;
+			
+			// aapt resource value: 0x7f02013f
+			public const int avd_hide_password_3 = 2130837823;
 			
 			// aapt resource value: 0x7f020055
 			public const int avd_show_password = 2130837589;
 			
-			// aapt resource value: 0x7f02013e
-			public const int avd_show_password_1 = 2130837822;
-			
-			// aapt resource value: 0x7f02013f
-			public const int avd_show_password_2 = 2130837823;
-			
 			// aapt resource value: 0x7f020140
-			public const int avd_show_password_3 = 2130837824;
+			public const int avd_show_password_1 = 2130837824;
+			
+			// aapt resource value: 0x7f020141
+			public const int avd_show_password_2 = 2130837825;
+			
+			// aapt resource value: 0x7f020142
+			public const int avd_show_password_3 = 2130837826;
 			
 			// aapt resource value: 0x7f020056
 			public const int background = 2130837590;
@@ -6924,58 +6924,64 @@ namespace MajaMobile.Droid
 			public const int mr_vol_type_audiotrack_light = 2130837800;
 			
 			// aapt resource value: 0x7f020129
-			public const int navigation_empty_icon = 2130837801;
+			public const int mute = 2130837801;
 			
 			// aapt resource value: 0x7f02012a
-			public const int notification_action_background = 2130837802;
+			public const int navigation_empty_icon = 2130837802;
 			
 			// aapt resource value: 0x7f02012b
-			public const int notification_bg = 2130837803;
+			public const int notification_action_background = 2130837803;
 			
 			// aapt resource value: 0x7f02012c
-			public const int notification_bg_low = 2130837804;
+			public const int notification_bg = 2130837804;
 			
 			// aapt resource value: 0x7f02012d
-			public const int notification_bg_low_normal = 2130837805;
+			public const int notification_bg_low = 2130837805;
 			
 			// aapt resource value: 0x7f02012e
-			public const int notification_bg_low_pressed = 2130837806;
+			public const int notification_bg_low_normal = 2130837806;
 			
 			// aapt resource value: 0x7f02012f
-			public const int notification_bg_normal = 2130837807;
+			public const int notification_bg_low_pressed = 2130837807;
 			
 			// aapt resource value: 0x7f020130
-			public const int notification_bg_normal_pressed = 2130837808;
+			public const int notification_bg_normal = 2130837808;
 			
 			// aapt resource value: 0x7f020131
-			public const int notification_icon_background = 2130837809;
-			
-			// aapt resource value: 0x7f020139
-			public const int notification_template_icon_bg = 2130837817;
-			
-			// aapt resource value: 0x7f02013a
-			public const int notification_template_icon_low_bg = 2130837818;
+			public const int notification_bg_normal_pressed = 2130837809;
 			
 			// aapt resource value: 0x7f020132
-			public const int notification_tile_bg = 2130837810;
+			public const int notification_icon_background = 2130837810;
+			
+			// aapt resource value: 0x7f02013b
+			public const int notification_template_icon_bg = 2130837819;
+			
+			// aapt resource value: 0x7f02013c
+			public const int notification_template_icon_low_bg = 2130837820;
 			
 			// aapt resource value: 0x7f020133
-			public const int notify_panel_notification_icon_bg = 2130837811;
+			public const int notification_tile_bg = 2130837811;
 			
 			// aapt resource value: 0x7f020134
-			public const int sfclosebutton = 2130837812;
+			public const int notify_panel_notification_icon_bg = 2130837812;
 			
 			// aapt resource value: 0x7f020135
-			public const int splash_screen = 2130837813;
+			public const int sfclosebutton = 2130837813;
 			
 			// aapt resource value: 0x7f020136
-			public const int styleinfo = 2130837814;
+			public const int sound = 2130837814;
 			
 			// aapt resource value: 0x7f020137
-			public const int tooltip_frame_dark = 2130837815;
+			public const int splash_screen = 2130837815;
 			
 			// aapt resource value: 0x7f020138
-			public const int tooltip_frame_light = 2130837816;
+			public const int styleinfo = 2130837816;
+			
+			// aapt resource value: 0x7f020139
+			public const int tooltip_frame_dark = 2130837817;
+			
+			// aapt resource value: 0x7f02013a
+			public const int tooltip_frame_light = 2130837818;
 			
 			static Drawable()
 			{
