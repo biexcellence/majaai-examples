@@ -20,6 +20,7 @@ namespace MajaMobile.Pages
         {
             var style = (Style)Application.Current.Resources["ContentPageStyle"];
             Style = style;
+            this.MasterBehavior = MasterBehavior.Popover;
             
             var binding = new Binding(nameof(MainPageMasterViewModel.IsPresented), BindingMode.TwoWay);
             SetBinding(IsPresentedProperty, binding);

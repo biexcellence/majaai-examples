@@ -1,9 +1,11 @@
 ﻿using AVFoundation;
 using Foundation;
+using ObjCRuntime;
 using Syncfusion.Licensing;
 using Syncfusion.ListView.XForms.iOS;
 using Syncfusion.SfAutoComplete.XForms.iOS;
 using UIKit;
+using Xamarin.Forms;
 
 namespace MajaMobile.iOS
 {
@@ -30,12 +32,17 @@ namespace MajaMobile.iOS
             SfAutoCompleteRenderer.Init();
 
             LoadApplication(new App());
-            
-          
 
             AVAudioSession.SharedInstance().SetCategory(AVAudioSessionCategory.PlayAndRecord, AVAudioSessionCategoryOptions.DefaultToSpeaker);
 
             return base.FinishedLaunching(app, options);
+        }
+
+        public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations(UIApplication application, [Transient] UIWindow forWindow)
+        {
+            if (Device.Idiom == TargetIdiom.Tablet)
+                return UIInterfaceOrientationMask.AllButUpsideDown;
+            return UIInterfaceOrientationMask.Portrait;
         }
     }
 }

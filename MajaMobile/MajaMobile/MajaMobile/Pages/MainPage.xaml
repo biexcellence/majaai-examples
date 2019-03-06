@@ -157,7 +157,7 @@
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span Text="Regen: "/>
-                                        <Span Text="{Binding CurrentWeather.Wind, Mode=OneWay, StringFormat={StaticResource StringFormatDecimalTwoPlaces}}"/>
+                                        <Span Text="{Binding CurrentWeather.Rain, Mode=OneWay, StringFormat={StaticResource StringFormatDecimalTwoPlaces}}"/>
                                         <Span Text=" mm"/>
                                     </FormattedString>
                                 </Label.FormattedText>
@@ -311,18 +311,9 @@
             </ControlTemplate>
         </ResourceDictionary>
     </ContentPage.Resources>
-    <NavigationPage.TitleView>
-        <Grid VerticalOptions="Center">
-            <Image Source="{Binding MajaSpeakingEnabled, Converter={StaticResource SpeakingImageConverter}}" HorizontalOptions="End" HeightRequest="30" WidthRequest="30">
-                <Image.Margin>
-                    <OnPlatform x:DataType="Thickness" Android="0,0,10,0" Default="0"/>
-                </Image.Margin>
-                <Image.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding MajaSpeakingEnabledCommand}"/>
-                </Image.GestureRecognizers>
-            </Image>
-        </Grid>
-    </NavigationPage.TitleView>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Icon="{Binding MajaSpeakingEnabled, Converter={StaticResource SpeakingImageConverter}}" Command="{Binding MajaSpeakingEnabledCommand}"/>
+    </ContentPage.ToolbarItems>
     <Grid>
         <Image Source="background.png" Aspect="Fill"/>
         <Grid RowSpacing="0" ColumnSpacing="0">
