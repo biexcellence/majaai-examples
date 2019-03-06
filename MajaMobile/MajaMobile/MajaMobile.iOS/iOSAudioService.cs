@@ -114,21 +114,25 @@ namespace MajaMobile.iOS
         }
 
         AVSpeechSynthesizer _speechSynthesizer;
+        private AVSpeechSynthesisVoice _voice;
 
         public void PlayAudio(string text)
         {
             if (_speechSynthesizer == null)
             {
                 _speechSynthesizer = new AVSpeechSynthesizer();
+                _voice = AVSpeechSynthesisVoice.FromIdentifier("com.apple.ttsbundle.siri_female_de-DE_compact");
+                if (_voice == null)
+                    _voice = AVSpeechSynthesisVoice.FromLanguage("de-DE");
             }
             var speechUtterance = new AVSpeechUtterance(text)
             {
                 Rate = AVSpeechUtterance.DefaultSpeechRate,
-                Voice = AVSpeechSynthesisVoice.FromLanguage("de-DE"),
+                Voice = _voice,
                 Volume = 1.0f,
                 PitchMultiplier = 1.0f
             };
-
+            
             _speechSynthesizer.SpeakUtterance(speechUtterance);
         }
 

@@ -53,7 +53,7 @@ namespace MajaMobile.Droid
 
         public void OnInit([GeneratedEnum] OperationResult status)
         {
-            if (status.Equals(OperationResult.Success))
+            if (status.Equals(OperationResult.Success) && !string.IsNullOrEmpty(_textToSpeak))
             {
                 _speaker.Speak(_textToSpeak, QueueMode.Flush, null, "MajaUtteranceId");
             }
