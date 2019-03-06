@@ -62,7 +62,6 @@
                 </ContentView>
             </DataTemplate>
             <DataTemplate x:Key="RealEstateTemplate">
-                <!--TODO-->
                 <ContentView ControlTemplate="{StaticResource MessageTemplate}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -157,7 +156,7 @@
                             <Label>
                                 <Label.FormattedText>
                                     <FormattedString>
-                                        <Span Text="Rain: "/>
+                                        <Span Text="Regen: "/>
                                         <Span Text="{Binding CurrentWeather.Wind, Mode=OneWay, StringFormat={StaticResource StringFormatDecimalTwoPlaces}}"/>
                                         <Span Text=" mm"/>
                                     </FormattedString>
@@ -178,7 +177,6 @@
                                 <DataTemplate>
                                     <ViewCell>
                                         <ViewCell.View>
-                                            <!--<Frame Padding="5" HasShadow="True" CornerRadius="5">-->
                                             <Grid BackgroundColor="Transparent" RowSpacing="3" Padding="5">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="auto"/>
@@ -204,7 +202,6 @@
                                                     </Label.FormattedText>
                                                 </Label>
                                             </Grid>
-                                            <!--</Frame>-->
                                         </ViewCell.View>
                                     </ViewCell>
                                 </DataTemplate>
@@ -213,7 +210,6 @@
                                 <DataTemplate>
                                     <ViewCell>
                                         <ViewCell.View>
-                                            <!--<Frame BackgroundColor="GhostWhite" Padding="5" HasShadow="True" CornerRadius="5">-->
                                             <Grid BackgroundColor="White" RowSpacing="3" Padding="5">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="auto"/>
@@ -239,7 +235,6 @@
                                                     </Label.FormattedText>
                                                 </Label>
                                             </Grid>
-                                            <!--</Frame>-->
                                         </ViewCell.View>
                                     </ViewCell>
                                 </DataTemplate>
