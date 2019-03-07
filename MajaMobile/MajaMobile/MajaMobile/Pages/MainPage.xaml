@@ -246,7 +246,7 @@
             <DataTemplate x:Key="AudioTemplate">
                 <ContentView ControlTemplate="{StaticResource MessageTemplate}">
                     <Grid>
-                        <Label Text="{Binding Text}" TextColor="{Binding Speaker, Converter={StaticResource TextColorConverter}}" Margin="5,0,0,0" IsVisible="{Binding Text, Converter={StaticResource NotNullConverter}}"/>
+                        <Label Text="{Binding Text}" TextColor="{Binding Speaker, Converter={StaticResource TextColorConverter}}" IsVisible="{Binding Text, Converter={StaticResource NotNullConverter}}"/>
                     </Grid>
                 </ContentView>
             </DataTemplate>
@@ -260,7 +260,7 @@
             </DataTemplate>
             <DataTemplate x:Key="LocationTemplate">
                 <ContentView ControlTemplate="{StaticResource MessageTemplate}">
-                    <Label Text="{Binding Text}" TextColor="{Binding Speaker, Converter={StaticResource TextColorConverter}}" Margin="5,0,0,0" IsVisible="{Binding Text, Converter={StaticResource NotNullConverter}}"/>
+                    <Label Text="{Binding Text}" TextColor="{Binding Speaker, Converter={StaticResource TextColorConverter}}" IsVisible="{Binding Text, Converter={StaticResource NotNullConverter}}"/>
                 </ContentView>
             </DataTemplate>
             <DataTemplate x:Key="ThinkingTemplate">
@@ -305,7 +305,7 @@
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <ContentPresenter/>
-                        <Image IsVisible="{Binding HasImage}" Source="{Binding Image}" Grid.Row="1" HeightRequest="200" Aspect="AspectFill"/>
+                        <controls:UniformImage IsVisible="{Binding HasImage}" Source="{Binding Image}" Grid.Row="1" WidthRequest="{Binding ImageWidth}" AspectEx="Uniform"/>
                     </Grid>
                 </Frame>
             </ControlTemplate>

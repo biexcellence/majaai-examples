@@ -390,8 +390,11 @@ namespace MajaMobile.ViewModels
                     StopAudioService();
                     break;
                 case ChatButtonDisplayMode.Microphone:
-                    _audioService.StartSpeechRecognition();
-                    CurrentMajaState = MajaListeningStatus.Listening;
+                    if (IsIdle)
+                    {
+                        _audioService.StartSpeechRecognition();
+                        CurrentMajaState = MajaListeningStatus.Listening;
+                    }
                     break;
             }
         }

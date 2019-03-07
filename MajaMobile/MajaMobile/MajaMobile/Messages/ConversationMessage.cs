@@ -1,4 +1,5 @@
 ﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
+using MajaMobile.Interfaces;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -22,6 +23,14 @@ namespace MajaMobile.Messages
         public MajaConversationSpeaker Speaker { get; }
         public bool HasImage => !string.IsNullOrEmpty(Image);
         public virtual string Image { get; }
+
+        public double ImageWidth
+        {
+            get
+            {
+                return DependencyService.Get<IDeviceInfo>().ScreenWidth * 0.75;
+            }
+        }
 
         private string _text;
         public string Text
