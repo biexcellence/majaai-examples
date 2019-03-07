@@ -18,7 +18,7 @@ namespace MajaMobile.Utilities
     {
 
         private static SessionHandler _instance;
-        public static SessionHandler Instance => _instance ?? new SessionHandler();
+        public static SessionHandler Instance => _instance ?? (_instance = new SessionHandler());
         public static IOpenBiSession Session { get; private set; }
         private static List<string> _packages = new List<string>();
         public static IReadOnlyList<string> Packages => _packages;
@@ -40,7 +40,7 @@ namespace MajaMobile.Utilities
 
         private SessionHandler()
         {
-            _instance = this;
+
             using (var db = new AppDatabase())
             {
                 var ids = db.GetTalentIds();
@@ -65,6 +65,7 @@ namespace MajaMobile.Utilities
 
         public async Task OpenbiUserLogin(string username = null, string password = null)
         {
+            await Task.Yield();
             Account account;
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
             {
