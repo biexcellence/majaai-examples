@@ -55,13 +55,18 @@ namespace MajaMobile.ViewModels
         public ICommand SendTextCommand { get; }
         public ICommand PossibleUserReplyCommand { get; }
         public ICommand MajaSpeakingEnabledCommand { get; }
+        public ICommand CancelDialogCommand { get; }
 
         IAudioService _audioService;
         IDeviceInfo _deviceInfo;
 
         private MajaConversationMessageThinking _thinkingMessage;
         private UserConversationMessage _speechRecognitionMessage;
-        private bool _dialogActive;
+        public bool DialogActive
+        {
+            get => GetField<bool>();
+            private set { SetField(value); OnPropertyChanged(); }
+        }
         public IPossibleUserReply CurrentUserInput
         {
             get => GetField<IPossibleUserReply>();
@@ -113,6 +118,7 @@ namespace MajaMobile.ViewModels
             SendTextCommand = new Command(SendTextCommandExecuted);
             PossibleUserReplyCommand = new Command(PossibleUserReplyTapped);
             MajaSpeakingEnabledCommand = new Command(SwitchMajaSpeakingEnabled);
+            CancelDialogCommand = new Command(CancelDialog);
 
             _audioService.SpeechRecognitionPartialResult += _audioService_SpeechRecognitionPartialResult;
             _audioService.SpeechRecognitionResult += _audioService_SpeechRecognitionResult;
@@ -220,7 +226,7 @@ namespace MajaMobile.ViewModels
             {
                 if (_speechRecognitionMessage == null)
                 {
-                    if (!_dialogActive)
+                    if (!DialogActive)
                     {
                         Messages.Clear();
                     }
@@ -289,14 +295,14 @@ namespace MajaMobile.ViewModels
         private async void SendText(string value = null, string text = null, IDictionary<string, string> parameters = null, bool addMessage = true)
         {
             _speechRecognitionMessage = null;
-            if (IsBusy && CurrentMajaState != MajaListeningStatus.Listening)
+            if (IsBusy && CurrentMajaState != MajaListeningStatus.Listening && !_cancellingDialog)
                 return;
             if (string.IsNullOrEmpty(value))
                 value = Text;
             if (!string.IsNullOrEmpty(value))
             {
                 CurrentUserInput = null;
-                if (!_dialogActive && addMessage)
+                if (!DialogActive && addMessage)
                 {
                     Messages.Clear();
                 }
@@ -317,7 +323,7 @@ namespace MajaMobile.ViewModels
                     {
                         if (answers == null || answers.Count == 0)
                         {
-                            _dialogActive = false;
+                            DialogActive = false;
                             speakingText = "Entschuldigung. Darauf habe ich keine Antwort.";
                             Messages.Add(new MajaConversationMessage(speakingText));
                         }
@@ -344,19 +350,19 @@ namespace MajaMobile.ViewModels
                                 if (answer.ProposalType == MajaQueryAnswerProposalType.AudioFile)
                                     speakingText = "";
                             }
-                            _dialogActive = !completed;
+                            DialogActive = !completed;
                         }
                     }
                 }
                 catch (OperationCanceledException)
                 {
-                    _dialogActive = false;
+                    //DialogActive = false;
                     speakingText = "Die Anfrage wurde abgebrochen";
                     Messages.Add(new MajaConversationMessage(speakingText));
                 }
                 catch (Exception ex)
                 {
-                    _dialogActive = false;
+                    DialogActive = false;
                     Messages.Add(new MajaConversationMessage(ex.Message));
                 }
                 finally
@@ -366,8 +372,27 @@ namespace MajaMobile.ViewModels
                     {
                         _audioService.PlayAudio(speakingText);
                     }
+                    _cancellingDialog = false;
                 }
             }
+        }
+
+        private bool _cancellingDialog;
+        private void CancelDialog()
+        {
+            if (_cancellingDialog)
+                return;
+            _cancellingDialog = true;
+            var tokenSource = _thinkingMessage?.CancellationTokenSource;
+            if (tokenSource != null)
+            {
+                try
+                {
+                    tokenSource.Cancel();
+                }
+                catch { }
+            }
+            SendText("Abbrechen", "Dialog abbrechen");
         }
 
         private void SwitchMajaSpeakingEnabled()

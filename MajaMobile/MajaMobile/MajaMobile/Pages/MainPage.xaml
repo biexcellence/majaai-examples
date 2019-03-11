@@ -321,16 +321,22 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <controls:ItemsStack ItemsSource="{Binding Messages}" ItemTemplate="{StaticResource TemplateSelector}" Grid.Row="0" Grid.ColumnSpan="2"/>
-            <controls:MultipleChoiceControl ItemsSource="{Binding PossibleUserReplies}" Command="{Binding PossibleUserReplyCommand}" Grid.Row="1" Grid.ColumnSpan="2" x:Name="MultipleChoiceControl"/>
-            <controls:ChatInputControl Margin="5,0,5,5" Grid.Row="2" VerticalOptions="End" HorizontalOptions="FillAndExpand" Text="{Binding Text}"
+            <Label Text="Dialog abbrechen" TextColor="#1fb8dd" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding DialogActive}" Margin="5,0,0,5">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CancelDialogCommand}"/>
+                </Label.GestureRecognizers>
+            </Label>
+            <controls:MultipleChoiceControl ItemsSource="{Binding PossibleUserReplies}" Command="{Binding PossibleUserReplyCommand}" Grid.Row="2" Grid.ColumnSpan="2" x:Name="MultipleChoiceControl" Margin="0,0,0,5"/>
+            <controls:ChatInputControl Margin="5,0,5,5" Grid.Row="3" VerticalOptions="End" HorizontalOptions="FillAndExpand" Text="{Binding Text}"
                              IsEnabled="{Binding IsIdle}" CompletedCommand="{Binding SendTextCommand}" CurrentUserInput="{Binding CurrentUserInput}" x:Name="ChatControl"/>
-            <controls:ChatButton VerticalOptions="End" HorizontalOptions="End" Grid.Row="2" Grid.Column="1" HeightRequest="45" WidthRequest="45" Margin="0,0,5,5" DisplayMode="{Binding ChatButtonMode}" x:Name="ChatButton">
+            <controls:ChatButton VerticalOptions="End" HorizontalOptions="End" Grid.Row="3" Grid.Column="1" HeightRequest="45" WidthRequest="45" Margin="0,0,5,5" DisplayMode="{Binding ChatButtonMode}" x:Name="ChatButton">
                 <controls:ChatButton.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding SpeechRecognitionCommand}"/>
                 </controls:ChatButton.GestureRecognizers>

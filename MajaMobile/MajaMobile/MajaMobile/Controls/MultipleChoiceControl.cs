@@ -28,8 +28,7 @@ namespace MajaMobile.Controls
         {
             Orientation = ScrollOrientation.Horizontal;
             HorizontalOptions = LayoutOptions.Fill;
-            Padding = new Thickness(5);
-            Content = _content = new StackLayout { Spacing = 5, Orientation = StackOrientation.Horizontal, HorizontalOptions = LayoutOptions.FillAndExpand };
+            Content = _content = new StackLayout { Spacing = 0, Orientation = StackOrientation.Horizontal, HorizontalOptions = LayoutOptions.FillAndExpand };
         }
 
         private static void ItemsSourceChanged(BindableObject bindable, object oldValue, object newValue)
@@ -59,7 +58,7 @@ namespace MajaMobile.Controls
                     {
                         if (item is IPossibleUserReply reply)
                         {
-                            var frame = new Frame() { HasShadow = false, BorderColor = Color.LightGray, CornerRadius = 30, Padding = new Thickness(10, 6), BackgroundColor = Color.White, HorizontalOptions = LayoutOptions.Start };
+                            var frame = new Frame() { HasShadow = false, BorderColor = Color.LightGray, CornerRadius = 30, Padding = new Thickness(10, 6), Margin = new Thickness(5, 0, 0, 0), BackgroundColor = Color.White, HorizontalOptions = LayoutOptions.Start };
                             var label = new Label() { Text = reply.Text, HorizontalTextAlignment = TextAlignment.Center, FontFamily = "seguisbi.ttf#seguisbi" };
                             if (Device.RuntimePlatform == Device.iOS)
                             {
