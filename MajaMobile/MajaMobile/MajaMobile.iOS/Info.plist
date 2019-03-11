@@ -5,7 +5,7 @@
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>1</integer>
-    <integer>2</integer>
+		<integer>2</integer>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
@@ -14,7 +14,9 @@
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+    <string>UIInterfaceOrientationPortraitUpsideDown</string>
+    <string>UIInterfaceOrientationLandscapeLeft</string>
+    <string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>CFBundleDisplayName</key>
 	<string>majaAI</string>
@@ -30,9 +32,9 @@
 		<string>en</string>
 	</array>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>We need your microphone</string>
+	<string>Wir benötigen das Mikrofon, damit du mit Maja sprechen kannst.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>We need speech recognition</string>
+	<string>Wir benötigen die Spracherkennung, damit du mit Maja sprechen kannst.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>segoeui.ttf</string>
