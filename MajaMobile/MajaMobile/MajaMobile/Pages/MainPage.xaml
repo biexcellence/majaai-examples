@@ -18,7 +18,11 @@
             <converters:MessageToImageRowSpacingConverter x:Key="ImageRowSpacingConverter"/>
             <converters:DateToDayOfWeekConverter x:Key="DayConverter"/>
             <converters:MajaSpeakingEnabledIconConverter x:Key="SpeakingImageConverter"/>
-            
+            <converters:FirstWordConverter x:Key="FirstWordConverter"/>
+            <converters:FlightDelayConverter x:Key="FlightDelayConverter"/>
+            <converters:FlightStatusTimeToVisibilityConverter x:Key="FlightTimeToVisibilityConverter"/>
+            <converters:FlightStatusActualDateConverter x:Key="FlightStatusActualDateConverter"/>
+
             <ControlTemplate x:Key="RealEstateControlTemplate">
                 <Frame CornerRadius="10" Padding="5" HasShadow="False" BorderColor="Transparent" BackgroundColor="White">
                     <Grid x:Name="RealEstateGrid" HeightRequest="{Binding Width, Source={x:Reference RealEstateGrid}}" BindingContext="{TemplateBinding BindingContext}" RowSpacing="2">
@@ -282,6 +286,93 @@
                     </Grid>
                 </ContentView>
             </DataTemplate>
+            <DataTemplate x:Key="FlightStatusTemplate">
+                <ContentView ControlTemplate="{StaticResource MessageTemplate}">
+                    <Grid RowSpacing="0" WidthRequest="{Binding ImageWidth}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid ColumnSpacing="5" HorizontalOptions="FillAndExpand" VerticalOptions="Start">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label FontSize="{StaticResource MediumFontSize}" FontFamily="{StaticResource UiFontSemiBoldItalic}" Grid.Row="0">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding FlightStatus.Airline.Name, Converter={StaticResource FirstWordConverter}}"/>
+                                        <Span Text=" "/>
+                                        <Span Text="{Binding FlightStatus.CarrierFsCode}"/>
+                                        <Span Text=" "/>
+                                        <Span Text="{Binding FlightStatus.FlightNumber}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Frame HasShadow="False" CornerRadius="3" BackgroundColor="{Binding FlightStatus,Converter={StaticResource FlightDelayConverter}}" Padding="3,0" Grid.Column="1" HorizontalOptions="Start">
+                                <Label Text="{Binding FlightStatus,Converter={StaticResource FlightDelayConverter}}" FontFamily="{StaticResource UiFontSemiBoldItalic}" TextColor="White"/>
+                            </Frame>
+                        </Grid>
+                        <Label Text="{Binding FlightStatus.DepartureAirport.FsCode}" FontSize="{StaticResource XLargeFontSize}" FontFamily="{StaticResource UiFontSemiBoldItalic}" Grid.Row="1"/>
+                        <Label Text="{Binding FlightStatus.ArrivalAirport.FsCode}" FontSize="{StaticResource XLargeFontSize}" FontFamily="{StaticResource UiFontSemiBoldItalic}" HorizontalOptions="End" Grid.Row="1"/>
+                        <Label Text="{Binding FlightStatus.DepartureAirport.City}" Grid.Row="2"/>
+                        <Label Text="{Binding FlightStatus.ArrivalAirport.City}" HorizontalOptions="End" Grid.Row="2"/>
+                        <StackLayout Grid.Row="3" HorizontalOptions="Start" Orientation="Horizontal" VerticalOptions="Center">
+                            <Label Text="{Binding FlightStatus.PublishedDeparture, StringFormat={StaticResource StringFormatTimeHoursMinutes}}" IsVisible="{Binding FlightStatus, Converter={StaticResource FlightTimeToVisibilityConverter}, ConverterParameter='dep'}">
+                                <Label.Effects>
+                                    <effects:StrikeThroughEffect/>
+                                </Label.Effects>
+                            </Label>
+                            <Label Text="{Binding FlightStatus, Converter={StaticResource FlightStatusActualDateConverter}, ConverterParameter=dep}" TextColor="{Binding FlightStatus,Converter={StaticResource FlightDelayConverter}, ConverterParameter=time}"/>
+                        </StackLayout>
+                        <StackLayout HorizontalOptions="End" Grid.Row="3" Orientation="Horizontal" VerticalOptions="Center">
+                            <Label Text="{Binding FlightStatus.PublishedArrival, StringFormat={StaticResource StringFormatTimeHoursMinutes}}" IsVisible="{Binding FlightStatus, Converter={StaticResource FlightTimeToVisibilityConverter}, ConverterParameter='arr'}">
+                                <Label.Effects>
+                                    <effects:StrikeThroughEffect/>
+                                </Label.Effects>
+                            </Label>
+                            <Label Text="{Binding FlightStatus, Converter={StaticResource FlightStatusActualDateConverter}, ConverterParameter=arr}" TextColor="{Binding FlightStatus,Converter={StaticResource FlightDelayConverter}, ConverterParameter=time}"/>
+                        </StackLayout>
+                        <Label Grid.Row="4">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Terminal: "/>
+                                    <Span Text="{Binding FlightStatus.DepartureTerminal}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label Grid.Row="4" HorizontalOptions="End">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Terminal: "/>
+                                    <Span Text="{Binding FlightStatus.ArrivalTerminal}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label Grid.Row="5">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Gate: "/>
+                                    <Span Text="{Binding FlightStatus.DepartureGate}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label Grid.Row="5" HorizontalOptions="End">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Gate: "/>
+                                    <Span Text="{Binding FlightStatus.ArrivalGate}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </Grid>
+                </ContentView>
+            </DataTemplate>
 
             <controls:MessageDataTemplateSelector x:Key="TemplateSelector"
                                             TextTemplate="{StaticResource TextTemplate}"
@@ -292,7 +383,8 @@
                                             VideoTemplate="{StaticResource VideoTemplate}"
                                             LocationTemplate="{StaticResource LocationTemplate}"
                                             AudioTemplate="{StaticResource AudioTemplate}"
-                                            ThinkingTemplate="{StaticResource ThinkingTemplate}"/>
+                                            ThinkingTemplate="{StaticResource ThinkingTemplate}"
+                                            FlightStatusTemplate ="{StaticResource FlightStatusTemplate}"/>
             <ControlTemplate x:Key="MessageTemplate">
                 <Frame BindingContext="{TemplateBinding BindingContext}" HasShadow="True" BorderColor="Transparent" CornerRadius="10" Padding="8" HorizontalOptions="{Binding Speaker, Converter={StaticResource AlignmentConverter}}"
                            Margin="{Binding Speaker, Converter={StaticResource MarginConverter}}" BackgroundColor="{Binding Speaker, Converter={StaticResource ColorConverter}}">

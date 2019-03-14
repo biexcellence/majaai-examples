@@ -15,6 +15,7 @@ namespace MajaMobile.Controls
         public DataTemplate AudioTemplate { get; set; }
         public DataTemplate VideoTemplate { get; set; }
         public DataTemplate ThinkingTemplate { get; set; }
+        public DataTemplate FlightStatusTemplate { get; set; }
 
         protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
         {
@@ -35,6 +36,8 @@ namespace MajaMobile.Controls
                 return WeatherTemplate;
             if (message is MajaConversationMessageThinking)
                 return ThinkingTemplate;
+            if (message is MajaConversationMessageFlightStatus flightStatus && flightStatus.FlightStatus != null)
+                return FlightStatusTemplate;
             return TextTemplate;
         }
     }

@@ -23,6 +23,7 @@
 
             <x:String x:Key="StringFormatDecimalZeroPlaces">{0:0}</x:String>
             <x:String x:Key="StringFormatDecimalTwoPlaces">{0:0.00}</x:String>
+            <x:String x:Key="StringFormatTimeHoursMinutes">{0:HH:mm}</x:String>
 
             <x:String x:Key="PageTitle">majaAI</x:String>
 

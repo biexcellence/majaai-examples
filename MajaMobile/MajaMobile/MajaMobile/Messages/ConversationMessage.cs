@@ -1,6 +1,8 @@
 ﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
 using MajaMobile.Interfaces;
+using MajaMobile.Models;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -89,30 +91,37 @@ namespace MajaMobile.Messages
         /// <param name="text"></param>
         public MajaConversationMessage(string text) : base(text, MajaConversationSpeaker.Maja) { }
 
-        public static MajaConversationMessage Factory(IMajaQueryAnswer queryAnswer)
+        public static IEnumerable<MajaConversationMessage> Factory(IMajaQueryAnswer queryAnswer)
         {
             switch (queryAnswer.ProposalType)
             {
-                //case Message.MessageType.Image:
-                //    return PhotoTemplate;
                 case MajaQueryAnswerProposalType.Location:
-                    return new MajaConversationMessageLocation(queryAnswer);
+                    return new[] { new MajaConversationMessageLocation(queryAnswer) };
                 case MajaQueryAnswerProposalType.VideoFile:
-                    return new MajaConversationMessageVideo(queryAnswer);
+                    return new[] { new MajaConversationMessageVideo(queryAnswer) };
                 case MajaQueryAnswerProposalType.ImmoSuche:
-                    return new MajaConversationMessageImmo(queryAnswer);
+                    return new[] { new MajaConversationMessageImmo(queryAnswer) };
                 case MajaQueryAnswerProposalType.AudioFile:
-                    return new MajaConversationMessageAudio(queryAnswer);
-                case MajaQueryAnswerProposalType.Simple when (string.Equals(queryAnswer.Action, MajaQueryAnswerAction.Weather, StringComparison.OrdinalIgnoreCase)) && !string.IsNullOrEmpty(queryAnswer.Data):
-                    return new MajaConversationMessageWeather(queryAnswer);
-                case MajaQueryAnswerProposalType.Simple when (string.Equals(queryAnswer.Action, MajaQueryAnswerAction.News, StringComparison.OrdinalIgnoreCase)):
-                    return new MajaConversationMessageNews(queryAnswer);
+                    return new[] { new MajaConversationMessageAudio(queryAnswer) };
+                case MajaQueryAnswerProposalType.Simple when string.Equals(queryAnswer.Action, MajaQueryAnswerAction.Weather, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(queryAnswer.Data):
+                    return new[] { new MajaConversationMessageWeather(queryAnswer) };
+                case MajaQueryAnswerProposalType.Simple when string.Equals(queryAnswer.Action, MajaQueryAnswerAction.News, StringComparison.OrdinalIgnoreCase):
+                    return new[] { new MajaConversationMessageNews(queryAnswer) };
+                case MajaQueryAnswerProposalType.Simple when string.Equals(queryAnswer.Action, "flightstatus", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(queryAnswer.Data):
+                    var list = new List<MajaConversationMessage>();
+                    foreach(var flightStatus in FlightStatus.GetFlightStatusesFromJson(queryAnswer.Data))
+                    {
+                        list.Add(new MajaConversationMessageFlightStatus(queryAnswer, flightStatus));
+                    }
+                    if (list.Count > 0)
+                        return list;
+                    break;
             }
             if (!string.IsNullOrEmpty(queryAnswer.Url))
             {
-                return new MajaConversationMessageLink(queryAnswer);
+                return new[] { new MajaConversationMessageLink(queryAnswer) };
             }
-            return new MajaConversationMessage(queryAnswer);
+            return new[] { new MajaConversationMessage(queryAnswer) };
         }
 
     }

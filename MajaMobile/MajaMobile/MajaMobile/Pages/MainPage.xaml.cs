@@ -333,7 +333,10 @@ namespace MajaMobile.ViewModels
                             speakingText = answers.First().Response;
                             foreach (var answer in answers)//TODO: only certain messages?
                             {
-                                Messages.Add(MajaConversationMessage.Factory((answer)));
+                                foreach(var message in MajaConversationMessage.Factory((answer)))
+                                {
+                                    Messages.Add(message);
+                                }
                                 foreach (var possibleUserReply in answer.PossibleUserReplies)
                                 {
                                     if (string.Equals(possibleUserReply.ControlType, PossibleUserReplyControlType.Button, StringComparison.OrdinalIgnoreCase) || (!(string.IsNullOrEmpty(possibleUserReply.Value)) && !string.Equals(possibleUserReply.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase)))
