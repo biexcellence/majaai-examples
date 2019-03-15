@@ -21,5 +21,12 @@ namespace MajaMobile.Messages
                 catch { }
             });
         }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            CancellationTokenSource.Dispose();
+        }
     }
 }
