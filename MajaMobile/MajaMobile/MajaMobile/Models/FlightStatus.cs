@@ -80,6 +80,9 @@ namespace MajaMobile.Models
     public class FlightStatus
     {
         private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fff";
+        private const string DateTimeFormatUtc = "yyyy-MM-ddTHH:mm:ss.fffZ";
+
+        public DateTime DateTimeUtc { get; } = DateTime.UtcNow;
 
         public long FlightId { get; }
         public string CarrierFsCode { get; }
@@ -97,6 +100,7 @@ namespace MajaMobile.Models
         public DateTime? ScheduledGateDeparture { get; }
         public DateTime? EstimatedGateDeparture { get; }
         public DateTime? ActualGateDeparture { get; }
+        public DateTime? GateDepartureUtc { get; }
 
         public DateTime? ScheduledRunwayDeparture { get; }
         public DateTime? EstimatedRunwayDeparture { get; }
@@ -104,6 +108,7 @@ namespace MajaMobile.Models
 
         public DateTime? ScheduledGateArrival { get; }
         public DateTime? EstimatedGateArrival { get; }
+        public DateTime? GateArrivalUtc { get; }
         public DateTime? ActualGateArrival { get; }
 
         public DateTime? FlightPlanPlannedDeparture { get; }
@@ -154,12 +159,21 @@ namespace MajaMobile.Models
                 if (operationTimes.TryGetValue("publishedArrival", out token))
                     PublishedArrival = GetDateLocal((JObject)token);
 
+                if (operationTimes.TryGetValue("actualGateDeparture", out token))
+                {
+                    ActualGateDeparture = GetDateLocal((JObject)token);
+                    GateDepartureUtc = GetDateUtc((JObject)token);
+                }
                 if (operationTimes.TryGetValue("scheduledGateDeparture", out token))
+                {
                     ScheduledGateDeparture = GetDateLocal((JObject)token);
+                    if (!GateDepartureUtc.HasValue)
+                    {
+                        GateDepartureUtc = GetDateUtc((JObject)token);
+                    }
+                }
                 if (operationTimes.TryGetValue("estimatedGateDeparture", out token))
                     EstimatedGateDeparture = GetDateLocal((JObject)token);
-                if (operationTimes.TryGetValue("actualGateDeparture", out token))
-                    ActualGateDeparture = GetDateLocal((JObject)token);
 
                 if (operationTimes.TryGetValue("scheduledRunwayDeparture", out token))
                     ScheduledRunwayDeparture = GetDateLocal((JObject)token);
@@ -168,10 +182,19 @@ namespace MajaMobile.Models
                 if (operationTimes.TryGetValue("actualRunwayDeparture", out token))
                     ActualRunwayDeparture = GetDateLocal((JObject)token);
 
-                if (operationTimes.TryGetValue("scheduledGateArrival", out token))
-                    ScheduledGateArrival = GetDateLocal((JObject)token);
                 if (operationTimes.TryGetValue("estimatedGateArrival", out token))
+                {
                     EstimatedGateArrival = GetDateLocal((JObject)token);
+                    GateArrivalUtc = GetDateUtc((JObject)token);
+                }
+                if (operationTimes.TryGetValue("scheduledGateArrival", out token))
+                {
+                    ScheduledGateArrival = GetDateLocal((JObject)token);
+                    if (!GateArrivalUtc.HasValue)
+                    {
+                        GateArrivalUtc = GetDateUtc((JObject)token);
+                    }
+                }
                 if (operationTimes.TryGetValue("actualGateArrival", out token))
                     ActualGateArrival = GetDateLocal((JObject)token);
 
@@ -232,6 +255,18 @@ namespace MajaMobile.Models
                 return (DateTime)token;
             if (DateTime.TryParseExact((string)token, DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var dateTime))
                 return dateTime;
+            return null;
+        }
+
+        private DateTime? GetDateUtc(JObject jobj)
+        {
+            if (jobj.TryGetValue("dateUtc", out var token))
+            {
+                if (token.Type == JTokenType.Date)
+                    return (DateTime)token;
+                if (DateTime.TryParseExact((string)token, DateTimeFormatUtc, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var dateTime))
+                    return dateTime;
+            }
             return null;
         }
 

@@ -18,7 +18,7 @@ namespace MajaMobile.Converters
                 if (status.ArrivalGateDelayMinutes > 15)
                 {
                     if (targetType == typeof(Color))
-                        return Color.IndianRed;
+                        return ColorScheme.FlightColorRed;
                     return string.Format("{0} Min. Verspätung", status.ArrivalGateDelayMinutes);
                 }
                 switch (status.Status)
@@ -28,17 +28,23 @@ namespace MajaMobile.Converters
                         {
                             if (parameter != null)
                                 return ColorScheme.MajaMessageTextColor;
-                            return Color.IndianRed;
+                            return ColorScheme.FlightColorRed;
                         }
                         return "Gestrichen";
                     case FlightStatusCodes.Scheduled:
                         //TODO: what if not on time and which fields to check
+                        if (status.DepartureGateDelayMinutes > 15)
+                        {
+                            if (targetType == typeof(Color))
+                                return ColorScheme.FlightColorRed;
+                            return string.Format("{0} Min. Verspätung", status.DepartureGateDelayMinutes);
+                        }
                         if (targetType == typeof(Color))
                             return ColorScheme.MajaMessageTextColor;
                         return "Planmäßig";
                 }
                 if (targetType == typeof(Color))
-                    return Color.ForestGreen;
+                    return ColorScheme.FlightColorGreen;
                 return "Pünktlich";
             }
             if (targetType == typeof(Color))

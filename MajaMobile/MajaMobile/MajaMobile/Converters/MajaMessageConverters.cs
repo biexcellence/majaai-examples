@@ -27,7 +27,7 @@ namespace MajaMobile.Converters
         {
             if (value is MajaConversationSpeaker speaker && speaker == MajaConversationSpeaker.User)
                 return new Thickness(40, 10, 10, 10);
-            return new Thickness(10, 10, 40, 10);
+            return new Thickness(10);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
