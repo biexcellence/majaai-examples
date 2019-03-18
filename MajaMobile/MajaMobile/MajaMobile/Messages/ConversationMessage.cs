@@ -26,7 +26,7 @@ namespace MajaMobile.Messages
         public bool HasImage => !string.IsNullOrEmpty(Image);
         public virtual string Image { get; }
 
-        public double ImageWidth
+        public virtual double ImageWidth
         {
             get
             {

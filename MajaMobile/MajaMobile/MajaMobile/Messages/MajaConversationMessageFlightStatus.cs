@@ -17,6 +17,8 @@ namespace MajaMobile.Messages
             }
         }
 
+        public override double ImageWidth => MessageWidth;
+
         public MajaConversationMessageFlightStatus(IMajaQueryAnswer queryAnswer, FlightStatus flightStatus) : base(queryAnswer)
         {
             FlightStatus = flightStatus;
