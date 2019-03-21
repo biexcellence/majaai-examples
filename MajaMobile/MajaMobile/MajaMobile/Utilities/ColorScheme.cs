@@ -15,6 +15,7 @@ namespace MajaMobile.Utilities
         public static readonly Color SeparatorColor = Color.FromHex("cccccc");
         public static readonly Color SelectedItemColor = Color.FromHex("1E8FCC");
         public static readonly Color OverlayColor = Color.FromHex("aaffffff");
+        public static readonly Color ImageOverlayColor = Color.FromHex("99666666");
 
         public static readonly Color FlightColorGreen = Color.ForestGreen;
         public static readonly Color FlightColorRed = Color.IndianRed;

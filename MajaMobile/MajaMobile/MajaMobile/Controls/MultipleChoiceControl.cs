@@ -63,7 +63,7 @@ namespace MajaMobile.Controls
                             if (Device.RuntimePlatform == Device.iOS)
                             {
                                 frame.CornerRadius = 18;
-                                label.FontFamily = "SegoeUI-SemiboldItalic";
+                                label.FontFamily = "SegoeUI-Semibold";
                                 label.FontSize = 18;
                             }
                             frame.Content = label;

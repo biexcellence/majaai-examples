@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Globalization;
+using System.IO;
 using Xamarin.Forms;
 
 namespace MajaMobile.Converters
@@ -44,6 +45,23 @@ namespace MajaMobile.Converters
                 {
                     return list[index];
                 }
+            }
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ByteArrayToImageSourceConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if(value is byte[] bytes)
+            {
+                return ImageSource.FromStream(() => new MemoryStream(bytes));
             }
             return null;
         }

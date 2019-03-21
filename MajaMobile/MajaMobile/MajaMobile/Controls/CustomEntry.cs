@@ -83,7 +83,7 @@ namespace MajaMobile.Controls
                     Content = _entry;
                     break;
                 default:
-                    Content = new Frame() { HasShadow = true, CornerRadius = 5.0f, Padding = new Thickness(10, 5, 10, 0), BackgroundColor = Utilities.ColorScheme.EntryBackgroundColor, Content = _entry };
+                    Content = new Frame() { HasShadow = true, CornerRadius = 5.0f, Padding = new Thickness(10, 1, 10, 4), BackgroundColor = Utilities.ColorScheme.EntryBackgroundColor, Content = _entry };
                     break;
             }
         }

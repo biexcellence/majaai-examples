@@ -21,12 +21,12 @@ namespace MajaMobile.Pages
             var style = (Style)Application.Current.Resources["ContentPageStyle"];
             Style = style;
             this.MasterBehavior = MasterBehavior.Popover;
-            
+
             var binding = new Binding(nameof(MainPageMasterViewModel.IsPresented), BindingMode.TwoWay);
             SetBinding(IsPresentedProperty, binding);
             BindingContext = _viewModel = new MainPageMasterViewModel();
 
-            Master = new MainPageMaster();
+            Master = new MainPageMaster(_viewModel);
 
             _mainPage = new MainPage();
             var navigationPage = new NavigationPageBase(_mainPage);//{ Icon = "Icon-Small.png" };
@@ -66,6 +66,11 @@ namespace MajaMobile.Pages
                 if (CanNavigate())
                     await Detail.Navigation.PushAsync(new LoginPage());
             });
+            MessagingCenter.Subscribe(this, MainPageMasterViewModel.EditUserProfileMessage, async (MainPageMasterViewModel viewmodel, IUser user) =>
+            {
+                if (user != null && CanNavigate())
+                    await Detail.Navigation.PushAsync(new UserProfilePage(user));
+            });
             MessagingCenter.Subscribe<ImmoObject>(this, ImmoObject.TappedMessage, ImmoTapped);
         }
 
@@ -88,6 +93,7 @@ namespace MajaMobile.Pages
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.SelectTalentsMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.LoginMessage);
             MessagingCenter.Unsubscribe<ImmoObject>(this, ImmoObject.TappedMessage);
+            MessagingCenter.Unsubscribe<MainPageMasterViewModel, IUser>(this, MainPageMasterViewModel.EditUserProfileMessage);
         }
 
         private void Register(MainPageMasterViewModel viewmodel)
@@ -102,7 +108,7 @@ namespace MajaMobile.Pages
                 await Detail.Navigation.PushAsync(new ImmoPage(message));
             }
         }
-        
+
         private async void LocationTapped(MajaConversationMessageLocation message)
         {
             if (CanNavigate())
@@ -146,9 +152,14 @@ namespace MajaMobile.ViewModels
         public ICommand RegisterCommand { get; }
         public ICommand LogoutCommand { get; }
         public ICommand SelectTalentsCommand { get; }
+        public ICommand ProfileExpanderCommand { get; }
+        public ICommand EditProfileCommand { get; }
         public const string RegisterMessage = "REGISTER";
         public const string LoginMessage = "LOGIN";
         public const string SelectTalentsMessage = "SELECT_TALENTS";
+        public const string EditUserProfileMessage = "EDIT_PROFILE";
+
+        public event EventHandler ExpandStateChanged;
 
         public bool IsPresented
         {
@@ -156,18 +167,33 @@ namespace MajaMobile.ViewModels
             set => SetField(value);
         }
 
+        public bool UserExpanded
+        {
+            get => GetField<bool>();
+            set
+            {
+                if (value == false || User != null)
+                {
+                    SetField(value);
+                    ExpandStateChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+
         public IUser User
         {
             get => GetField<IUser>();
-            set { SetField(value); }
+            set { SetField(value); if (value == null) UserExpanded = false; }
         }
 
         public MainPageMasterViewModel()
         {
             LoginCommand = new Command(() => MessagingCenter.Send(this, LoginMessage));
+            LogoutCommand = new Command(() => SessionHandler.Instance.Logout());
             RegisterCommand = new Command(() => MessagingCenter.Send(this, RegisterMessage));
             SelectTalentsCommand = new Command(() => MessagingCenter.Send(this, SelectTalentsMessage));
-            LogoutCommand = new Command(() => SessionHandler.Instance.Logout());
+            ProfileExpanderCommand = new Command(() => UserExpanded = !UserExpanded);
+            EditProfileCommand = new Command(() => MessagingCenter.Send(this, EditUserProfileMessage, User));
             MessagingCenter.Subscribe(this, SessionHandler.UserChangedMessage, (SessionHandler s, IUser user) => User = user);
             Login();
         }

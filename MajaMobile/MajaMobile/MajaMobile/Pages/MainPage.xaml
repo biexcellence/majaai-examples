@@ -114,14 +114,14 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-                        <Label Text="{Binding Forecast.City}" FontSize="{StaticResource XXLargeFontSize}" FontFamily="{StaticResource UiFontSemiBoldItalic}" Grid.ColumnSpan="2" Margin="20,0,0,0"/>
+                        <Label Text="{Binding Forecast.City}" FontSize="{StaticResource XXLargeFontSize}" FontFamily="{StaticResource UiFontSemiBold}" Grid.ColumnSpan="2" Margin="20,0,0,0"/>
                         <StackLayout Orientation="Horizontal" Spacing="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="20,0,0,0">
-                            <Label Text="{Binding CurrentWeather.Date, Converter={StaticResource DayConverter}}" FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontSemiBoldItalic}"/>
-                            <Label Text=", " FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontSemiBoldItalic}"/>
-                            <Label Text="{Binding Time}" FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontSemiBoldItalic}"/>
+                            <Label Text="{Binding CurrentWeather.Date, Converter={StaticResource DayConverter}}" FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontSemiBold}"/>
+                            <Label Text=", " FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontSemiBold}"/>
+                            <Label Text="{Binding Time}" FontSize="{StaticResource LargeFontSize}" FontFamily="{StaticResource UiFontSemiBold}"/>
                         </StackLayout>
                         <controls:WeatherSymbol Weather="{Binding CurrentWeather}" HeightRequest="120" WidthRequest="120" Margin="20,10" Grid.Row="2"/>
-                        <Label FontSize="{StaticResource XXXLargeFontSize}" FontFamily="{StaticResource UiFontBoldItalic}" Grid.Column="1" Grid.Row="2">
+                        <Label FontSize="{StaticResource XXXLargeFontSize}" FontFamily="{StaticResource UiFontBold}" Grid.Column="1" Grid.Row="2">
                             <Label.FormattedText>
                                 <FormattedString>
                                     <Span Text="{Binding CurrentWeather.CurrentTemperature, Mode=OneWay}"/>
@@ -187,9 +187,9 @@
                                                     <RowDefinition Height="auto"/>
                                                     <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
-                                                <Label Text="{Binding Date, Converter={StaticResource DayConverter}, ConverterParameter=1}" FontFamily="{StaticResource UiFontSemiLightItalic}" HorizontalOptions="Center"/>
+                                                <Label Text="{Binding Date, Converter={StaticResource DayConverter}, ConverterParameter=1}" FontFamily="{StaticResource UiFontSemiLight}" HorizontalOptions="Center"/>
                                                 <controls:WeatherSymbol Weather="{Binding}" HeightRequest="50" WidthRequest="50" Grid.Row="1"/>
-                                                <Label FontFamily="{StaticResource UiFontSemiBoldItalic}" Grid.Row="2" HorizontalOptions="Start" Margin="3,0,0,0">
+                                                <Label FontFamily="{StaticResource UiFontSemiBold}" Grid.Row="2" HorizontalOptions="Start" Margin="3,0,0,0">
                                                     <Label.FormattedText>
                                                         <FormattedString>
                                                             <Span Text="{Binding MaxTemperature}"/>
@@ -197,7 +197,7 @@
                                                         </FormattedString>
                                                     </Label.FormattedText>
                                                 </Label>
-                                                <Label FontFamily="{StaticResource UiFontSemiLightItalic}" Grid.Row="2" HorizontalOptions="End" Margin="0,0,3,0">
+                                                <Label FontFamily="{StaticResource UiFontSemiLight}" Grid.Row="2" HorizontalOptions="End" Margin="0,0,3,0">
                                                     <Label.FormattedText>
                                                         <FormattedString>
                                                             <Span Text="{Binding MinTemperature}"/>
@@ -220,9 +220,9 @@
                                                     <RowDefinition Height="auto"/>
                                                     <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
-                                                <Label Text="{Binding Date, Converter={StaticResource DayConverter}, ConverterParameter=1}" FontFamily="{StaticResource UiFontSemiLightItalic}" HorizontalOptions="Center"/>
+                                                <Label Text="{Binding Date, Converter={StaticResource DayConverter}, ConverterParameter=1}" FontFamily="{StaticResource UiFontSemiLight}" HorizontalOptions="Center"/>
                                                 <controls:WeatherSymbol Weather="{Binding}" HeightRequest="50" WidthRequest="50" Grid.Row="1"/>
-                                                <Label FontFamily="{StaticResource UiFontSemiBoldItalic}" Grid.Row="2" HorizontalOptions="Start" Margin="3,0,0,0">
+                                                <Label FontFamily="{StaticResource UiFontSemiBold}" Grid.Row="2" HorizontalOptions="Start" Margin="3,0,0,0">
                                                     <Label.FormattedText>
                                                         <FormattedString>
                                                             <Span Text="{Binding MaxTemperature}"/>
@@ -230,7 +230,7 @@
                                                         </FormattedString>
                                                     </Label.FormattedText>
                                                 </Label>
-                                                <Label FontFamily="{StaticResource UiFontSemiLightItalic}" Grid.Row="2" HorizontalOptions="End" Margin="0,0,3,0">
+                                                <Label FontFamily="{StaticResource UiFontSemiLight}" Grid.Row="2" HorizontalOptions="End" Margin="0,0,3,0">
                                                     <Label.FormattedText>
                                                         <FormattedString>
                                                             <Span Text="{Binding MinTemperature}"/>
@@ -303,7 +303,7 @@
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
-                            <Label FontSize="{StaticResource MediumFontSize}" FontFamily="{StaticResource UiFontSemiBoldItalic}" Grid.Row="0">
+                            <Label FontSize="{StaticResource MediumFontSize}" FontFamily="{StaticResource UiFontSemiBold}" Grid.Row="0">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span Text="{Binding FlightStatus.Airline.Name, Converter={StaticResource FirstWordConverter}}"/>
@@ -315,7 +315,7 @@
                                 </Label.FormattedText>
                             </Label>
                             <Frame HasShadow="False" CornerRadius="3" BackgroundColor="{Binding FlightStatus,Converter={StaticResource FlightDelayConverter}}" Padding="3,0" Grid.Column="1" HorizontalOptions="Start">
-                                <Label Text="{Binding FlightStatus,Converter={StaticResource FlightDelayConverter}}" FontFamily="{StaticResource UiFontSemiBoldItalic}" TextColor="White"/>
+                                <Label Text="{Binding FlightStatus,Converter={StaticResource FlightDelayConverter}}" FontFamily="{StaticResource UiFontSemiBold}" TextColor="White"/>
                             </Frame>
                         </Grid>
                         <Grid HorizontalOptions="FillAndExpand" VerticalOptions="Start" Grid.Row="1">
@@ -324,9 +324,9 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
-                            <Label Text="{Binding FlightStatus.DepartureAirport.FsCode}" FontSize="{StaticResource XLargeFontSize}" FontFamily="{StaticResource UiFontSemiBoldItalic}"/>
+                            <Label Text="{Binding FlightStatus.DepartureAirport.FsCode}" FontSize="{StaticResource XLargeFontSize}" FontFamily="{StaticResource UiFontSemiBold}"/>
                             <controls:FlightProgressControl Grid.Column="1" HorizontalOptions="Fill" VerticalOptions="Center"/>
-                            <Label Text="{Binding FlightStatus.ArrivalAirport.FsCode}" FontSize="{StaticResource XLargeFontSize}" FontFamily="{StaticResource UiFontSemiBoldItalic}" HorizontalOptions="End" Grid.Column="2"/>
+                            <Label Text="{Binding FlightStatus.ArrivalAirport.FsCode}" FontSize="{StaticResource XLargeFontSize}" FontFamily="{StaticResource UiFontSemiBold}" HorizontalOptions="End" Grid.Column="2"/>
                         </Grid>
                         <Label Text="{Binding FlightStatus.DepartureAirport.City}" Grid.Row="2"/>
                         <Label Text="{Binding FlightStatus.ArrivalAirport.City}" HorizontalOptions="End" Grid.Row="2"/>

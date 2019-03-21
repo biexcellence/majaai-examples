@@ -110,10 +110,12 @@
     <Compile Include="iOSDeviceInfo.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
+    <Compile Include="Renderers\FramelessEntryRenderer.cs" />
     <Compile Include="Renderers\IOSEntryRenderer.cs" />
     <Compile Include="Renderers\CustomFrameRenderer.cs" />
     <Compile Include="Renderers\MainPageRenderer.cs" />
     <Compile Include="Renderers\MultiLineLabelRenderer.cs" />
+    <Compile Include="Renderers\RoundImageRenderer.cs" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist">
       <SubType>Designer</SubType>
@@ -123,6 +125,9 @@
     <BundleResource Include="Resources\segoeuiz.ttf" />
     <BundleResource Include="Resources\seguisbi.ttf" />
     <BundleResource Include="Resources\seguisli.ttf" />
+    <BundleResource Include="Resources\seguisb.ttf" />
+    <BundleResource Include="Resources\segoeuib.ttf" />
+    <BundleResource Include="Resources\segoeuisl.ttf" />
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon-1024.png">

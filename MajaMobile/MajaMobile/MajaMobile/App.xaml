@@ -9,6 +9,9 @@
             <OnPlatform x:TypeArguments="x:String" Android="seguisli.ttf#seguisli" iOS="SegoeUI-SemilightItalic" x:Key="UiFontSemiLightItalic"/>
             <OnPlatform x:TypeArguments="x:String" Android="seguisbi.ttf#seguisbi" iOS="SegoeUI-SemiboldItalic" x:Key="UiFontSemiBoldItalic"/>
             <OnPlatform x:TypeArguments="x:String" Android="segoeuiz.ttf#segoeuiz" iOS="SegoeUI-BoldItalic" x:Key="UiFontBoldItalic"/>
+            <OnPlatform x:TypeArguments="x:String" Android="segoeuisl.ttf#segoeuisl" iOS="SegoeUI-Semilight" x:Key="UiFontSemiLight"/>
+            <OnPlatform x:TypeArguments="x:String" Android="seguisb.ttf#seguisb" iOS="SegoeUI-Semibold" x:Key="UiFontSemiBold"/>
+            <OnPlatform x:TypeArguments="x:String" Android="segoeuib.ttf#segoeuib" iOS="SegoeUI-Bold" x:Key="UiFontBold"/>
             <OnPlatform x:TypeArguments="Color" Android="#706F6F" iOS="#706F6F" x:Key="InputTextColor"/>
             <OnPlatform x:TypeArguments="Color" Android="#64706F6F" iOS="#64706F6F" x:Key="InputHintColor"/>
 
@@ -49,7 +52,7 @@
                 <Setter Property="HorizontalOptions" Value="Start"/>
                 <Setter Property="VerticalOptions" Value="Center"/>
                 <Setter Property="HorizontalTextAlignment" Value="Start"/>
-                <Setter Property="TextColor" Value="#706F6F"/>
+                <Setter Property="TextColor" Value="{StaticResource InputTextColor}"/>
                 <Setter Property="FontFamily" Value="{StaticResource UiFontNormal}"/>
                 <Setter Property="FontSize" Value="{StaticResource StandardFontSize}"/>
             </Style>
@@ -59,7 +62,7 @@
                 <Setter Property="TextColor" Value="White"/>
                 <Setter Property="HorizontalOptions" Value="Center"/>
                 <Setter Property="CornerRadius" Value="20"/>
-                <Setter Property="FontFamily" Value="{StaticResource UiFontBoldItalic}"/>
+                <Setter Property="FontFamily" Value="{StaticResource UiFontBold}"/>
                 <Setter Property="FontSize" Value="{StaticResource StandardFontSize}"/>
             </Style>
 

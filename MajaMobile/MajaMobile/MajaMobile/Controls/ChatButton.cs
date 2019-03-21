@@ -120,7 +120,6 @@ namespace MajaMobile.Controls
 
                             using (var path = new SKPath())
                             {
-                                path.MoveTo(width * 0.35f, height * 0.5f);
                                 path.AddArc(new SKRect(width * 0.35f, height * 0.4f, width * 0.65f, height * 0.65f), 0, 180);
                                 path.MoveTo(width * 0.5f, height * 0.65f);
                                 path.LineTo(width * 0.5f, height * 0.735f);

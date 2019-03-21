@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:ContentPageBase xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MajaMobile.Controls"
+             xmlns:converters="clr-namespace:MajaMobile.Converters"
+             xmlns:pages="clr-namespace:MajaMobile.Pages"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
+             xmlns:util="clr-namespace:MajaMobile.Utilities"
+             x:Class="MajaMobile.Pages.UserProfilePage" Title="Profil bearbeiten">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Speichern" Command="{Binding SaveCommand}"/>
+    </ContentPage.ToolbarItems>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayImageConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <controls:ActivityIndicatorLayout>
+        <Grid RowSpacing="0" ColumnSpacing="0" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
+            <Grid VerticalOptions="Start" RowSpacing="0" ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="180"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Image Source="background.png" Aspect="AspectFill" Grid.ColumnSpan="2"/>
+                <controls:RoundImage x:Name="ProfileImage" Source="{Binding User.Picture, Converter={StaticResource ByteArrayImageConverter}}" HorizontalOptions="Center" VerticalOptions="Center" HeightRequest="150" WidthRequest="150" Grid.ColumnSpan="2">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+                    </Image.GestureRecognizers>
+                </controls:RoundImage>
+                <skia:SKCanvasView x:Name="OverlayCanvas" PaintSurface="OverlayCanvas_PaintSurface" Grid.ColumnSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
+                <skia:SKCanvasView x:Name="ImageCanvas" PaintSurface="ImageCanvas_PaintSurface" Grid.ColumnSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
+                <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="1" Grid.ColumnSpan="2"/>
+                <Label Text="Vorname" FontSize="{StaticResource MediumFontSize}" FontFamily="{StaticResource UiFontSemiBold}" HorizontalOptions="Start" HorizontalTextAlignment="Start" Margin="20,0,0,0" Grid.Row="2"/>
+                <controls:FramelessEntry Placeholder="Gib deinen Vornamen an" Text="{Binding User.Firstname}" Grid.Column="1" Grid.Row="2"/>
+                <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="3" Grid.ColumnSpan="2"/>
+                <Label Text="Nachname" FontSize="{StaticResource MediumFontSize}" FontFamily="{StaticResource UiFontSemiBold}" HorizontalOptions="Start" HorizontalTextAlignment="Start" Margin="20,0,0,0" Grid.Row="4"/>
+                <controls:FramelessEntry Placeholder="Gib deinen Nachnamen an" Text="{Binding User.Lastname}" Grid.Column="1" Grid.Row="4"/>
+                <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="5" Grid.ColumnSpan="2"/>
+                <Label Text="Email" FontSize="{StaticResource MediumFontSize}" FontFamily="{StaticResource UiFontSemiBold}" HorizontalOptions="Start" HorizontalTextAlignment="Start" Margin="20,0,0,0" Grid.Row="6"/>
+                <controls:FramelessEntry Text="{Binding User.Username}" IsEnabled="False" Grid.Column="1" Grid.Row="6"/>
+                <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="7" Grid.ColumnSpan="2"/>
+            </Grid>
+        </Grid>
+    </controls:ActivityIndicatorLayout>
+</pages:ContentPageBase>

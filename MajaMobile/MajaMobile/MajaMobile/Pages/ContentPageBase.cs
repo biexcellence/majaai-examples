@@ -29,7 +29,13 @@ namespace MajaMobile.Pages
             if (ViewModel != null)
             {
                 MessagingCenter.Subscribe<ViewModelBase, Exception>(this, ViewModelBase.OpenbirequestErrorMessage, RequestOnError);
-                MessagingCenter.Subscribe(this, ViewModelBase.GoBackMessage, async (ViewModelBase vm) => await Navigation.PopAsync());
+                MessagingCenter.Subscribe(this, ViewModelBase.GoBackMessage, async (ViewModelBase vm) =>
+                {
+                    if(vm == ViewModel)
+                    {
+                        await Navigation.PopAsync();
+                    }
+                });
                 ViewModel.SendAppearing();
             }
             PageIsActive = true;

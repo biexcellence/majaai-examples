@@ -83,7 +83,9 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Renderers\DroidEntryRenderer.cs" />
     <Compile Include="Renderers\CustomFrameRenderer.cs" />
+    <Compile Include="Renderers\FramelessEntryRenderer.cs" />
     <Compile Include="Renderers\MultiLineLabelRenderer.cs" />
+    <Compile Include="Renderers\RoundImageRenderer.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -92,6 +94,9 @@
     <AndroidAsset Include="Assets\segoeuiz.ttf" />
     <AndroidAsset Include="Assets\seguisbi.ttf" />
     <AndroidAsset Include="Assets\seguisli.ttf" />
+    <AndroidAsset Include="Assets\seguisb.ttf" />
+    <AndroidAsset Include="Assets\segoeuib.ttf" />
+    <AndroidAsset Include="Assets\segoeuisl.ttf" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />

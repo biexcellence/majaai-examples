@@ -196,7 +196,7 @@ namespace MajaMobile.Utilities
             }
         }
 
-        public Task ExecuteOpenbiCommand(Func<IOpenBiSession, CancellationToken, Task> fn, CancellationToken token)
+        public Task ExecuteOpenbiCommand(Func<IOpenBiSession, CancellationToken, Task> fn, CancellationToken token = default(CancellationToken))
         {
             return ExecuteOpenbiCommand(async (sess, t) =>
             {

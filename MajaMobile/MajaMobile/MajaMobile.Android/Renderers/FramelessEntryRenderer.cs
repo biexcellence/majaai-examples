@@ -2,12 +2,12 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
-[assembly: ExportRenderer(typeof(MajaMobile.Controls.DroidEntry), typeof(MajaMobile.Droid.Renderers.DroidEntryRenderer))]
+[assembly: ExportRenderer(typeof(MajaMobile.Controls.FramelessEntry), typeof(MajaMobile.Droid.Renderers.FramelessEntryRenderer))]
 namespace MajaMobile.Droid.Renderers
 {
-    public class DroidEntryRenderer : EntryRenderer
+    public class FramelessEntryRenderer : EntryRenderer
     {
-        public DroidEntryRenderer(Context context) : base(context)
+        public FramelessEntryRenderer(Context context) : base(context)
         {
         }
 
@@ -20,9 +20,11 @@ namespace MajaMobile.Droid.Renderers
                 var hor = (Control.PaddingLeft + Control.PaddingRight) / 2;
                 var ver = (Control.PaddingTop + Control.PaddingBottom) / 2;
                 Control.SetPadding(hor, ver, hor, ver);
-
-                Control.SetBackgroundColor(Utilities.ColorScheme.EntryBackgroundColor.ToAndroid());
-                //Control.SetSingleLine(true);
+                
+                Control.SetBackgroundColor(Android.Graphics.Color.Transparent);
+                //var gd = new GradientDrawable();
+                //gd.SetColor(Android.Graphics.Color.Transparent);
+                //Control.SetBackground(gd);
             }
         }
     }

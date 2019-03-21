@@ -21,6 +21,9 @@
          colorControlHighlight and colorSwitchThumbNormal. -->
     <item name="windowActionModeOverlay">true</item>
 
+    <item name="android:actionMenuTextColor">#1E8FCC</item>
+    <item name="actionMenuTextColor">#1E8FCC</item>
+
     <!-- Splash screen -->
     <item name="android:windowBackground">@drawable/splash_screen</item>
 
@@ -35,7 +38,7 @@
     <item name="android:textAllCaps">false</item>
 
   </style>
-
+  
   <style name="AppCompatDialogStyle" parent="Theme.AppCompat.Light.Dialog">
     <item name="colorAccent">#FF4081</item>
   </style>

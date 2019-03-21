@@ -206,7 +206,7 @@ namespace MajaMobile.Controls
         {
             if (!(Device.RuntimePlatform == Device.iOS))
             {
-                Content = new Frame() { HasShadow = true, CornerRadius = 5.0f, Padding = new Thickness(10, 5, 10, 0), BackgroundColor = ColorScheme.EntryBackgroundColor };
+                Content = new Frame() { HasShadow = true, CornerRadius = 5.0f, Padding = new Thickness(10, 1, 10, 4), BackgroundColor = ColorScheme.EntryBackgroundColor };
             }
             SetControl();
         }
@@ -221,7 +221,7 @@ namespace MajaMobile.Controls
         {
             CompletedCommand?.Execute(null);
         }
-        
+
         #region Slider
 
         private class StringToIntConverter : IValueConverter

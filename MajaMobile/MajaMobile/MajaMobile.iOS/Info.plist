@@ -23,7 +23,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.biexcellence.MajaMobile</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>2</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>de_DE</string>
 	<key>CFBundleLocalizations</key>
@@ -41,6 +41,9 @@
 		<string>seguisbi.ttf</string>
 		<string>segoeuiz.ttf</string>
 		<string>seguisli.ttf</string>
+    <string>segoeuib.ttf</string>
+    <string>segoeuisl.ttf</string>
+    <string>seguisb.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
