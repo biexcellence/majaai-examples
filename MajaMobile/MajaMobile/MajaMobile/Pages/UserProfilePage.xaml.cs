@@ -17,24 +17,29 @@ namespace MajaMobile.Pages
             InitializeComponent();
             BindingContext = ViewModel = new UserProfileViewModel(user);
         }
-
-        //TODO: cancel back in iOS when DataChanged
+        
+        private bool _discarded;
 
         protected override bool OnBackButtonPressed()
         {
-            var changed = ((UserProfileViewModel)ViewModel).DataChanged();
-            if (changed)
+            if (!_discarded && ((UserProfileViewModel)ViewModel).DataChanged())
             {
                 Device.BeginInvokeOnMainThread(async () =>
                 {
                     if (await DisplayAlert("Profil bearbeiten", "Änderungen verwerfen?", "VERWERFEN", "ABBRECHEN"))
                     {
+                        _discarded = true;
                         await Navigation.PopAsync();
                     }
                 });
                 return true;
             }
             return false;
+        }
+
+        public bool OnBackPressed()
+        {
+            return OnBackButtonPressed();
         }
 
         private void ImageCanvas_PaintSurface(object sender, SKPaintSurfaceEventArgs e)

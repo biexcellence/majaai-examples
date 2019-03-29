@@ -1,4 +1,5 @@
-﻿using MajaMobile.Messages;
+﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
+using MajaMobile.Messages;
 using Xamarin.Forms;
 
 namespace MajaMobile.Controls
@@ -38,6 +39,18 @@ namespace MajaMobile.Controls
                 return ThinkingTemplate;
             if (message is MajaConversationMessageFlightStatus flightStatus && flightStatus.FlightStatus != null)
                 return FlightStatusTemplate;
+            return TextTemplate;
+        }
+    }
+
+    public class PossibleUserReplyDataTemplateSelector : DataTemplateSelector
+    {
+        public DataTemplate TextTemplate { get; set; }
+        public DataTemplate ImageTemplate { get; set; }
+        protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
+        {
+            if (item is IPossibleUserReply reply && reply.ControlOptions.TryGetValue("IMAGE", out var img) && !string.IsNullOrEmpty((string)img))
+                return ImageTemplate;
             return TextTemplate;
         }
     }

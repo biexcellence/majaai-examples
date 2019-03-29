@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Xamarin.Forms;
 
 namespace MajaMobile.Pages
 {
@@ -16,6 +17,14 @@ namespace MajaMobile.Pages
             InitializeComponent();
             BindingContext = ViewModel = new TalentsViewModel();
         }
+
+        private async void TalentList_ItemTapped(object sender, Syncfusion.ListView.XForms.ItemTappedEventArgs e)
+        {
+            if (Navigation.NavigationStack.Last() == this && e.ItemData is MajaTalent talent)
+            {
+                await Navigation.PushAsync(new TalentDetailPage(talent));
+            }
+        }
     }
 }
 
@@ -24,9 +33,7 @@ namespace MajaMobile.ViewModels
     public class TalentsViewModel : ViewModelBase
     {
 
-        public ObservableCollection<IMajaTalent> Talents { get; } = new ObservableCollection<IMajaTalent>();
-        public ObservableCollection<object> SelectedTalents { get; } = new ObservableCollection<object>();
-        private bool _loaded;
+        public ObservableCollection<MajaTalent> Talents { get; } = new ObservableCollection<MajaTalent>();
 
         public TalentsViewModel()
         {
@@ -50,9 +57,8 @@ namespace MajaMobile.ViewModels
                     var talent = new MajaTalent(apiTalent, category);
                     Talents.Add(talent);
                     if (SessionHandler.Packages.Contains(talent.Id))
-                        SelectedTalents.Add(talent);
+                        talent.Selected = true;
                 }
-                _loaded = true;
             }
             catch (Exception e)
             {
@@ -61,15 +67,6 @@ namespace MajaMobile.ViewModels
             finally
             {
                 IsBusy = false;
-            }
-        }
-
-        public override void SendDisappearing()
-        {
-            base.SendDisappearing();
-            if (_loaded)
-            {
-                SessionHandler.SetPackages(SelectedTalents.Cast<IMajaTalent>());
             }
         }
     }

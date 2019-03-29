@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:ContentPageBase xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MajaMobile.Pages.TalentDetailPage"
+             xmlns:controls="clr-namespace:MajaMobile.Controls"
+             xmlns:pages="clr-namespace:MajaMobile.Pages"
+             xmlns:util="clr-namespace:MajaMobile.Utilities"
+             Title="Talent">
+    <controls:ActivityIndicatorLayout>
+        <Grid VerticalOptions="Start" RowSpacing="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="170"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Image Source="background.png" Aspect="AspectFill" Grid.RowSpan="2"/>
+            <Image Source="{Binding Talent.ImagePath}" HorizontalOptions="Center" VerticalOptions="Center" HeightRequest="150" Aspect="AspectFill"/>
+            <Button Text="Talent aktivieren" Command="{Binding TalentSelectionCommand}" IsVisible="{Binding Talent.Selected, Converter={StaticResource NotNullConverter}, ConverterParameter=invert}" Grid.Row="1" Margin="0,0,0,10"/>
+            <Button Text="Talent deaktivieren" Command="{Binding TalentSelectionCommand}" IsVisible="{Binding Talent.Selected}" Grid.Row="1" Margin="0,0,0,10"/>
+            <ScrollView Orientation="Vertical" Grid.Row="2">
+                <Grid RowSpacing="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}"/>
+                    <Label x:Name="TalentLabel" Grid.Row="1" Margin="20,10" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Talent: " FontFamily="{StaticResource UiFontSemiBold}" FontSize="{StaticResource MediumFontSize}"/>
+                                <Span Text="{Binding Talent.Name}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="2"/>
+                    <Label x:Name="CategoryLabel" Grid.Row="3" Margin="20,10" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Kategorie: " FontFamily="{StaticResource UiFontSemiBold}" FontSize="{StaticResource MediumFontSize}"/>
+                                <Span Text="{Binding Talent.Category.Name}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="4"/>
+                    <Label x:Name="OrganisationLabel" Grid.Row="5" Margin="20,10" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Autor: " FontFamily="{StaticResource UiFontSemiBold}" FontSize="{StaticResource MediumFontSize}"/>
+                                <Span Text="{Binding Organisation.Name, Mode=OneWay}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="6"/>
+                    <Label x:Name="DescriptionLabel" Grid.Row="7" Margin="20,10" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Beschreibung: " FontFamily="{StaticResource UiFontSemiBold}" FontSize="{StaticResource MediumFontSize}"/>
+                                <Span Text="{Binding Talent.Description}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" VerticalOptions="Start" IsVisible="{Binding UserExpanded}" Grid.Row="8"/>
+                </Grid>
+            </ScrollView>
+        </Grid>
+    </controls:ActivityIndicatorLayout>
+</pages:ContentPageBase>

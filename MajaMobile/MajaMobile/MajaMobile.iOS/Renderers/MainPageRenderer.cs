@@ -1,22 +1,22 @@
 ﻿using Foundation;
 using MajaMobile.Pages;
 using SoftInput.iOS.Render;
+using System;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
-[assembly: ExportRenderer(typeof(MainPage), typeof(KeyboardRender))]
+[assembly: ExportRenderer(typeof(MainPage), typeof(MainPageRenderer))]
 namespace SoftInput.iOS.Render
 {
-
     [Preserve(AllMembers = true)]
-    public class KeyboardRender : PageRenderer
+    public class MainPageRenderer : PageRenderer
     {
         NSObject _keyboardShowObserver;
         NSObject _keyboardHideObserver;
         private bool _isKeyboardShown;
 
-        public KeyboardRender() { }
+        public MainPageRenderer() { }
 
         public static new void Init()
         {
@@ -39,7 +39,7 @@ namespace SoftInput.iOS.Render
                 RegisterForKeyboardNotifications();
             }
         }
-
+        
         public override void ViewWillDisappear(bool animated)
         {
             base.ViewWillDisappear(animated);

@@ -11,7 +11,6 @@
              x:Class="MajaMobile.Pages.MainPageMaster">
     <ContentPage.Resources>
         <ResourceDictionary>
-            <converters:NotNullConverter x:Key="NotNullConverter"/>
             <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayImageConverter"/>
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -22,7 +21,7 @@
                 <RowDefinition Height="4*"/>
             </Grid.RowDefinitions>
             <Image Source="background.png" Aspect="Fill"/>
-            <Grid RowSpacing="0" ColumnSpacing="0" VerticalOptions="End" HorizontalOptions="Fill" BackgroundColor="Transparent" Padding="0,5,0,10" IsVisible="{Binding User, Converter={StaticResource NotNullConverter}}">
+            <Grid RowSpacing="0" ColumnSpacing="0" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" BackgroundColor="Transparent" Padding="0,5,0,10" IsVisible="{Binding User, Converter={StaticResource NotNullConverter}}">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding ProfileExpanderCommand}"/>
                 </Grid.GestureRecognizers>

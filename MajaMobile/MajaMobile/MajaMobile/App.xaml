@@ -1,9 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Application xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:MajaMobile.Converters"
              x:Class="MajaMobile.App">
     <Application.Resources>
         <ResourceDictionary>
+            <converters:NotNullConverter x:Key="NotNullConverter"/>
 
             <OnPlatform x:TypeArguments="x:String" Android="segoeui.ttf#segoeui" iOS="SegoeUI" x:Key="UiFontNormal"/>
             <OnPlatform x:TypeArguments="x:String" Android="seguisli.ttf#seguisli" iOS="SegoeUI-SemilightItalic" x:Key="UiFontSemiLightItalic"/>
@@ -58,12 +60,13 @@
             </Style>
 
             <Style TargetType="Button">
-                <Setter Property="BackgroundColor" Value="#1396E2"/>
+                <Setter Property="BackgroundColor" Value="#409088"/>
                 <Setter Property="TextColor" Value="White"/>
                 <Setter Property="HorizontalOptions" Value="Center"/>
-                <Setter Property="CornerRadius" Value="20"/>
+                <Setter Property="CornerRadius" Value="10"/>
                 <Setter Property="FontFamily" Value="{StaticResource UiFontBold}"/>
-                <Setter Property="FontSize" Value="{StaticResource StandardFontSize}"/>
+                <Setter Property="FontSize" Value="{StaticResource MediumFontSize}"/>
+                <Setter Property="Padding" Value="10,0"/>
             </Style>
 
         </ResourceDictionary>

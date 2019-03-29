@@ -9,7 +9,7 @@
     <controls:ActivityIndicatorLayout>
         <Image Source="background.png" Aspect="Fill" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All"/>
         <Grid AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Padding="10,0">
-            <sync:SfListView ItemsSource="{Binding Talents}" SelectionMode="Multiple" SelectedItems="{Binding SelectedTalents}" x:Name="TalentList">
+            <sync:SfListView ItemsSource="{Binding Talents}" SelectionMode="None" SelectedItems="{Binding SelectedTalents}" x:Name="TalentList" ItemTapped="TalentList_ItemTapped">
                 <sync:SfListView.DataSource>
                     <data:DataSource>
                         <data:DataSource.GroupDescriptors>
@@ -30,26 +30,15 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="40"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
                             <Image Source="{Binding ImagePath}"/>
-                            <Label Text="{Binding Name}" Grid.Column="1"/>
+                            <Label Text="{Binding Name}" Grid.Column="1" IsVisible="{Binding Selected, Converter={StaticResource NotNullConverter}, ConverterParameter=invert}"/>
+                            <Label Text="{Binding Name}" Grid.Column="1" FontFamily="{StaticResource UiFontSemiBold}" IsVisible="{Binding Selected}"/>
+                            <Image Grid.Column="2" Source="checkmark.png" WidthRequest="25" IsVisible="{Binding Selected}"/>
                         </Grid>
                     </DataTemplate>
                 </sync:SfListView.ItemTemplate>
-                <sync:SfListView.SelectedItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="40"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="25"/>
-                            </Grid.ColumnDefinitions>
-                            <Image Source="{Binding ImagePath}"/>
-                            <Label Text="{Binding Name}" Grid.Column="1" FontFamily="{StaticResource UiFontSemiBold}"/>
-                            <Image Grid.Column="2" Source="checkmark.png"/>
-                        </Grid>
-                    </DataTemplate>
-                </sync:SfListView.SelectedItemTemplate>
             </sync:SfListView>
         </Grid>
     </controls:ActivityIndicatorLayout>

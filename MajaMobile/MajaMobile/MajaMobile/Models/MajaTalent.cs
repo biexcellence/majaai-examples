@@ -1,16 +1,30 @@
 ﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
 using System;
+using System.ComponentModel;
 
 namespace MajaMobile.Models
 {
 
-    public class MajaTalent:IMajaTalent
+    public class MajaTalent:IMajaTalent, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
         public string Id { get; }
         public string Name { get; }
         public bool IsPublic { get; }
         public string ImagePath { get; }
         public IMajaTalentCategory Category { get; }
+        public string Description { get; }
+        public string OrganisationId { get; }
+        private bool _selected;
+        public bool Selected
+        {
+            get => _selected;
+            set
+            {
+                _selected = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Selected)));
+            }
+        }
 
         public MajaTalent(IMajaTalent talent, MajaCategory category)
         {
@@ -21,6 +35,8 @@ namespace MajaMobile.Models
             if (string.IsNullOrEmpty(ImagePath))
                 ImagePath = "maja.png";
             Category = category;
+            Description = talent.Description;
+            OrganisationId = talent.OrganisationId;
         }
     }
 
@@ -28,11 +44,13 @@ namespace MajaMobile.Models
     {
         public string Id { get; }
         public string Name { get; }
+        public string ParentId { get; }
 
         public MajaCategory(IMajaTalentCategory category)
         {
             Id = category.Id;
             Name = category.Name;
+            ParentId = category.ParentId;
         }
 
         public int CompareTo(MajaCategory other)

@@ -85,6 +85,7 @@
     <Compile Include="Renderers\CustomFrameRenderer.cs" />
     <Compile Include="Renderers\FramelessEntryRenderer.cs" />
     <Compile Include="Renderers\MultiLineLabelRenderer.cs" />
+    <Compile Include="Renderers\CustomNavigationPageRenderer.cs" />
     <Compile Include="Renderers\RoundImageRenderer.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

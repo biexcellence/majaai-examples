@@ -6,14 +6,14 @@
              xmlns:effects="clr-namespace:MajaMobile.Effects"
              xmlns:pages="clr-namespace:MajaMobile.Pages"
              xmlns:sync="clr-namespace:Syncfusion.ListView.XForms;assembly=Syncfusion.SfListView.XForms"
-             x:Class="MajaMobile.Pages.MainPage" Title="majaAI">
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             x:Class="MajaMobile.Pages.MainPage" Title="majaAI" x:Name="mainPage">
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:SpeakerToAlignmentConverter x:Key="AlignmentConverter"/>
             <converters:SpeakerToColorConverter x:Key="ColorConverter"/>
             <converters:SpeakerToTextColorConverter x:Key="TextColorConverter"/>
             <converters:SpeakerToMarginConverter x:Key="MarginConverter"/>
-            <converters:NotNullConverter x:Key="NotNullConverter"/>
             <converters:ObjectFromListConverter x:Key="ListConverter"/>
             <converters:MessageToImageRowSpacingConverter x:Key="ImageRowSpacingConverter"/>
             <converters:DateToDayOfWeekConverter x:Key="DayConverter"/>
@@ -22,6 +22,8 @@
             <converters:FlightDelayConverter x:Key="FlightDelayConverter"/>
             <converters:FlightStatusTimeToVisibilityConverter x:Key="FlightTimeToVisibilityConverter"/>
             <converters:FlightStatusActualDateConverter x:Key="FlightStatusActualDateConverter"/>
+            <converters:GreaterThanConverter x:Key="GreaterThanConverter"/>
+            <converters:PossibleUserReplyImageConverter x:Key="PossibleUserReplyImageConverter"/>
 
             <ControlTemplate x:Key="RealEstateControlTemplate">
                 <Frame CornerRadius="10" Padding="5" HasShadow="False" BorderColor="Transparent" BackgroundColor="White">
@@ -409,6 +411,43 @@
                     </Grid>
                 </Frame>
             </ControlTemplate>
+
+            <DataTemplate x:Key="UserReplyTemplate">
+                <Frame HasShadow="False" BorderColor="LightGray" Padding="10,6" Margin="5,0,0,0" BackgroundColor="White" HorizontalOptions="Start" VerticalOptions="End">
+                    <Frame.CornerRadius>
+                        <OnPlatform x:TypeArguments="x:Single" Android="30" iOS="18"/>
+                    </Frame.CornerRadius>
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ViewModel.PossibleUserReplyCommand, Source={Reference mainPage}}" CommandParameter="{Binding}"/>
+                    </Frame.GestureRecognizers>
+                    <Label Text="{Binding Text}" HorizontalTextAlignment="Center" FontFamily="{StaticResource UiFontSemiBoldItalic}">
+                        <Label.FontSize>
+                            <OnPlatform x:TypeArguments="x:Double" iOS="18"/>
+                        </Label.FontSize>
+                    </Label>
+                </Frame>
+            </DataTemplate>
+
+            <DataTemplate x:Key="UserReplyImageTemplate">
+                <Frame HasShadow="False" BorderColor="LightGray" Padding="8" Margin="5,0,5,0" BackgroundColor="White" HorizontalOptions="Start" VerticalOptions="End" CornerRadius="10">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ViewModel.PossibleUserReplyCommand, Source={Reference mainPage}}" CommandParameter="{Binding}"/>
+                    </Frame.GestureRecognizers>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Image Source="{Binding Converter={StaticResource PossibleUserReplyImageConverter}}" HeightRequest="150" Aspect="AspectFill"/>
+                        <Label Text="{Binding Text}" HorizontalTextAlignment="Center" HorizontalOptions="Center" FontFamily="{StaticResource UiFontSemiBoldItalic}" FontSize="{StaticResource MediumFontSize}" Grid.Row="1"/>
+                    </Grid>
+                </Frame>
+            </DataTemplate>
+
+            <controls:PossibleUserReplyDataTemplateSelector x:Key="ReplyTemplateSelector"
+                                                            TextTemplate="{StaticResource UserReplyTemplate}"
+                                                            ImageTemplate="{StaticResource UserReplyImageTemplate}"/>
+
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
@@ -416,31 +455,40 @@
     </ContentPage.ToolbarItems>
     <Grid>
         <Image Source="background.png" Aspect="Fill"/>
-        <Grid RowSpacing="0" ColumnSpacing="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <controls:ItemsStack ItemsSource="{Binding Messages}" ItemTemplate="{StaticResource TemplateSelector}" Grid.Row="0" Grid.ColumnSpan="2"/>
-            <Label Text="Dialog abbrechen" TextColor="#1fb8dd" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding DialogActive}" Margin="5,0,0,5">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding CancelDialogCommand}"/>
-                </Label.GestureRecognizers>
-            </Label>
-            <controls:MultipleChoiceControl ItemsSource="{Binding PossibleUserReplies}" Command="{Binding PossibleUserReplyCommand}" Grid.Row="2" Grid.ColumnSpan="2" x:Name="MultipleChoiceControl" Margin="0,0,0,5"/>
-            <controls:ChatInputControl Margin="5,0,5,5" Grid.Row="3" VerticalOptions="End" HorizontalOptions="FillAndExpand" Text="{Binding Text}"
+    <Grid RowSpacing="0" ColumnSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <controls:ItemsStack ItemsSource="{Binding Messages}" ItemTemplate="{StaticResource TemplateSelector}" Grid.Row="0" Grid.ColumnSpan="2"/>
+        <Label Text="Dialog abbrechen" TextColor="#1fb8dd" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding DialogActive}" Margin="5,0,0,5" x:Name="CancelLabel">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CancelDialogCommand}"/>
+            </Label.GestureRecognizers>
+        </Label>
+        <ScrollView HorizontalOptions="Fill" VerticalOptions="End" Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="2" x:Name="MultipleChoiceControl" Margin="0,0,0,5">
+            <ScrollView.IsVisible>
+                <Binding Path="PossibleUserReplies.Count" Converter="{StaticResource GreaterThanConverter}">
+                    <Binding.ConverterParameter>
+                        <sys:Int32>0</sys:Int32>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </ScrollView.IsVisible>
+            <StackLayout BindableLayout.ItemsSource="{Binding PossibleUserReplies}" BindableLayout.ItemTemplateSelector="{StaticResource ReplyTemplateSelector}" Orientation="Horizontal" HorizontalOptions="FillAndExpand" Spacing="0"/>
+        </ScrollView>
+        <controls:ChatInputControl Margin="5,0,5,5" Grid.Row="3" VerticalOptions="End" HorizontalOptions="FillAndExpand" Text="{Binding Text}"
                              IsEnabled="{Binding IsIdle}" CompletedCommand="{Binding SendTextCommand}" CurrentUserInput="{Binding CurrentUserInput}" x:Name="ChatControl"/>
-            <controls:ChatButton VerticalOptions="End" HorizontalOptions="End" Grid.Row="3" Grid.Column="1" HeightRequest="45" WidthRequest="45" Margin="0,0,5,5" DisplayMode="{Binding ChatButtonMode}" x:Name="ChatButton">
-                <controls:ChatButton.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding SpeechRecognitionCommand}"/>
-                </controls:ChatButton.GestureRecognizers>
-            </controls:ChatButton>
+        <controls:ChatButton VerticalOptions="End" HorizontalOptions="End" Grid.Row="3" Grid.Column="1" HeightRequest="45" WidthRequest="45" Margin="0,0,5,5" DisplayMode="{Binding ChatButtonMode}" x:Name="ChatButton">
+            <controls:ChatButton.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding SpeechRecognitionCommand}"/>
+            </controls:ChatButton.GestureRecognizers>
+        </controls:ChatButton>
         </Grid>
     </Grid>
 </pages:ContentPageBase>

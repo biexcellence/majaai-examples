@@ -3,6 +3,7 @@ using BiExcellence.OpenBi.Api.Commands;
 using BiExcellence.OpenBi.Api.Commands.MajaAi;
 using BiExcellence.OpenBi.Api.Commands.Users;
 using MajaMobile.Extensions;
+using MajaMobile.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,16 +51,27 @@ namespace MajaMobile.Utilities
             }
         }
 
-        public static void SetPackages(IEnumerable<IMajaTalent> talents)
+        public static void SaveTalentSelection(MajaTalent talent)
         {
-            _packages.Clear();
-            _packages.AddRange(talents.Select(t => t.Id));
-            using (var db = new AppDatabase())
+            if (!talent.Selected)
             {
-                db.SetMajaTalentData(talents);
+                _packages.Remove(talent.Id);
+                using (var db = new AppDatabase())
+                {
+                    db.DeleteMajaTalentData(talent);
+                }
             }
-        }
+            else if (!_packages.Contains(talent.Id))
+            {
+                _packages.Add(talent.Id);
+                using (var db = new AppDatabase())
+                {
+                    db.InsertMajaTalentData(talent);
+                }
+            }
 
+        }
+        
         private Task _currentUserLoginTask;
         private const string _accountStoreServiceId = "MajaAiAccount";
 

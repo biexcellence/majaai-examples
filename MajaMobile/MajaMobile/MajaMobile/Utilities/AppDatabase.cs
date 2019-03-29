@@ -87,15 +87,24 @@ namespace MajaMobile.Utilities
             return Connection.Table<MajaTalentData>().Select(t => t.Id);
         }
 
-        public bool SetMajaTalentData(IEnumerable<IMajaTalent> talent)
+        public bool InsertMajaTalentData(IMajaTalent talent)
         {
             try
             {
-                Connection.DeleteAll<MajaTalentData>();
-                foreach (var id in talent)
-                {
-                    Connection.Insert(new MajaTalentData(id));
-                }
+                Connection.Insert(new MajaTalentData(talent));
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool DeleteMajaTalentData(IMajaTalent talent)
+        {
+            try
+            {
+                Connection.Delete<MajaTalentData>(talent.Id);
                 return true;
             }
             catch (Exception)

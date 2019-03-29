@@ -146,6 +146,10 @@ namespace MajaMobile.Controls
                     {
                         element = new Frame() { HasShadow = false, CornerRadius = 5.0f, Padding = new Thickness(0, 6), BackgroundColor = ColorScheme.EntryBackgroundColor, Content = autoComplete };
                     }
+                    else
+                    {
+                        autoComplete.Margin = new Thickness(0, 0, 0, -3);
+                    }
                 }
                 if (Device.RuntimePlatform == Device.iOS)
                     Content = element;

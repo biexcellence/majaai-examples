@@ -15,6 +15,8 @@ namespace MajaMobile.Converters
                 result = false;
             else if (value is string s && string.IsNullOrWhiteSpace(s))
                 result = false;
+            else if (value is bool b)
+                result = b;
             else
                 result = true;
             return parameter == null ? result : !result;
@@ -64,6 +66,23 @@ namespace MajaMobile.Converters
                 return ImageSource.FromStream(() => new MemoryStream(bytes));
             }
             return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class GreaterThanConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is int && parameter is int)
+            {
+                return (int)value > (int)parameter;
+            }
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -33,7 +33,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Image Source="background.png" Aspect="AspectFill" Grid.ColumnSpan="2"/>
-                <controls:RoundImage x:Name="ProfileImage" Source="{Binding User.Picture, Converter={StaticResource ByteArrayImageConverter}}" HorizontalOptions="Center" VerticalOptions="Center" HeightRequest="150" WidthRequest="150" Grid.ColumnSpan="2">
+                <controls:RoundImage Source="{Binding User.Picture, Converter={StaticResource ByteArrayImageConverter}}" HorizontalOptions="Center" VerticalOptions="Center" HeightRequest="150" WidthRequest="150" Grid.ColumnSpan="2">
                     <Image.GestureRecognizers>
                         <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
                     </Image.GestureRecognizers>
@@ -49,7 +49,7 @@
                 <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="5" Grid.ColumnSpan="2"/>
                 <Label Text="Email" FontSize="{StaticResource MediumFontSize}" FontFamily="{StaticResource UiFontSemiBold}" HorizontalOptions="Start" HorizontalTextAlignment="Start" Margin="20,0,0,0" Grid.Row="6"/>
                 <controls:FramelessEntry Text="{Binding User.Username}" IsEnabled="False" Grid.Column="1" Grid.Row="6"/>
-                <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="7" Grid.ColumnSpan="2"/>
+                <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" VerticalOptions="Start" IsVisible="{Binding UserExpanded}" Grid.Row="7" Grid.ColumnSpan="2"/>
             </Grid>
         </Grid>
     </controls:ActivityIndicatorLayout>

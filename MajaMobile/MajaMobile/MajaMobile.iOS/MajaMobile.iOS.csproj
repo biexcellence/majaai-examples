@@ -110,12 +110,14 @@
     <Compile Include="iOSDeviceInfo.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
+    <Compile Include="Renderers\ContentPageBaseRenderer.cs" />
     <Compile Include="Renderers\FramelessEntryRenderer.cs" />
     <Compile Include="Renderers\IOSEntryRenderer.cs" />
     <Compile Include="Renderers\CustomFrameRenderer.cs" />
     <Compile Include="Renderers\MainPageRenderer.cs" />
     <Compile Include="Renderers\MultiLineLabelRenderer.cs" />
     <Compile Include="Renderers\RoundImageRenderer.cs" />
+    <Compile Include="Renderers\UserProfilePageRenderer.cs" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist">
       <SubType>Designer</SubType>

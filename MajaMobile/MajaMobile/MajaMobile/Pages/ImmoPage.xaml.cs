@@ -47,21 +47,4 @@ namespace MajaMobile.Converters
             throw new NotImplementedException();
         }
     }
-
-    public class GreaterThanConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is int && parameter is int)
-            {
-                return (int)value > (int)parameter;
-            }
-            return false;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
 }

@@ -13,11 +13,11 @@
                 <ColumnDefinition Width="10*"/>
             </Grid.ColumnDefinitions>
             <!--<Frame Margin="0,50,0,0" HasShadow="True" BackgroundColor="#99ffffff" Grid.Column="1" VerticalOptions="Start" Padding="0">-->
-                <StackLayout Margin="0,50,0,0" Padding="15,20,15,40" VerticalOptions="Start" Orientation="Vertical" Spacing="20" Grid.Column="1">
-                    <controls:CustomEntry CompletedCommand="{Binding SignInCommand}" Placeholder="Email" Text="{Binding UsernameInput}" Keyboard="Email"/>
-                    <controls:CustomEntry CompletedCommand="{Binding SignInCommand}" Placeholder="Passwort" Text="{Binding PasswordInput}" IsPassword="True"/>
-                    <Button Text="Anmelden" Command="{Binding SignInCommand}" IsEnabled="{Binding LoginValid}" HorizontalOptions="FillAndExpand"/>
-                </StackLayout>
+            <StackLayout Margin="0,50,0,0" Padding="15,20,15,40" VerticalOptions="Start" Orientation="Vertical" Spacing="20" Grid.Column="1">
+                <controls:CustomEntry CompletedCommand="{Binding SignInCommand}" Placeholder="Email" Text="{Binding UsernameInput}" Keyboard="Email"/>
+                <controls:CustomEntry CompletedCommand="{Binding SignInCommand}" Placeholder="Passwort" Text="{Binding PasswordInput}" IsPassword="True"/>
+                <Button Text="Anmelden" Command="{Binding SignInCommand}" IsEnabled="{Binding LoginValid}" HorizontalOptions="FillAndExpand"/>
+            </StackLayout>
             <!--</Frame>-->
         </Grid>
     </controls:ActivityIndicatorLayout>

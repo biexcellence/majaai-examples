@@ -20,7 +20,7 @@ namespace MajaMobile.Pages
         {
             var style = (Style)Application.Current.Resources["ContentPageStyle"];
             Style = style;
-            this.MasterBehavior = MasterBehavior.Popover;
+            MasterBehavior = MasterBehavior.Popover;
 
             var binding = new Binding(nameof(MainPageMasterViewModel.IsPresented), BindingMode.TwoWay);
             SetBinding(IsPresentedProperty, binding);
@@ -37,16 +37,12 @@ namespace MajaMobile.Pages
 
         private void NavigationPage_Pushed(object sender, NavigationEventArgs e)
         {
-            _viewModel.IsPresented = false;
-            if (!(e.Page is MainPage))
-            {
-                IsGestureEnabled = false;
-            }
+            IsGestureEnabled = false;
         }
 
         private void NavigationPage_Popped(object sender, NavigationEventArgs e)
         {
-            IsGestureEnabled = true;
+            IsGestureEnabled = Detail.Navigation.NavigationStack.Count == 1;
         }
 
         protected override void OnAppearing()
@@ -58,18 +54,20 @@ namespace MajaMobile.Pages
             MessagingCenter.Subscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.RegisterMessage, Register);
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.SelectTalentsMessage, async (MainPageMasterViewModel viewmodel) =>
             {
-                if (CanNavigate())
+                if (PrepareNavigation())
                     await Detail.Navigation.PushAsync(new TalentsPage());
             });
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.LoginMessage, async (MainPageMasterViewModel viewmodel) =>
             {
-                if (CanNavigate())
+                if (PrepareNavigation())
                     await Detail.Navigation.PushAsync(new LoginPage());
             });
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.EditUserProfileMessage, async (MainPageMasterViewModel viewmodel, IUser user) =>
             {
-                if (user != null && CanNavigate())
+                if (user != null && PrepareNavigation())
+                {
                     await Detail.Navigation.PushAsync(new UserProfilePage(user));
+                }
             });
             MessagingCenter.Subscribe<ImmoObject>(this, ImmoObject.TappedMessage, ImmoTapped);
         }
@@ -103,7 +101,7 @@ namespace MajaMobile.Pages
 
         private async void ImmoMessageTapped(MajaConversationMessageImmo message)
         {
-            if (CanNavigate())
+            if (PrepareNavigation())
             {
                 await Detail.Navigation.PushAsync(new ImmoPage(message));
             }
@@ -111,7 +109,7 @@ namespace MajaMobile.Pages
 
         private async void LocationTapped(MajaConversationMessageLocation message)
         {
-            if (CanNavigate())
+            if (PrepareNavigation())
             {
                 try
                 {
@@ -125,7 +123,7 @@ namespace MajaMobile.Pages
 
         private async void LinkTapped(MajaConversationMessageLink message)
         {
-            if (CanNavigate())
+            if (PrepareNavigation())
             {
                 try
                 {
@@ -136,10 +134,14 @@ namespace MajaMobile.Pages
         }
 
         //Prevent double tap
-        private bool CanNavigate()
+        private bool PrepareNavigation()
         {
-            var page = Detail.Navigation.NavigationStack.Last();
-            return page is MainPage mainPage && mainPage.IsIdle;
+            if (Detail.Navigation.NavigationStack.Count == 1 && _mainPage.IsIdle)
+            {
+                _viewModel.IsPresented = false;
+                return true;
+            }
+            return false;
         }
     }
 }

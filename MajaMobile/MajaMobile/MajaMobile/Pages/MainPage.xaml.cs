@@ -29,12 +29,17 @@ namespace MajaMobile.Pages
 
         public void ShiftEntryUp(double keyboardHeight)
         {
-            ChatButton.TranslationY = ChatControl.TranslationY = MultipleChoiceControl.TranslationY = keyboardHeight * -1;
+            ChatButton.TranslationY = ChatControl.TranslationY = MultipleChoiceControl.TranslationY = CancelLabel.TranslationY = keyboardHeight * -1;
         }
 
         public void ShiftEntryDown()
         {
-            ChatButton.TranslationY = ChatControl.TranslationY = MultipleChoiceControl.TranslationY = 0;
+            ChatButton.TranslationY = ChatControl.TranslationY = MultipleChoiceControl.TranslationY = CancelLabel.TranslationY = 0;
+        }
+
+        public void SetBackTitle(string title)
+        {
+            Title = title;
         }
     }
 
@@ -107,8 +112,15 @@ namespace MajaMobile.ViewModels
             set { SetField(value); }
         }
 
+        public string Title
+        {
+            get => GetField<string>();
+            set { SetField(value); }
+        }
+
         public MainPageViewModel()
         {
+            Title = "majaAI";
             _deviceInfo = DependencyService.Get<IDeviceInfo>();
             _audioService = DependencyService.Get<IAudioService>();
 
@@ -333,7 +345,7 @@ namespace MajaMobile.ViewModels
                             speakingText = answers.First().Response;
                             foreach (var answer in answers)//TODO: only certain messages?
                             {
-                                foreach(var message in MajaConversationMessage.Factory((answer)))
+                                foreach (var message in MajaConversationMessage.Factory((answer)))
                                 {
                                     Messages.Add(message);
                                 }
@@ -425,6 +437,24 @@ namespace MajaMobile.ViewModels
                     }
                     break;
             }
+        }
+    }
+}
+
+namespace MajaMobile.Converters
+{
+    public class PossibleUserReplyImageConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is IPossibleUserReply reply && reply.ControlOptions.TryGetValue("IMAGE", out var img))
+                return (string)img;
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }
