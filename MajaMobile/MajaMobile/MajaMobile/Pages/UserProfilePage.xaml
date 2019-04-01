@@ -33,13 +33,13 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Image Source="background.png" Aspect="AspectFill" Grid.ColumnSpan="2"/>
-                <controls:RoundImage Source="{Binding User.Picture, Converter={StaticResource ByteArrayImageConverter}}" HorizontalOptions="Center" VerticalOptions="Center" HeightRequest="150" WidthRequest="150" Grid.ColumnSpan="2">
-                    <Image.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
-                    </Image.GestureRecognizers>
-                </controls:RoundImage>
+                <controls:RoundImage Source="{Binding User.Picture, Converter={StaticResource ByteArrayImageConverter}}" HorizontalOptions="Center" VerticalOptions="Center" HeightRequest="150" WidthRequest="150" Grid.ColumnSpan="2"/>
                 <skia:SKCanvasView x:Name="OverlayCanvas" PaintSurface="OverlayCanvas_PaintSurface" Grid.ColumnSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
-                <skia:SKCanvasView x:Name="ImageCanvas" PaintSurface="ImageCanvas_PaintSurface" Grid.ColumnSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
+                <skia:SKCanvasView x:Name="ImageCanvas" PaintSurface="ImageCanvas_PaintSurface" Grid.ColumnSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <skia:SKCanvasView.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+                    </skia:SKCanvasView.GestureRecognizers>
+                </skia:SKCanvasView>
                 <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="1" Grid.ColumnSpan="2"/>
                 <Label Text="Vorname" FontSize="{StaticResource MediumFontSize}" FontFamily="{StaticResource UiFontSemiBold}" HorizontalOptions="Start" HorizontalTextAlignment="Start" Margin="20,0,0,0" Grid.Row="2"/>
                 <controls:FramelessEntry Placeholder="Gib deinen Vornamen an" Text="{Binding User.Firstname}" Grid.Column="1" Grid.Row="2"/>

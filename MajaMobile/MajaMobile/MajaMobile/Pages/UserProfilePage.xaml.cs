@@ -1,9 +1,14 @@
 ﻿using BiExcellence.OpenBi.Api.Commands.Users;
+using MajaMobile.Models;
 using MajaMobile.Utilities;
 using MajaMobile.ViewModels;
+using Plugin.Media;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -17,7 +22,7 @@ namespace MajaMobile.Pages
             InitializeComponent();
             BindingContext = ViewModel = new UserProfileViewModel(user);
         }
-        
+
         private bool _discarded;
 
         protected override bool OnBackButtonPressed()
@@ -97,9 +102,30 @@ namespace MajaMobile.Pages
             }
         }
 
-        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+        private async void TapGestureRecognizer_Tapped(object sender, EventArgs e)
         {
-            //TODO: open picture from camera or file, crop and save to Viewmodel.User
+            if (!CrossMedia.Current.IsPickPhotoSupported)
+            {
+                await DisplayAlert("Bild auswählen", "Die Funktion wird von Ihrem Gerät derzeit nicht unterstützt", "OK");
+                return;
+            }
+            try
+            {
+                var imageFile = await CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions() { PhotoSize = Plugin.Media.Abstractions.PhotoSize.Medium });
+                if (imageFile != null)
+                {
+                    using (var stream = imageFile.GetStreamWithImageRotatedForExternalStorage())
+                    using (var ms = new MemoryStream())
+                    {
+                        await stream.CopyToAsync(ms);
+                        ((UserProfileViewModel)ViewModel).User.SetPicture(ms.ToArray());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Cannot access camera. Error: ", ex.Message);
+            }
         }
     }
 }
@@ -108,9 +134,10 @@ namespace MajaMobile.ViewModels
 {
     public class UserProfileViewModel : ViewModelBase
     {
-        public IUser User { get; }
+        public MajaUser User { get; }
         private IUser _originalUser;
         public ICommand SaveCommand { get; }
+        private bool _saved;
 
         public UserProfileViewModel(IUser user)
         {
@@ -121,7 +148,7 @@ namespace MajaMobile.ViewModels
 
         public bool DataChanged()
         {
-            return !User.Equals(_originalUser);
+            return !_saved && !User.Equals(_originalUser);
         }
 
         private async void Save()
@@ -136,6 +163,7 @@ namespace MajaMobile.ViewModels
             try
             {
                 await SessionHandler.Instance.ExecuteOpenbiCommand((s, t) => s.CreateUser(User));
+                _saved = true;
                 SessionHandler.Instance.OpenBiUser = User;
                 GoBack();
             }
@@ -148,43 +176,54 @@ namespace MajaMobile.ViewModels
                 IsBusy = false;
             }
         }
+    }
+}
 
-        private class MajaUser : User, IEquatable<IUser>
+namespace MajaMobile.Models
+{
+    public class MajaUser : User, IEquatable<IUser>, INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public MajaUser(IUser user) : base(user.Username)
         {
-            public MajaUser(IUser user) : base(user.Username)
+            foreach (var prop in typeof(IUser).GetTypeInfo().DeclaredProperties)
             {
-                foreach (var prop in typeof(IUser).GetTypeInfo().DeclaredProperties)
-                {
-                    if (prop.CanWrite)
-                        prop.SetValue(this, prop.GetValue(user));
-                }
+                if (prop.CanWrite)
+                    prop.SetValue(this, prop.GetValue(user));
             }
+        }
 
-            public override bool Equals(object obj)
-            {
-                if (obj == null) return false;
-                if (obj == this) return true;
-                if (obj is IUser user)
-                    return Equals(user);
-                return false;
-            }
+        public void SetPicture(byte[] picture)
+        {
+            Picture = picture;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Picture)));
+        }
 
-            public bool Equals(IUser other)
-            {
-                if (other == null) return false;
-                return Firstname == other.Firstname && Lastname == other.Lastname && Birthdate == other.Birthdate && Picture == other.Picture;
-            }
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (obj == this) return true;
+            if (obj is IUser user)
+                return Equals(user);
+            return false;
+        }
 
-            public override int GetHashCode()
+        public bool Equals(IUser other)
+        {
+            if (other == null) return false;
+            return Firstname == other.Firstname && Lastname == other.Lastname && Birthdate == other.Birthdate && Picture == other.Picture;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
             {
-                unchecked
-                {
-                    var hashCode = 13;
-                    hashCode = (hashCode * 397) ^ Username.GetHashCode();
-                    hashCode = (hashCode * 397) ^ (!string.IsNullOrEmpty(Firstname) ? Firstname.GetHashCode() : 0);
-                    hashCode = (hashCode * 397) ^ (!string.IsNullOrEmpty(Lastname) ? Lastname.GetHashCode() : 0);
-                    return hashCode;
-                }
+                var hashCode = 13;
+                hashCode = (hashCode * 397) ^ Username.GetHashCode();
+                hashCode = (hashCode * 397) ^ (!string.IsNullOrEmpty(Firstname) ? Firstname.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (!string.IsNullOrEmpty(Lastname) ? Lastname.GetHashCode() : 0);
+                return hashCode;
             }
         }
     }

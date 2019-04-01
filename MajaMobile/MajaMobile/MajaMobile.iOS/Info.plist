@@ -23,7 +23,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.biexcellence.MajaMobile</string>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>3</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>de_DE</string>
 	<key>CFBundleLocalizations</key>
@@ -35,15 +35,17 @@
 	<string>Wir benötigen das Mikrofon, damit du mit Maja sprechen kannst.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Wir benötigen die Spracherkennung, damit du mit Maja sprechen kannst.</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>Wir müssen auf deine Fotos zugreifen, damit du dein Profilbild auswählen kannst.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>segoeui.ttf</string>
 		<string>seguisbi.ttf</string>
 		<string>segoeuiz.ttf</string>
 		<string>seguisli.ttf</string>
-    <string>segoeuib.ttf</string>
-    <string>segoeuisl.ttf</string>
-    <string>seguisb.ttf</string>
+		<string>segoeuib.ttf</string>
+		<string>segoeuisl.ttf</string>
+		<string>seguisb.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

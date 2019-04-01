@@ -36,11 +36,6 @@ namespace MajaMobile.Pages
         {
             ChatButton.TranslationY = ChatControl.TranslationY = MultipleChoiceControl.TranslationY = CancelLabel.TranslationY = 0;
         }
-
-        public void SetBackTitle(string title)
-        {
-            Title = title;
-        }
     }
 
     public enum MajaListeningStatus
@@ -112,15 +107,8 @@ namespace MajaMobile.ViewModels
             set { SetField(value); }
         }
 
-        public string Title
-        {
-            get => GetField<string>();
-            set { SetField(value); }
-        }
-
         public MainPageViewModel()
         {
-            Title = "majaAI";
             _deviceInfo = DependencyService.Get<IDeviceInfo>();
             _audioService = DependencyService.Get<IAudioService>();
 

@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Android.Runtime;
 using Plugin.CurrentActivity;
 using Syncfusion.Licensing;
 using System;
@@ -34,6 +35,10 @@ namespace MajaMobile.Droid
                 var message = ex.Message;
                 var stack = ex.StackTrace;
             }
+        }
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
+        {
+            Plugin.Permissions.PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 }
