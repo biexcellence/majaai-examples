@@ -57,9 +57,9 @@ namespace MajaMobile.Pages
         {
             var canvas = e.Surface.Canvas;
             canvas.Clear();
-            var radius = e.Info.Height * (5f / 12f);
+            var radius = e.Info.Height / 2f;
             var centerX = e.Info.Width / 2f;
-            var centerY = e.Info.Height / 2f;
+            var centerY = radius;
             var halfVer = 0.3f * radius;
             centerY += halfVer * 0.25f;
             using (var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Stroke, Color = SKColors.White, StrokeWidth = radius * 0.05f })
