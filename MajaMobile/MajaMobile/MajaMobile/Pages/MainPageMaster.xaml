@@ -2,18 +2,12 @@
 <pages:ContentPageBase xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MajaMobile.Controls"
-             xmlns:converters="clr-namespace:MajaMobile.Converters"
              xmlns:pages="clr-namespace:MajaMobile.Pages"
              xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              xmlns:util="clr-namespace:MajaMobile.Utilities"
              Title="MajaAI"
              Icon="hamburger.png"
              x:Class="MajaMobile.Pages.MainPageMaster">
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayImageConverter"/>
-        </ResourceDictionary>
-    </ContentPage.Resources>
     <controls:ActivityIndicatorLayout>
         <Grid RowSpacing="0">
             <Grid.RowDefinitions>

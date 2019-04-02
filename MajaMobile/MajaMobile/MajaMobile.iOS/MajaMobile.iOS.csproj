@@ -117,7 +117,7 @@
     <Compile Include="Renderers\MainPageRenderer.cs" />
     <Compile Include="Renderers\MultiLineLabelRenderer.cs" />
     <Compile Include="Renderers\RoundImageRenderer.cs" />
-    <Compile Include="Renderers\UserProfilePageRenderer.cs" />
+    <Compile Include="Renderers\CancelBackPageRenderer.cs" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist">
       <SubType>Designer</SubType>
@@ -204,6 +204,9 @@
       <Version>1.68.0</Version>
     </PackageReference>
     <PackageReference Include="Syncfusion.Xamarin.SfAutoComplete">
+      <Version>16.4.0.54</Version>
+    </PackageReference>
+    <PackageReference Include="Syncfusion.Xamarin.SfImageEditor">
       <Version>16.4.0.54</Version>
     </PackageReference>
     <PackageReference Include="Syncfusion.Xamarin.SfListView">

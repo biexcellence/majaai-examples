@@ -15,12 +15,18 @@ using Xamarin.Forms;
 
 namespace MajaMobile.Pages
 {
-    public partial class UserProfilePage : ContentPageBase
+    public partial class UserProfilePage : CancelBackContentPage
     {
         public UserProfilePage(IUser user)
         {
             InitializeComponent();
             BindingContext = ViewModel = new UserProfileViewModel(user);
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            MessagingCenter.Unsubscribe<ImageEditorPage, byte[]>(this, ImageEditorPage.ImageSavedMessage);
         }
 
         private bool _discarded;
@@ -42,7 +48,7 @@ namespace MajaMobile.Pages
             return false;
         }
 
-        public bool OnBackPressed()
+        public override bool OnBackPressed()
         {
             return OnBackButtonPressed();
         }
@@ -104,6 +110,8 @@ namespace MajaMobile.Pages
 
         private async void TapGestureRecognizer_Tapped(object sender, EventArgs e)
         {
+            if (ViewModel.IsBusy)
+                return;
             if (!CrossMedia.Current.IsPickPhotoSupported)
             {
                 await DisplayAlert("Bild auswählen", "Die Funktion wird von Ihrem Gerät derzeit nicht unterstützt", "OK");
@@ -111,6 +119,7 @@ namespace MajaMobile.Pages
             }
             try
             {
+                ViewModel.IsBusy = true;
                 var imageFile = await CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions() { PhotoSize = Plugin.Media.Abstractions.PhotoSize.Medium });
                 if (imageFile != null)
                 {
@@ -118,7 +127,8 @@ namespace MajaMobile.Pages
                     using (var ms = new MemoryStream())
                     {
                         await stream.CopyToAsync(ms);
-                        ((UserProfileViewModel)ViewModel).User.SetPicture(ms.ToArray());
+                        await Navigation.PushAsync(new ImageEditorPage(ms.ToArray()));
+                        MessagingCenter.Subscribe<ImageEditorPage, byte[]>(this, ImageEditorPage.ImageSavedMessage, ImageEditor_Saved);
                     }
                 }
             }
@@ -126,6 +136,15 @@ namespace MajaMobile.Pages
             {
                 Debug.WriteLine("Cannot access camera. Error: ", ex.Message);
             }
+            finally
+            {
+                ViewModel.IsBusy = false;
+            }
+        }
+
+        private void ImageEditor_Saved(ImageEditorPage page, byte[] arr)
+        {
+            ((UserProfileViewModel)ViewModel).User.SetPicture(arr);
         }
     }
 }

@@ -4,10 +4,10 @@ using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
-[assembly: ExportRenderer(typeof(UserProfilePage), typeof(MajaMobile.iOS.Renderers.UserProfilePageRenderer))]
+[assembly: ExportRenderer(typeof(CancelBackContentPage), typeof(MajaMobile.iOS.Renderers.CancelBackPageRenderer))]
 namespace MajaMobile.iOS.Renderers
 {
-    public class UserProfilePageRenderer : PageRenderer
+    public class CancelBackPageRenderer : PageRenderer
     {
         public override void ViewDidAppear(bool animated)
         {

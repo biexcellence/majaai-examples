@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<pages:ContentPageBase xmlns="http://xamarin.com/schemas/2014/forms"
+<pages:CancelBackContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MajaMobile.Controls"
-             xmlns:converters="clr-namespace:MajaMobile.Converters"
              xmlns:pages="clr-namespace:MajaMobile.Pages"
              xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              xmlns:util="clr-namespace:MajaMobile.Utilities"
@@ -10,11 +9,6 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Speichern" Command="{Binding SaveCommand}"/>
     </ContentPage.ToolbarItems>
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayImageConverter"/>
-        </ResourceDictionary>
-    </ContentPage.Resources>
     <controls:ActivityIndicatorLayout>
         <Grid RowSpacing="0" ColumnSpacing="0" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
             <Grid VerticalOptions="Start" RowSpacing="0" ColumnSpacing="10">
@@ -53,4 +47,4 @@
             </Grid>
         </Grid>
     </controls:ActivityIndicatorLayout>
-</pages:ContentPageBase>
+</pages:CancelBackContentPage>

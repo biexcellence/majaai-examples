@@ -4,6 +4,7 @@ using ObjCRuntime;
 using Syncfusion.Licensing;
 using Syncfusion.ListView.XForms.iOS;
 using Syncfusion.SfAutoComplete.XForms.iOS;
+using Syncfusion.SfImageEditor.XForms.iOS;
 using UIKit;
 using Xamarin.Forms;
 
@@ -30,6 +31,7 @@ namespace MajaMobile.iOS
             SyncfusionLicenseProvider.RegisterLicense("");//TODO: Your Syncfusion License
             SfListViewRenderer.Init();
             SfAutoCompleteRenderer.Init();
+            SfImageEditorRenderer.Init();
 
             LoadApplication(new App());
 

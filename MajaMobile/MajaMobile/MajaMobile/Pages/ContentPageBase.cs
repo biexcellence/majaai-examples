@@ -15,7 +15,7 @@ namespace MajaMobile.Pages
             var style = (Style)Application.Current.Resources["ContentPageStyle"];
             Style = style;
         }
-        
+
         protected bool PageIsActive;
 
         protected override void OnAppearing()
@@ -26,7 +26,7 @@ namespace MajaMobile.Pages
                 MessagingCenter.Subscribe<ViewModelBase, Exception>(this, ViewModelBase.OpenbirequestErrorMessage, RequestOnError);
                 MessagingCenter.Subscribe(this, ViewModelBase.GoBackMessage, async (ViewModelBase vm) =>
                 {
-                    if(vm == ViewModel)
+                    if (vm == ViewModel)
                     {
                         await Navigation.PopAsync();
                     }
@@ -63,5 +63,10 @@ namespace MajaMobile.Pages
                 await DisplayAlert("Fehler", message, "OK");
             }
         }
+    }
+
+    public abstract class CancelBackContentPage : ContentPageBase
+    {
+        public abstract bool OnBackPressed();
     }
 }

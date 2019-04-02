@@ -59,6 +59,9 @@
     <PackageReference Include="Syncfusion.Xamarin.SfAutoComplete">
       <Version>16.4.0.54</Version>
     </PackageReference>
+    <PackageReference Include="Syncfusion.Xamarin.SfImageEditor">
+      <Version>16.4.0.54</Version>
+    </PackageReference>
     <PackageReference Include="Syncfusion.Xamarin.SfListView">
       <Version>16.4.0.54</Version>
     </PackageReference>

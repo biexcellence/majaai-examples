@@ -17,7 +17,7 @@ namespace MajaMobile.Droid.Renderers
 
         protected override Task<bool> OnPopViewAsync(Page page, bool animated)
         {
-            if(page is UserProfilePage profilePage && profilePage.OnBackPressed())
+            if(page is CancelBackContentPage p && p.OnBackPressed())
             {
                 return Task.FromResult(false);
             }

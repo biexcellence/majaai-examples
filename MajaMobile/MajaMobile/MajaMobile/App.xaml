@@ -6,6 +6,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <converters:NotNullConverter x:Key="NotNullConverter"/>
+            <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayImageConverter"/>
 
             <OnPlatform x:TypeArguments="x:String" Android="segoeui.ttf#segoeui" iOS="SegoeUI" x:Key="UiFontNormal"/>
             <OnPlatform x:TypeArguments="x:String" Android="seguisli.ttf#seguisli" iOS="SegoeUI-SemilightItalic" x:Key="UiFontSemiLightItalic"/>
