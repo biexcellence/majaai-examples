@@ -17,10 +17,10 @@ namespace MajaMobile.Pages
 {
     public partial class UserProfilePage : CancelBackContentPage
     {
-        public UserProfilePage(IUser user)
+        public UserProfilePage(IUser user, SessionHandler sessionHandler)
         {
             InitializeComponent();
-            BindingContext = ViewModel = new UserProfileViewModel(user);
+            BindingContext = ViewModel = new UserProfileViewModel(user, sessionHandler);
         }
 
         protected override void OnAppearing()
@@ -158,7 +158,7 @@ namespace MajaMobile.ViewModels
         public ICommand SaveCommand { get; }
         private bool _saved;
 
-        public UserProfileViewModel(IUser user)
+        public UserProfileViewModel(IUser user, SessionHandler sessionHandler) : base(sessionHandler)
         {
             _originalUser = user;
             User = new MajaUser(user);
@@ -181,9 +181,9 @@ namespace MajaMobile.ViewModels
             IsBusy = true;
             try
             {
-                await SessionHandler.Instance.ExecuteOpenbiCommand((s, t) => s.CreateUser(User));
+                await SessionHandler.ExecuteOpenbiCommand((s, t) => s.CreateUser(User));
                 _saved = true;
-                SessionHandler.Instance.OpenBiUser = User;
+                SessionHandler.OpenBiUser = User;
                 GoBack();
             }
             catch (Exception ex)

@@ -1,6 +1,5 @@
 ﻿using BiExcellence.OpenBi.Api;
 using BiExcellence.OpenBi.Api.Commands;
-using BiExcellence.OpenBi.Api.Commands.MajaAi;
 using BiExcellence.OpenBi.Api.Commands.Users;
 using MajaMobile.Extensions;
 using MajaMobile.Models;
@@ -11,23 +10,18 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Auth;
-using Xamarin.Forms;
 
 namespace MajaMobile.Utilities
 {
-    public class SessionHandler
+    public class SessionHandler : IDisposable
     {
-
-        private static SessionHandler _instance;
-        public static SessionHandler Instance => _instance ?? (_instance = new SessionHandler());
-        public static IOpenBiSession Session { get; private set; }
-        private static List<string> _packages = new List<string>();
-        public static IReadOnlyList<string> Packages => _packages;
+        public IOpenBiSession Session { get; private set; }
+        private List<string> _packages = new List<string>();
+        public IReadOnlyList<string> Packages => _packages;
 
         private static IOpenBiConfiguration _openBiConfiguration = new OpenBiConfiguration(Protocol.HTTPS, "maja.ai", 443, "MajaApp");
 
-        public const string UserChangedMessage = "USER_CHANGED";
-
+        public event EventHandler<UserChangedEventArgs> UserChanged;
         private IUser _openBiUser;
         public IUser OpenBiUser
         {
@@ -35,13 +29,20 @@ namespace MajaMobile.Utilities
             set
             {
                 _openBiUser = value;
-                MessagingCenter.Send(this, UserChangedMessage, value);
+                UserChanged?.Invoke(this, new UserChangedEventArgs(value));
             }
         }
 
-        private SessionHandler()
+        public SessionHandler(IEnumerable<string> packages)
         {
+            _packages.AddRange(packages);
+        }
 
+        /// <summary>
+        /// Uses packages from database
+        /// </summary>
+        public SessionHandler()
+        {
             using (var db = new AppDatabase())
             {
                 var ids = db.GetTalentIds();
@@ -51,7 +52,7 @@ namespace MajaMobile.Utilities
             }
         }
 
-        public static void SaveTalentSelection(MajaTalent talent)
+        public void SaveTalentSelection(MajaTalent talent)
         {
             if (!talent.Selected)
             {
@@ -71,7 +72,7 @@ namespace MajaMobile.Utilities
             }
 
         }
-        
+
         private Task _currentUserLoginTask;
         private const string _accountStoreServiceId = "MajaAiAccount";
 
@@ -217,5 +218,20 @@ namespace MajaMobile.Utilities
             }, token);
         }
 
+        public void Dispose()
+        {
+            var session = Session;
+            Session = null;
+            session?.Dispose();
+            OpenBiUser = null;
+        }
+    }
+    public class UserChangedEventArgs : EventArgs
+    {
+        public IUser User { get; }
+        public UserChangedEventArgs(IUser user)
+        {
+            User = user;
+        }
     }
 }

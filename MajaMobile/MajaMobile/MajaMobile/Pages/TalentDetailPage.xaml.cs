@@ -10,10 +10,10 @@ namespace MajaMobile.Pages
 {
     public partial class TalentDetailPage : ContentPageBase
     {
-        public TalentDetailPage(MajaTalent talent)
+        public TalentDetailPage(MajaTalent talent, SessionHandler sessionHandler)
         {
             InitializeComponent();
-            BindingContext = ViewModel = new TalentDetailViewModel(talent);
+            BindingContext = ViewModel = new TalentDetailViewModel(talent, sessionHandler);
             OrganisationLabel.SizeChanged += OrganisationLabel_SizeChanged;
         }
 
@@ -44,7 +44,7 @@ namespace MajaMobile.ViewModels
             private set { SetField(value); }
         }
 
-        public TalentDetailViewModel(MajaTalent talent)
+        public TalentDetailViewModel(MajaTalent talent, SessionHandler sessionHandler) : base(sessionHandler)
         {
             Talent = talent;
             LoadOrganisation(talent.OrganisationId);
@@ -60,7 +60,7 @@ namespace MajaMobile.ViewModels
             IsBusy = true;
             try
             {
-                Organisation = await SessionHandler.Instance.ExecuteOpenbiCommand((s, t) => s.GetOrganisationById(organisationId));
+                Organisation = await SessionHandler.ExecuteOpenbiCommand((s, t) => s.GetOrganisationById(organisationId));
             }
             catch (Exception e)
             {

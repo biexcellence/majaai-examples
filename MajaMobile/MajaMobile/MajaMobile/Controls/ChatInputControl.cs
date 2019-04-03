@@ -2,6 +2,7 @@
 using MajaMobile.Utilities;
 using Syncfusion.SfAutoComplete.XForms;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
@@ -38,6 +39,13 @@ namespace MajaMobile.Controls
         {
             get { return (IPossibleUserReply)GetValue(CurrentUserInputProperty); }
             set { SetValue(CurrentUserInputProperty, value); }
+        }
+
+        private Func<string, IPossibleUserReply, CancellationToken, Task<IList<IMajaEntity>>> _getMajaEntitiesTask;
+
+        public void SetGetMajaEntitiesTask(Func<string, IPossibleUserReply, CancellationToken, Task<IList<IMajaEntity>>> task)
+        {
+            _getMajaEntitiesTask = task;
         }
 
         protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -277,7 +285,8 @@ namespace MajaMobile.Controls
         {
             text = text.Trim();
             var possibleUserReply = CurrentUserInput;
-            if (possibleUserReply == null || !string.Equals(possibleUserReply.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase) || !possibleUserReply.ControlOptions.TryGetValue("ENTITY_ID", out var entityId))
+            var getMajaEntitiesTask = _getMajaEntitiesTask;
+            if (getMajaEntitiesTask == null || possibleUserReply == null || !string.Equals(possibleUserReply.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase) || !possibleUserReply.ControlOptions.TryGetValue("ENTITY_ID", out var entityId))
                 return;
             if (text.Length < 3)
             {
@@ -294,27 +303,18 @@ namespace MajaMobile.Controls
                     CancelRunningTask();
                     var cts = _previousCts = new CancellationTokenSource();
 
-                    string filter = "";
-                    if (possibleUserReply.ControlOptions.TryGetValue("ENTITY_FILTER", out var entityFilter))
-                    {
-                        filter = (string)entityFilter;
-                    }
-
-                    var entities = await SessionHandler.Instance.ExecuteOpenbiCommand((s, t) => s.GetMajaEntities((string)entityId, filter, text, Utils.MajaApiKey, Utils.MajaApiSecret, SessionHandler.Packages, null, t), cts.Token);
+                    var entities = await getMajaEntitiesTask(text, possibleUserReply, cts.Token);
                     if (!cts.IsCancellationRequested)
                     {
                         _previousCts = null;
                         EntitySearchResults.Clear();
-                        foreach (var entity in entities.Take(10).OrderBy(e => e.Name))
+                        foreach (var entity in entities?.Take(10).OrderBy(e => e.Name))
                         {
                             EntitySearchResults.Add(entity);
                         }
                     }
                 }
-                catch (Exception e)
-                {
-
-                }
+                catch (Exception e) { }
             }
         }
 

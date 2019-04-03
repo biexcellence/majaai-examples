@@ -30,7 +30,7 @@
                 <controls:RoundImage Source="{Binding User.Picture, Converter={StaticResource ByteArrayImageConverter}}" HorizontalOptions="Center" VerticalOptions="Center" HeightRequest="150" WidthRequest="150" Grid.ColumnSpan="2"/>
                 <skia:SKCanvasView PaintSurface="OverlayCanvas_PaintSurface" Grid.ColumnSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
                 <skia:SKCanvasView PaintSurface="ImageCanvas_PaintSurface" Grid.ColumnSpan="2" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="150" HeightRequest="150">
-                    <skia:SKCanvasView.GestureRecognizers>  
+                    <skia:SKCanvasView.GestureRecognizers>
                         <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
                     </skia:SKCanvasView.GestureRecognizers>
                 </skia:SKCanvasView>

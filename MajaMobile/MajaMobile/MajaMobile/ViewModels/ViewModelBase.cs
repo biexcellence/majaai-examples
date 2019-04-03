@@ -1,4 +1,5 @@
 ﻿using MajaMobile.Interfaces;
+using MajaMobile.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,6 +19,8 @@ namespace MajaMobile.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public SessionHandler SessionHandler { get; }
 
         public bool IsIdle
         {
@@ -58,6 +61,11 @@ namespace MajaMobile.ViewModels
         public ViewModelBase()
         {
             GoBackCommand = new Command(GoBack);
+        }
+
+        public ViewModelBase(SessionHandler sessionHandler) : this()
+        {
+            SessionHandler = sessionHandler;
         }
 
         private readonly Dictionary<string, object> _fields = new Dictionary<string, object>();

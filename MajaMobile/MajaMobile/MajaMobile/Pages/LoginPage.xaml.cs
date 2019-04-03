@@ -8,10 +8,10 @@ namespace MajaMobile.Pages
 {
     public partial class LoginPage : ContentPageBase
     {
-        public LoginPage()
+        public LoginPage(SessionHandler sessionHandler)
         {
             InitializeComponent();
-            BindingContext = ViewModel = new LoginPageViewModel();
+            BindingContext = ViewModel = new LoginPageViewModel(sessionHandler);
         }
 
         protected override void OnAppearing()
@@ -63,7 +63,7 @@ namespace MajaMobile.ViewModels
             }
         }
 
-        public LoginPageViewModel()
+        public LoginPageViewModel(SessionHandler sessionHandler) : base(sessionHandler)
         {
             SignInCommand = new Command(SignIn);
         }
@@ -75,7 +75,7 @@ namespace MajaMobile.ViewModels
                 IsBusy = true;
                 try
                 {
-                    await SessionHandler.Instance.OpenbiUserLogin(UsernameInput, PasswordInput);
+                    await SessionHandler.OpenbiUserLogin(UsernameInput, PasswordInput);
                     MessagingCenter.Send(this, LoginMessage);
                 }
                 catch (Exception ex)

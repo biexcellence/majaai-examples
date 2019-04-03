@@ -22,13 +22,15 @@ namespace MajaMobile.Pages
             Style = style;
             MasterBehavior = MasterBehavior.Popover;
 
+            var sessionHandler = new SessionHandler();
+
             var binding = new Binding(nameof(MainPageMasterViewModel.IsPresented), BindingMode.TwoWay);
             SetBinding(IsPresentedProperty, binding);
-            BindingContext = _viewModel = new MainPageMasterViewModel();
+            BindingContext = _viewModel = new MainPageMasterViewModel(sessionHandler);
 
             Master = new MainPageMaster(_viewModel);
 
-            _mainPage = new MainPage();
+            _mainPage = new MainPage(sessionHandler);
             var navigationPage = new NavigationPageBase(_mainPage);//{ Icon = "Icon-Small.png" };
             Detail = navigationPage;
             navigationPage.Popped += NavigationPage_Popped;
@@ -55,30 +57,21 @@ namespace MajaMobile.Pages
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.SelectTalentsMessage, async (MainPageMasterViewModel viewmodel) =>
             {
                 if (PrepareNavigation())
-                    await Detail.Navigation.PushAsync(new TalentsPage());
+                    await Detail.Navigation.PushAsync(new TalentsPage(_viewModel.SessionHandler));
             });
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.LoginMessage, async (MainPageMasterViewModel viewmodel) =>
             {
                 if (PrepareNavigation())
-                    await Detail.Navigation.PushAsync(new LoginPage());
+                    await Detail.Navigation.PushAsync(new LoginPage(_viewModel.SessionHandler));
             });
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.EditUserProfileMessage, async (MainPageMasterViewModel viewmodel, IUser user) =>
             {
                 if (user != null && PrepareNavigation())
                 {
-                    await Detail.Navigation.PushAsync(new UserProfilePage(user));
+                    await Detail.Navigation.PushAsync(new UserProfilePage(user, _viewModel.SessionHandler));
                 }
             });
             MessagingCenter.Subscribe<ImmoObject>(this, ImmoObject.TappedMessage, ImmoTapped);
-        }
-
-        private async void ImmoTapped(ImmoObject immo)
-        {
-            try
-            {
-                await Browser.OpenAsync(immo.Link, BrowserLaunchMode.SystemPreferred);
-            }
-            catch (Exception) { }
         }
 
         protected override void OnDisappearing()
@@ -92,6 +85,18 @@ namespace MajaMobile.Pages
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.LoginMessage);
             MessagingCenter.Unsubscribe<ImmoObject>(this, ImmoObject.TappedMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel, IUser>(this, MainPageMasterViewModel.EditUserProfileMessage);
+        }
+
+        private async void ImmoTapped(ImmoObject immo)
+        {
+            if (PrepareNavigation())
+            {
+                try
+                {
+                    await Browser.OpenAsync(immo.Link, BrowserLaunchMode.SystemPreferred);
+                }
+                catch (Exception) { }
+            }
         }
 
         private void Register(MainPageMasterViewModel viewmodel)
@@ -136,7 +141,7 @@ namespace MajaMobile.Pages
         //Prevent double tap
         private bool PrepareNavigation()
         {
-            if (Detail.Navigation.NavigationStack.Count == 1 && _mainPage.IsIdle)
+            if (Detail.Navigation.NavigationStack.LastOrDefault() is MainPage page && page.IsIdle)
             {
                 _viewModel.IsPresented = false;
                 return true;
@@ -188,15 +193,15 @@ namespace MajaMobile.ViewModels
             set { SetField(value); if (value == null) UserExpanded = false; }
         }
 
-        public MainPageMasterViewModel()
+        public MainPageMasterViewModel(SessionHandler sessionHandler) : base(sessionHandler)
         {
             LoginCommand = new Command(() => MessagingCenter.Send(this, LoginMessage));
-            LogoutCommand = new Command(() => SessionHandler.Instance.Logout());
+            LogoutCommand = new Command(() => SessionHandler.Logout());
             RegisterCommand = new Command(() => MessagingCenter.Send(this, RegisterMessage));
             SelectTalentsCommand = new Command(() => MessagingCenter.Send(this, SelectTalentsMessage));
             ProfileExpanderCommand = new Command(() => UserExpanded = !UserExpanded);
             EditProfileCommand = new Command(() => MessagingCenter.Send(this, EditUserProfileMessage, User));
-            MessagingCenter.Subscribe(this, SessionHandler.UserChangedMessage, (SessionHandler s, IUser user) => User = user);
+            SessionHandler.UserChanged += (object sender, UserChangedEventArgs e) => User = e.User;
             Login();
         }
 
@@ -205,7 +210,7 @@ namespace MajaMobile.ViewModels
             IsBusy = true;
             try
             {
-                await SessionHandler.Instance.OpenbiUserLogin();
+                await SessionHandler.OpenbiUserLogin();
             }
             catch (Exception) { }
             finally

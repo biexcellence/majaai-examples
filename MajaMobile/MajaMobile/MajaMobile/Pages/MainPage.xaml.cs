@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -20,11 +21,23 @@ namespace MajaMobile.Pages
     {
         public bool IsIdle => ViewModel.IsIdle;
 
-        public MainPage()
+        public MainPage(SessionHandler sessionHandler)
         {
             InitializeComponent();
-            var viewmodel = new MainPageViewModel();
+            var viewmodel = new MainPageViewModel(sessionHandler);
             BindingContext = ViewModel = viewmodel;
+            ChatControl.SetGetMajaEntitiesTask(GetMajaEntities);
+        }
+
+        private Task<IList<IMajaEntity>> GetMajaEntities(string text, IPossibleUserReply possibleUserReply, CancellationToken cancellationToken)
+        {
+            var entityId = possibleUserReply.ControlOptions["ENTITY_ID"];
+            string filter = "";
+            if (possibleUserReply.ControlOptions.TryGetValue("ENTITY_FILTER", out var entityFilter))
+            {
+                filter = (string)entityFilter;
+            }
+            return ViewModel.SessionHandler.ExecuteOpenbiCommand((s, t) => s.GetMajaEntities((string)entityId, filter, text, Utils.MajaApiKey, Utils.MajaApiSecret, ViewModel.SessionHandler.Packages, null, t), cancellationToken);
         }
 
         public void ShiftEntryUp(double keyboardHeight)
@@ -107,7 +120,7 @@ namespace MajaMobile.ViewModels
             set { SetField(value); }
         }
 
-        public MainPageViewModel()
+        public MainPageViewModel(SessionHandler sessionHandler) : base(sessionHandler)
         {
             _deviceInfo = DependencyService.Get<IDeviceInfo>();
             _audioService = DependencyService.Get<IAudioService>();
@@ -120,10 +133,29 @@ namespace MajaMobile.ViewModels
             MajaSpeakingEnabledCommand = new Command(SwitchMajaSpeakingEnabled);
             CancelDialogCommand = new Command(CancelDialog);
 
+            MajaSpeakingEnabled = true;
+        }
+
+        public override void SendAppearing()
+        {
+            base.SendAppearing();
             _audioService.SpeechRecognitionPartialResult += _audioService_SpeechRecognitionPartialResult;
             _audioService.SpeechRecognitionResult += _audioService_SpeechRecognitionResult;
+        }
 
-            MajaSpeakingEnabled = true;
+        public override void SendDisappearing()
+        {
+            base.SendDisappearing();
+            foreach (MajaConversationMessageAudio audioMessage in Messages.Where(m => m is MajaConversationMessageAudio))
+            {
+                if (audioMessage.IsPlaying)
+                {
+                    audioMessage.StopAudio();
+                }
+            }
+            StopAudioService();
+            _audioService.SpeechRecognitionPartialResult -= _audioService_SpeechRecognitionPartialResult;
+            _audioService.SpeechRecognitionResult -= _audioService_SpeechRecognitionResult;
         }
 
         private void SendTextCommandExecuted(object parameter)
@@ -144,19 +176,6 @@ namespace MajaMobile.ViewModels
             {
                 SendText();
             }
-        }
-
-        public override void SendDisappearing()
-        {
-            base.SendDisappearing();
-            foreach (MajaConversationMessageAudio audioMessage in Messages.Where(m => m is MajaConversationMessageAudio))
-            {
-                if (audioMessage.IsPlaying)
-                {
-                    audioMessage.StopAudio();
-                }
-            }
-            StopAudioService();
         }
 
         private void StopAudioService()
@@ -318,7 +337,7 @@ namespace MajaMobile.ViewModels
                 {
                     IList<IMajaQueryAnswer> answers = null;
                     var cancellationToken = tokenSource != null ? tokenSource.Token : default(CancellationToken);
-                    answers = await SessionHandler.Instance.ExecuteOpenbiCommand((s, t) => s.QueryMajaForAnswers(value, Utils.MajaApiKey, Utils.MajaApiSecret, SessionHandler.Packages, parameters, t), cancellationToken);
+                    answers = await SessionHandler.ExecuteOpenbiCommand((s, t) => s.QueryMajaForAnswers(value, Utils.MajaApiKey, Utils.MajaApiSecret, SessionHandler.Packages, parameters, t), cancellationToken);
                     if (tokenSource == null || !tokenSource.IsCancellationRequested)
                     {
                         if (answers == null || answers.Count == 0)
@@ -377,8 +396,11 @@ namespace MajaMobile.ViewModels
                     }
                     _cancellingDialog = false;
                 }
+                TextSent();
             }
         }
+
+        protected virtual void TextSent() { }
 
         private bool _cancellingDialog;
         private void CancelDialog()

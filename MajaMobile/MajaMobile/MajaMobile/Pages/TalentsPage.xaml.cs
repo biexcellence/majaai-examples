@@ -6,23 +6,22 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Xamarin.Forms;
 
 namespace MajaMobile.Pages
 {
     public partial class TalentsPage : ContentPageBase
     {
-        public TalentsPage()
+        public TalentsPage(SessionHandler sessionHandler)
         {
             InitializeComponent();
-            BindingContext = ViewModel = new TalentsViewModel();
+            BindingContext = ViewModel = new TalentsViewModel(sessionHandler);
         }
 
         private async void TalentList_ItemTapped(object sender, Syncfusion.ListView.XForms.ItemTappedEventArgs e)
         {
             if (Navigation.NavigationStack.Last() == this && e.ItemData is MajaTalent talent)
             {
-                await Navigation.PushAsync(new TalentDetailPage(talent));
+                await Navigation.PushAsync(new TalentDetailPage(talent, ViewModel.SessionHandler));
             }
         }
     }
@@ -35,7 +34,7 @@ namespace MajaMobile.ViewModels
 
         public ObservableCollection<MajaTalent> Talents { get; } = new ObservableCollection<MajaTalent>();
 
-        public TalentsViewModel()
+        public TalentsViewModel(SessionHandler sessionHandler) : base(sessionHandler)
         {
             LoadTalents();
         }
@@ -45,7 +44,7 @@ namespace MajaMobile.ViewModels
             try
             {
                 IsBusy = true;
-                var talents = await SessionHandler.Instance.ExecuteOpenbiCommand((s, t) => s.GetMajaTalents(t));
+                var talents = await SessionHandler.ExecuteOpenbiCommand((s, t) => s.GetMajaTalents(t));
                 var categories = new Dictionary<string, MajaCategory>();
                 foreach (var apiTalent in talents)
                 {
