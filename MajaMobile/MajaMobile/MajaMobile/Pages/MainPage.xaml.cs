@@ -11,7 +11,6 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -26,18 +25,6 @@ namespace MajaMobile.Pages
             InitializeComponent();
             var viewmodel = new MainPageViewModel(sessionHandler);
             BindingContext = ViewModel = viewmodel;
-            ChatControl.SetGetMajaEntitiesTask(GetMajaEntities);
-        }
-
-        private Task<IList<IMajaEntity>> GetMajaEntities(string text, IPossibleUserReply possibleUserReply, CancellationToken cancellationToken)
-        {
-            var entityId = possibleUserReply.ControlOptions["ENTITY_ID"];
-            string filter = "";
-            if (possibleUserReply.ControlOptions.TryGetValue("ENTITY_FILTER", out var entityFilter))
-            {
-                filter = (string)entityFilter;
-            }
-            return ViewModel.SessionHandler.ExecuteOpenbiCommand((s, t) => s.GetMajaEntities((string)entityId, filter, text, Utils.MajaApiKey, Utils.MajaApiSecret, ViewModel.SessionHandler.Packages, null, t), cancellationToken);
         }
 
         public void ShiftEntryUp(double keyboardHeight)
@@ -49,6 +36,79 @@ namespace MajaMobile.Pages
         {
             ChatButton.TranslationY = ChatControl.TranslationY = MultipleChoiceControl.TranslationY = CancelLabel.TranslationY = 0;
         }
+
+        #region AutoComplete
+        private string _lastSearch = "";
+        private CancellationTokenSource _previousCts;
+        private async void UpdateEntityInfo(string text)
+        {
+            text = text.Trim();
+            var possibleUserReply = ((MainPageViewModel)ViewModel).CurrentUserInput;
+            if (possibleUserReply == null || !string.Equals(possibleUserReply.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase) || !possibleUserReply.ControlOptions.TryGetValue("ENTITY_ID", out var entityId))
+                return;
+            if (text.Length < 3)
+            {
+                CancelRunningTask();
+                ChatControl.EntitySearchResults.Clear();
+                _lastSearch = "";
+                return;
+            }
+            if (!string.Equals(_lastSearch, text, StringComparison.OrdinalIgnoreCase))
+            {
+                _lastSearch = text;
+                try
+                {
+                    CancelRunningTask();
+                    var cts = _previousCts = new CancellationTokenSource();
+
+                    string filter = "";
+                    if (possibleUserReply.ControlOptions.TryGetValue("ENTITY_FILTER", out var entityFilter))
+                    {
+                        filter = (string)entityFilter;
+                    }
+                    var entities = await ViewModel.SessionHandler.ExecuteOpenbiCommand((s, t) => s.GetMajaEntities((string)entityId, filter, text, Utils.MajaApiKey, Utils.MajaApiSecret, ViewModel.SessionHandler.Packages, null, t), cts.Token);
+                    if (!cts.IsCancellationRequested)
+                    {
+                        _previousCts = null;
+                        ChatControl.EntitySearchResults.Clear();
+                        foreach (var entity in entities?.Take(10).OrderBy(e => e.Name))
+                        {
+                            ChatControl.EntitySearchResults.Add(entity);
+                        }
+                    }
+                }
+                catch (Exception e) { }
+            }
+        }
+
+        private void CancelRunningTask()
+        {
+            try
+            {
+                var previousCts = _previousCts;
+                _previousCts = null;
+                if (previousCts != null)
+                {
+                    try
+                    {
+                        previousCts.Cancel();
+                    }
+                    catch { }
+                }
+            }
+            catch (Exception) { }
+        }
+
+        private void ChatControl_AutoCompleteValueChanged(object sender, Syncfusion.SfAutoComplete.XForms.ValueChangedEventArgs e)
+        {
+            UpdateEntityInfo(e.Value);
+        }
+
+        private void ChatControl_AutoCompleteselectionChanged(object sender, Syncfusion.SfAutoComplete.XForms.SelectionChangedEventArgs e)
+        {
+            CancelRunningTask();
+        }
+        #endregion
     }
 
     public enum MajaListeningStatus

@@ -2,14 +2,9 @@
 using MajaMobile.Utilities;
 using Syncfusion.SfAutoComplete.XForms;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
-using System.Net.Http;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -18,6 +13,9 @@ namespace MajaMobile.Controls
     public class ChatInputControl : ContentView
     {
         private View _currentElement;
+
+        public event EventHandler<Syncfusion.SfAutoComplete.XForms.ValueChangedEventArgs> AutoCompleteValueChanged;
+        public event EventHandler<Syncfusion.SfAutoComplete.XForms.SelectionChangedEventArgs> AutoCompleteSelectionChanged;
 
         public static readonly BindableProperty CurrentUserInputProperty = BindableProperty.Create(nameof(CurrentUserInput), typeof(IPossibleUserReply), typeof(ChatInputControl));
         public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(ChatInputControl), defaultBindingMode: BindingMode.TwoWay);
@@ -39,13 +37,6 @@ namespace MajaMobile.Controls
         {
             get { return (IPossibleUserReply)GetValue(CurrentUserInputProperty); }
             set { SetValue(CurrentUserInputProperty, value); }
-        }
-
-        private Func<string, IPossibleUserReply, CancellationToken, Task<IList<IMajaEntity>>> _getMajaEntitiesTask;
-
-        public void SetGetMajaEntitiesTask(Func<string, IPossibleUserReply, CancellationToken, Task<IList<IMajaEntity>>> task)
-        {
-            _getMajaEntitiesTask = task;
         }
 
         protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -272,85 +263,18 @@ namespace MajaMobile.Controls
         #endregion
 
         #region AutoComplete
+        public ObservableCollection<IMajaEntity> EntitySearchResults { get; private set; }
 
         private void AutoComplete_ValueChanged(object sender, Syncfusion.SfAutoComplete.XForms.ValueChangedEventArgs e)
         {
-            UpdateEntityInfo(e.Value);
-        }
-
-        public ObservableCollection<IMajaEntity> EntitySearchResults { get; private set; }
-        private string _lastSearch = "";
-        private CancellationTokenSource _previousCts;
-        private async void UpdateEntityInfo(string text)
-        {
-            text = text.Trim();
-            var possibleUserReply = CurrentUserInput;
-            var getMajaEntitiesTask = _getMajaEntitiesTask;
-            if (getMajaEntitiesTask == null || possibleUserReply == null || !string.Equals(possibleUserReply.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase) || !possibleUserReply.ControlOptions.TryGetValue("ENTITY_ID", out var entityId))
-                return;
-            if (text.Length < 3)
-            {
-                CancelRunningTask();
-                EntitySearchResults.Clear();
-                _lastSearch = "";
-                return;
-            }
-            if (!string.Equals(_lastSearch, text, StringComparison.OrdinalIgnoreCase))
-            {
-                _lastSearch = text;
-                try
-                {
-                    CancelRunningTask();
-                    var cts = _previousCts = new CancellationTokenSource();
-
-                    var entities = await getMajaEntitiesTask(text, possibleUserReply, cts.Token);
-                    if (!cts.IsCancellationRequested)
-                    {
-                        _previousCts = null;
-                        EntitySearchResults.Clear();
-                        foreach (var entity in entities?.Take(10).OrderBy(e => e.Name))
-                        {
-                            EntitySearchResults.Add(entity);
-                        }
-                    }
-                }
-                catch (Exception e) { }
-            }
-        }
-
-        private static async Task<HttpResponseMessage> SendApiRequest(HttpContent content, string urlParameters, CancellationToken token = default(CancellationToken))
-        {
-            using (var handler = new HttpClientHandler())
-            using (var client = new HttpClient(handler))
-            {
-                client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
-                return await client.PostAsync("https://maja.ai?" + urlParameters, content, token);
-            }
-        }
-
-        private void CancelRunningTask()
-        {
-            try
-            {
-                var previousCts = _previousCts;
-                _previousCts = null;
-                if (previousCts != null)
-                {
-                    try
-                    {
-                        previousCts.Cancel();
-                    }
-                    catch { }
-                }
-            }
-            catch (Exception) { }
+            AutoCompleteValueChanged?.Invoke(this, e);
         }
 
         private void AutoComplete_SelectionChanged(object sender, Syncfusion.SfAutoComplete.XForms.SelectionChangedEventArgs e)
         {
             if (e.Value != null)
             {
-                CancelRunningTask();
+                AutoCompleteSelectionChanged?.Invoke(this, e);
                 CompletedCommand?.Execute(e.Value);
             }
         }
