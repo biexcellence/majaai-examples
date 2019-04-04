@@ -4,6 +4,7 @@
              x:Class="MajaMobile.Pages.TalentDetailPage"
              xmlns:controls="clr-namespace:MajaMobile.Controls"
              xmlns:pages="clr-namespace:MajaMobile.Pages"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
              xmlns:util="clr-namespace:MajaMobile.Utilities"
              Title="Talent">
     <controls:ActivityIndicatorLayout>
@@ -11,13 +12,25 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="170"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Image Source="background.png" Aspect="AspectFill" Grid.RowSpan="2"/>
-            <Image Source="{Binding Talent.ImagePath}" HorizontalOptions="Center" VerticalOptions="Center" HeightRequest="150" Aspect="AspectFill"/>
-            <Button Text="Talent aktivieren" Command="{Binding TalentSelectionCommand}" IsVisible="{Binding Talent.Selected, Converter={StaticResource NotNullConverter}, ConverterParameter=invert}" Grid.Row="1" Margin="0,0,0,10"/>
-            <Button Text="Talent deaktivieren" Command="{Binding TalentSelectionCommand}" IsVisible="{Binding Talent.Selected}" Grid.Row="1" Margin="0,0,0,10"/>
-            <ScrollView Orientation="Vertical" Grid.Row="2">
+            <Image Source="background.png" Aspect="AspectFill" Grid.RowSpan="3"/>
+            <Image Source="{Binding Talent.ImagePath}" HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="150" Aspect="AspectFit"/>
+            <Button Text="Aktivieren" Command="{Binding TalentSelectionCommand}" IsVisible="{Binding Talent.Selected, Converter={StaticResource NotNullConverter}, ConverterParameter=invert}" Grid.Row="1" Margin="0,0,0,10"/>
+            <Button Text="Deaktivieren" Command="{Binding TalentSelectionCommand}" IsVisible="{Binding Talent.Selected}" Grid.Row="1" Margin="0,0,0,10"/>
+            <Grid Grid.Row="2">
+                <Button Text="Showcase" Clicked="Showcase_Clicked" Margin="0,0,0,10" VerticalOptions="Start">
+                    <Button.IsVisible>
+                        <Binding Path="Talent.ShowcaseGrammars.Count" Converter="{StaticResource GreaterThanConverter}">
+                            <Binding.ConverterParameter>
+                                <sys:Int32>0</sys:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Button.IsVisible>
+                </Button>
+            </Grid>
+            <ScrollView Orientation="Vertical" Grid.Row="3" VerticalOptions="StartAndExpand">
                 <Grid RowSpacing="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>

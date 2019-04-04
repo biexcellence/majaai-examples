@@ -5,7 +5,7 @@ using Xamarin.Forms;
 
 namespace MajaMobile.Pages
 {
-    public class ContentPageBase : ContentPage
+    public class ContentPageBase : ContentPage, IDisposable
     {
 
         public ViewModelBase ViewModel { get; protected set; }
@@ -62,6 +62,11 @@ namespace MajaMobile.Pages
                 }
                 await DisplayAlert("Fehler", message, "OK");
             }
+        }
+
+        public virtual void Dispose()
+        {
+            ViewModel.Dispose();
         }
     }
 

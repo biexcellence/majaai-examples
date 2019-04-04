@@ -1,11 +1,13 @@
 ﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace MajaMobile.Models
 {
 
-    public class MajaTalent:IMajaTalent, INotifyPropertyChanged
+    public class MajaTalent : IMajaTalent, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public string Id { get; }
@@ -15,6 +17,7 @@ namespace MajaMobile.Models
         public IMajaTalentCategory Category { get; }
         public string Description { get; }
         public string OrganisationId { get; }
+        public IList<IMajaGrammar> ShowcaseGrammars { get; }
         private bool _selected;
         public bool Selected
         {
@@ -37,6 +40,7 @@ namespace MajaMobile.Models
             Category = category;
             Description = talent.Description;
             OrganisationId = talent.OrganisationId;
+            ShowcaseGrammars = talent.ShowcaseGrammars.ToList();
         }
     }
 

@@ -3,6 +3,7 @@ using MajaMobile.Models;
 using MajaMobile.Utilities;
 using MajaMobile.ViewModels;
 using System;
+using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -28,6 +29,12 @@ namespace MajaMobile.Pages
                 //heights on all tested devices were 20-28
                 CategoryLabel.Margin = TalentLabel.Margin = OrganisationLabel.Margin = DescriptionLabel.Margin = new Thickness(20, 35 - labelHeight);
             }
+        }
+
+        private async void Showcase_Clicked(object sender, EventArgs e)
+        {
+            if (Navigation.NavigationStack.Last() == this)
+                await Navigation.PushAsync(new TalentShowcasePage(((TalentDetailViewModel)ViewModel).Talent));
         }
     }
 }

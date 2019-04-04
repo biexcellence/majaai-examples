@@ -20,10 +20,13 @@ namespace MajaMobile.Pages
     {
         public bool IsIdle => ViewModel.IsIdle;
 
-        public MainPage(SessionHandler sessionHandler)
+        public MainPage(SessionHandler sessionHandler) : this(new MainPageViewModel(sessionHandler))
+        {
+        }
+
+        protected MainPage(MainPageViewModel viewmodel)
         {
             InitializeComponent();
-            var viewmodel = new MainPageViewModel(sessionHandler);
             BindingContext = ViewModel = viewmodel;
         }
 
@@ -38,9 +41,19 @@ namespace MajaMobile.Pages
         }
 
         #region AutoComplete
+        private void ChatControl_AutoCompleteValueChanged(object sender, Syncfusion.SfAutoComplete.XForms.ValueChangedEventArgs e)
+        {
+            SearchEntities(e.Value);
+        }
+
+        private void ChatControl_AutoCompleteselectionChanged(object sender, Syncfusion.SfAutoComplete.XForms.SelectionChangedEventArgs e)
+        {
+            CancelRunningTask();
+        }
+
         private string _lastSearch = "";
         private CancellationTokenSource _previousCts;
-        private async void UpdateEntityInfo(string text)
+        private async void SearchEntities(string text)
         {
             text = text.Trim();
             var possibleUserReply = ((MainPageViewModel)ViewModel).CurrentUserInput;
@@ -98,16 +111,6 @@ namespace MajaMobile.Pages
             }
             catch (Exception) { }
         }
-
-        private void ChatControl_AutoCompleteValueChanged(object sender, Syncfusion.SfAutoComplete.XForms.ValueChangedEventArgs e)
-        {
-            UpdateEntityInfo(e.Value);
-        }
-
-        private void ChatControl_AutoCompleteselectionChanged(object sender, Syncfusion.SfAutoComplete.XForms.SelectionChangedEventArgs e)
-        {
-            CancelRunningTask();
-        }
         #endregion
     }
 
@@ -133,6 +136,9 @@ namespace MajaMobile.ViewModels
         IAudioService _audioService;
         IDeviceInfo _deviceInfo;
 
+        public ObservableCollection<ConversationMessage> Messages { get; } = new ObservableCollection<ConversationMessage>();
+        public ObservableCollection<IPossibleUserReply> PossibleUserReplies { get; } = new ObservableCollection<IPossibleUserReply>();
+
         private MajaConversationMessageThinking _thinkingMessage;
         private UserConversationMessage _speechRecognitionMessage;
         public bool DialogActive
@@ -145,8 +151,6 @@ namespace MajaMobile.ViewModels
             get => GetField<IPossibleUserReply>();
             private set { SetField(value); }
         }
-        public ObservableCollection<ConversationMessage> Messages { get; } = new ObservableCollection<ConversationMessage>();
-        public ObservableCollection<IPossibleUserReply> PossibleUserReplies { get; } = new ObservableCollection<IPossibleUserReply>();
 
         public string Text
         {
@@ -180,6 +184,12 @@ namespace MajaMobile.ViewModels
             set { SetField(value); }
         }
 
+        public bool UserCanChat
+        {
+            get => GetField<bool>();
+            set { SetField(value); }
+        }
+
         public MainPageViewModel(SessionHandler sessionHandler) : base(sessionHandler)
         {
             _deviceInfo = DependencyService.Get<IDeviceInfo>();
@@ -194,6 +204,7 @@ namespace MajaMobile.ViewModels
             CancelDialogCommand = new Command(CancelDialog);
 
             MajaSpeakingEnabled = true;
+            UserCanChat = true;
         }
 
         public override void SendAppearing()

@@ -10,9 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BiExcellence.OpenBi.Api.MajaAi" Version="0.0.11-ci-5737" />
-    <PackageReference Include="BiExcellence.OpenBi.Api.Organisation" Version="0.0.11-ci-5737" />
-    <PackageReference Include="BiExcellence.OpenBi.Api.User" Version="0.0.11-ci-5737" />
+    <PackageReference Include="BiExcellence.OpenBi.Api.MajaAi" Version="0.0.11-ci-5821" />
+    <PackageReference Include="BiExcellence.OpenBi.Api.Organisation" Version="0.0.11-ci-5821" />
+    <PackageReference Include="BiExcellence.OpenBi.Api.User" Version="0.0.11-ci-5821" />
     <PackageReference Include="SkiaSharp.Views.Forms" Version="1.68.0" />
     <PackageReference Include="sqlite-net-pcl" Version="1.6.258-beta" />
     <PackageReference Include="Syncfusion.Xamarin.SfAutoComplete" Version="16.4.0.54" />

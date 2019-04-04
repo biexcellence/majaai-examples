@@ -22,7 +22,6 @@
             <converters:FlightDelayConverter x:Key="FlightDelayConverter"/>
             <converters:FlightStatusTimeToVisibilityConverter x:Key="FlightTimeToVisibilityConverter"/>
             <converters:FlightStatusActualDateConverter x:Key="FlightStatusActualDateConverter"/>
-            <converters:GreaterThanConverter x:Key="GreaterThanConverter"/>
             <converters:PossibleUserReplyImageConverter x:Key="PossibleUserReplyImageConverter"/>
 
             <ControlTemplate x:Key="RealEstateControlTemplate">
@@ -480,11 +479,11 @@
                     </Binding.ConverterParameter>
                 </Binding>
             </ScrollView.IsVisible>
-            <StackLayout BindableLayout.ItemsSource="{Binding PossibleUserReplies}" BindableLayout.ItemTemplateSelector="{StaticResource ReplyTemplateSelector}" Orientation="Horizontal" HorizontalOptions="FillAndExpand" Spacing="0"/>
+            <StackLayout BindableLayout.ItemsSource="{Binding PossibleUserReplies}" BindableLayout.ItemTemplateSelector="{StaticResource ReplyTemplateSelector}" Orientation="Horizontal" HorizontalOptions="Start" Spacing="0"/>
         </ScrollView>
         <controls:ChatInputControl Margin="5,0,5,5" Grid.Row="3" VerticalOptions="End" HorizontalOptions="FillAndExpand" Text="{Binding Text}" AutoCompleteValueChanged="ChatControl_AutoCompleteValueChanged" AutoCompleteSelectionChanged="ChatControl_AutoCompleteselectionChanged"
-                             IsEnabled="{Binding IsIdle}" CompletedCommand="{Binding SendTextCommand}" CurrentUserInput="{Binding CurrentUserInput}" x:Name="ChatControl"/>
-        <controls:ChatButton VerticalOptions="End" HorizontalOptions="End" Grid.Row="3" Grid.Column="1" HeightRequest="45" WidthRequest="45" Margin="0,0,5,5" DisplayMode="{Binding ChatButtonMode}" x:Name="ChatButton">
+                             IsEnabled="{Binding IsIdle}" CompletedCommand="{Binding SendTextCommand}" CurrentUserInput="{Binding CurrentUserInput}" x:Name="ChatControl" IsVisible="{Binding UserCanChat}"/>
+        <controls:ChatButton VerticalOptions="End" HorizontalOptions="End" Grid.Row="3" Grid.Column="1" HeightRequest="45" WidthRequest="45" Margin="0,0,5,5" DisplayMode="{Binding ChatButtonMode}" x:Name="ChatButton" IsVisible="{Binding UserCanChat}">
             <controls:ChatButton.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding SpeechRecognitionCommand}"/>
             </controls:ChatButton.GestureRecognizers>

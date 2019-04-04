@@ -45,6 +45,10 @@ namespace MajaMobile.Pages
         private void NavigationPage_Popped(object sender, NavigationEventArgs e)
         {
             IsGestureEnabled = Detail.Navigation.NavigationStack.Count == 1;
+            if(e.Page is ContentPageBase page)
+            {
+                page.Dispose();
+            }
         }
 
         protected override void OnAppearing()
