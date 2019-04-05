@@ -102,14 +102,16 @@ namespace MajaMobile.ViewModels
 
         }
 
+        protected bool IsActive;
+
         public virtual void SendAppearing()
         {
-
+            IsActive = true;
         }
 
         public virtual void SendDisappearing()
         {
-
+            IsActive = false;
         }
 
     }

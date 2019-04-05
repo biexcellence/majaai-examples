@@ -71,6 +71,10 @@
                 <Setter Property="Padding" Value="10,0"/>
             </Style>
 
+            <Style TargetType="Switch">
+                <Setter Property="OnColor" Value="#409088"/>
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

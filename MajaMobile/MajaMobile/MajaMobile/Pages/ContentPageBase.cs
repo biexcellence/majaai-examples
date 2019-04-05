@@ -15,9 +15,7 @@ namespace MajaMobile.Pages
             var style = (Style)Application.Current.Resources["ContentPageStyle"];
             Style = style;
         }
-
-        protected bool PageIsActive;
-
+        
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -33,7 +31,6 @@ namespace MajaMobile.Pages
                 });
                 ViewModel.SendAppearing();
             }
-            PageIsActive = true;
         }
 
         protected override void OnDisappearing()
@@ -45,7 +42,6 @@ namespace MajaMobile.Pages
                 MessagingCenter.Unsubscribe<ViewModelBase>(this, ViewModelBase.GoBackMessage);
                 ViewModel.SendDisappearing();
             }
-            PageIsActive = false;
         }
 
         public async void RequestOnError(ViewModelBase viewmodel, Exception ex)

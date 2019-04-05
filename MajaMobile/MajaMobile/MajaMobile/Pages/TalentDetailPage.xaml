@@ -12,14 +12,11 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="170"/>
                 <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Image Source="background.png" Aspect="AspectFill" Grid.RowSpan="3"/>
+            <Image Source="background.png" Aspect="AspectFill" Grid.RowSpan="2"/>
             <Image Source="{Binding Talent.ImagePath}" HorizontalOptions="Fill" VerticalOptions="Center" HeightRequest="150" Aspect="AspectFit"/>
-            <Button Text="Aktivieren" Command="{Binding TalentSelectionCommand}" IsVisible="{Binding Talent.Selected, Converter={StaticResource NotNullConverter}, ConverterParameter=invert}" Grid.Row="1" Margin="0,0,0,10"/>
-            <Button Text="Deaktivieren" Command="{Binding TalentSelectionCommand}" IsVisible="{Binding Talent.Selected}" Grid.Row="1" Margin="0,0,0,10"/>
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="1">
                 <Button Text="Showcase" Clicked="Showcase_Clicked" Margin="0,0,0,10" VerticalOptions="Start">
                     <Button.IsVisible>
                         <Binding Path="Talent.ShowcaseGrammars.Count" Converter="{StaticResource GreaterThanConverter}">
@@ -30,9 +27,11 @@
                     </Button.IsVisible>
                 </Button>
             </Grid>
-            <ScrollView Orientation="Vertical" Grid.Row="3" VerticalOptions="StartAndExpand">
+            <ScrollView Orientation="Vertical" Grid.Row="2" VerticalOptions="StartAndExpand">
                 <Grid RowSpacing="0">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
@@ -44,7 +43,20 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}"/>
-                    <Label x:Name="TalentLabel" Grid.Row="1" Margin="20,10" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
+                    <StackLayout VerticalOptions="Center" Orientation="Horizontal" Grid.Row="1" Spacing="0">
+                        <Label x:Name="TalentActiveLabel" Text="Aktiv" FontFamily="{StaticResource UiFontSemiBold}" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding TalentSelectionCommand}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Switch IsToggled="{Binding TalentSelected}" VerticalOptions="Center" HorizontalOptions="Start">
+                            <Switch.Scale>
+                                <OnPlatform x:TypeArguments="x:Double" iOS="0.7" Android="1.0"/>
+                            </Switch.Scale>
+                        </Switch>
+                    </StackLayout>
+                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="2"/>
+                    <Label x:Name="TalentLabel" Grid.Row="3" Margin="20,10" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
                         <Label.FormattedText>
                             <FormattedString>
                                 <Span Text="Talent: " FontFamily="{StaticResource UiFontSemiBold}" FontSize="{StaticResource MediumFontSize}"/>
@@ -52,8 +64,8 @@
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
-                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="2"/>
-                    <Label x:Name="CategoryLabel" Grid.Row="3" Margin="20,10" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
+                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="4"/>
+                    <Label x:Name="CategoryLabel" Grid.Row="5" Margin="20,10" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
                         <Label.FormattedText>
                             <FormattedString>
                                 <Span Text="Kategorie: " FontFamily="{StaticResource UiFontSemiBold}" FontSize="{StaticResource MediumFontSize}"/>
@@ -61,8 +73,8 @@
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
-                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="4"/>
-                    <Label x:Name="OrganisationLabel" Grid.Row="5" Margin="20,10" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
+                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="6"/>
+                    <Label x:Name="OrganisationLabel" Grid.Row="7" Margin="20,10" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
                         <Label.FormattedText>
                             <FormattedString>
                                 <Span Text="Autor: " FontFamily="{StaticResource UiFontSemiBold}" FontSize="{StaticResource MediumFontSize}"/>
@@ -70,8 +82,8 @@
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
-                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="6"/>
-                    <Label x:Name="DescriptionLabel" Grid.Row="7" Margin="20,10" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
+                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" IsVisible="{Binding UserExpanded}" Grid.Row="8"/>
+                    <Label x:Name="DescriptionLabel" Grid.Row="9" Margin="20,10" FontSize="{StaticResource MediumFontSize}" VerticalTextAlignment="Center">
                         <Label.FormattedText>
                             <FormattedString>
                                 <Span Text="Beschreibung: " FontFamily="{StaticResource UiFontSemiBold}" FontSize="{StaticResource MediumFontSize}"/>
@@ -79,7 +91,7 @@
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
-                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" VerticalOptions="Start" IsVisible="{Binding UserExpanded}" Grid.Row="8"/>
+                    <BoxView BackgroundColor="{x:Static util:ColorScheme.SeparatorColor}" HeightRequest=".5" HorizontalOptions="FillAndExpand" VerticalOptions="Start" IsVisible="{Binding UserExpanded}" Grid.Row="10"/>
                 </Grid>
             </ScrollView>
         </Grid>

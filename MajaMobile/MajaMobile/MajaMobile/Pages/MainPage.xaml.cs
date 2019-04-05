@@ -461,7 +461,7 @@ namespace MajaMobile.ViewModels
                 finally
                 {
                     CurrentMajaState = MajaListeningStatus.Idle;
-                    if (MajaSpeakingEnabled && !string.IsNullOrEmpty(speakingText))
+                    if (MajaSpeakingEnabled && !string.IsNullOrEmpty(speakingText) && IsActive)
                     {
                         _audioService.PlayAudio(speakingText);
                     }

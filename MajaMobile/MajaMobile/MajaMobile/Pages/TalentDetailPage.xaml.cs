@@ -15,19 +15,21 @@ namespace MajaMobile.Pages
         {
             InitializeComponent();
             BindingContext = ViewModel = new TalentDetailViewModel(talent, sessionHandler);
-            OrganisationLabel.SizeChanged += OrganisationLabel_SizeChanged;
+            TalentActiveLabel.SizeChanged += TalentActiveLabel_SizeChanged;
         }
 
-        private void OrganisationLabel_SizeChanged(object sender, EventArgs e)
+        private void TalentActiveLabel_SizeChanged(object sender, EventArgs e)
         {
             //different heights of labels on different devices require dynamic vertical margins.
             //small labelHeights require high vertical margin
-            if (CategoryLabel.Height > 0)
+            if (TalentActiveLabel.Height > 0)
             {
-                OrganisationLabel.SizeChanged -= OrganisationLabel_SizeChanged;
-                var labelHeight = OrganisationLabel.Height;
+                TalentActiveLabel.SizeChanged -= TalentActiveLabel_SizeChanged;
+                var labelHeight = TalentActiveLabel.Height;
                 //heights on all tested devices were 20-28
-                CategoryLabel.Margin = TalentLabel.Margin = OrganisationLabel.Margin = DescriptionLabel.Margin = new Thickness(20, 35 - labelHeight);
+                var margin = 35 - labelHeight;
+                CategoryLabel.Margin = TalentLabel.Margin = OrganisationLabel.Margin = DescriptionLabel.Margin = new Thickness(20, margin);
+                TalentActiveLabel.Margin = new Thickness(20, margin, Device.RuntimePlatform == Device.iOS ? margin * 0.5 : margin, margin);
             }
         }
 
@@ -51,15 +53,22 @@ namespace MajaMobile.ViewModels
             private set { SetField(value); }
         }
 
+        public bool TalentSelected
+        {
+            get => Talent.Selected;
+            set
+            {
+                Talent.Selected = value;
+                OnPropertyChanged();
+                SessionHandler.SaveTalentSelection(Talent);
+            }
+        }
+
         public TalentDetailViewModel(MajaTalent talent, SessionHandler sessionHandler) : base(sessionHandler)
         {
             Talent = talent;
             LoadOrganisation(talent.OrganisationId);
-            TalentSelectionCommand = new Command(() =>
-            {
-                Talent.Selected = !Talent.Selected;
-                SessionHandler.SaveTalentSelection(Talent);
-            });
+            TalentSelectionCommand = new Command(() => TalentSelected = !TalentSelected);
         }
 
         private async void LoadOrganisation(string organisationId)

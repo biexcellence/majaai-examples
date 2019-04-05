@@ -45,7 +45,7 @@ namespace MajaMobile.Pages
         private void NavigationPage_Popped(object sender, NavigationEventArgs e)
         {
             IsGestureEnabled = Detail.Navigation.NavigationStack.Count == 1;
-            if(e.Page is ContentPageBase page)
+            if (e.Page is ContentPageBase page)
             {
                 page.Dispose();
             }
@@ -60,17 +60,17 @@ namespace MajaMobile.Pages
             MessagingCenter.Subscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.RegisterMessage, Register);
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.SelectTalentsMessage, async (MainPageMasterViewModel viewmodel) =>
             {
-                if (PrepareNavigation())
+                if (PrepareNavigation() && _viewModel.IsIdle)
                     await Detail.Navigation.PushAsync(new TalentsPage(_viewModel.SessionHandler));
             });
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.LoginMessage, async (MainPageMasterViewModel viewmodel) =>
             {
-                if (PrepareNavigation())
+                if (PrepareNavigation() && _viewModel.IsIdle)
                     await Detail.Navigation.PushAsync(new LoginPage(_viewModel.SessionHandler));
             });
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.EditUserProfileMessage, async (MainPageMasterViewModel viewmodel, IUser user) =>
             {
-                if (user != null && PrepareNavigation())
+                if (user != null && PrepareNavigation() && _viewModel.IsIdle)
                 {
                     await Detail.Navigation.PushAsync(new UserProfilePage(user, _viewModel.SessionHandler));
                 }
@@ -93,14 +93,11 @@ namespace MajaMobile.Pages
 
         private async void ImmoTapped(ImmoObject immo)
         {
-            if (PrepareNavigation())
+            try
             {
-                try
-                {
-                    await Browser.OpenAsync(immo.Link, BrowserLaunchMode.SystemPreferred);
-                }
-                catch (Exception) { }
+                await Browser.OpenAsync(immo.Link, BrowserLaunchMode.SystemPreferred);
             }
+            catch (Exception) { }
         }
 
         private void Register(MainPageMasterViewModel viewmodel)
