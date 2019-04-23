@@ -108,6 +108,60 @@ namespace MajaMobile.Pages
             }
         }
 
+        //private const string takePhoto = "Foto aufnehmen";
+        //private const string choosePhoto = "Vorhandenes Foto auswählen";
+        //private async void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+        //{
+        //    if (ViewModel.IsBusy)
+        //        return;
+        //    var action = await DisplayActionSheet("Profilbild", "Abbrechen", null, takePhoto, choosePhoto);
+        //    switch (action)
+        //    {
+        //        case takePhoto:
+        //            if (!CrossMedia.Current.IsTakePhotoSupported)
+        //            {
+        //                await DisplayAlert("Bild aufnehmen", "Die Funktion wird von Ihrem Gerät derzeit nicht unterstützt", "OK");
+        //                return;
+        //            }
+        //            break;
+        //        case choosePhoto:
+        //            if (!CrossMedia.Current.IsPickPhotoSupported)
+        //            {
+        //                await DisplayAlert("Bild auswählen", "Die Funktion wird von Ihrem Gerät derzeit nicht unterstützt", "OK");
+        //                return;
+        //            }
+        //            break;
+        //        default:
+        //            return;
+        //    }
+        //    try
+        //    {
+        //        ViewModel.IsBusy = true;
+        //        using (var imageFile = action == choosePhoto ? await CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions() { PhotoSize = Plugin.Media.Abstractions.PhotoSize.Medium })
+        //                                                     : await CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions() { PhotoSize = Plugin.Media.Abstractions.PhotoSize.Medium, SaveToAlbum = false, AllowCropping = false }))
+        //        {
+        //            if (imageFile != null)
+        //            {
+        //                using (var stream = imageFile.GetStreamWithImageRotatedForExternalStorage())
+        //                using (var ms = new MemoryStream())
+        //                {
+        //                    await stream.CopyToAsync(ms);
+        //                    await Navigation.PushAsync(new ImageEditorPage(ms.ToArray()));
+        //                    MessagingCenter.Subscribe<ImageEditorPage, byte[]>(this, ImageEditorPage.ImageSavedMessage, ImageEditor_Saved);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine("Cannot access camera. Error: ", ex.Message);
+        //    }
+        //    finally
+        //    {
+        //        ViewModel.IsBusy = false;
+        //    }
+        //}
+
         private async void TapGestureRecognizer_Tapped(object sender, EventArgs e)
         {
             if (ViewModel.IsBusy)

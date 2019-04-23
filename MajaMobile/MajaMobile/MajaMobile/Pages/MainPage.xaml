@@ -259,7 +259,12 @@
                 <!--TODO-->
                 <ContentView ControlTemplate="{StaticResource MessageTemplate}">
                     <Grid>
-                        <Label Text="{Binding Text}" TextColor="{Binding Speaker, Converter={StaticResource TextColorConverter}}"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Label Text="{Binding Text}" TextColor="{Binding Speaker, Converter={StaticResource TextColorConverter}}" IsVisible="{Binding Text, Converter={StaticResource NotNullConverter}}"/>
+                        <controls:VideoPlayer Source="{Binding VideoSource}" WidthRequest="{Binding ImageWidth}" HeightRequest="{Binding ImageWidth}" Grid.Row="1"/>
                     </Grid>
                 </ContentView>
             </DataTemplate>

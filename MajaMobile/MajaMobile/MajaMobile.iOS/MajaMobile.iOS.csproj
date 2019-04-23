@@ -118,6 +118,7 @@
     <Compile Include="Renderers\MultiLineLabelRenderer.cs" />
     <Compile Include="Renderers\RoundImageRenderer.cs" />
     <Compile Include="Renderers\CancelBackPageRenderer.cs" />
+    <Compile Include="Renderers\VideoPlayerRenderer.cs" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist">
       <SubType>Designer</SubType>

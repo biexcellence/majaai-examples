@@ -439,8 +439,8 @@ namespace MajaMobile.ViewModels
                                     }
                                 }
                                 completed = completed && answer.Completed;
-                                //don't speak when answer is AudioFile
-                                if (answer.ProposalType == MajaQueryAnswerProposalType.AudioFile)
+                                //don't speak when answer is AudioFile or VideoFile
+                                if (answer.ProposalType == MajaQueryAnswerProposalType.AudioFile || answer.ProposalType == MajaQueryAnswerProposalType.VideoFile)
                                     speakingText = "";
                             }
                             DialogActive = !completed;

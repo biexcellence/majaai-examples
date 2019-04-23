@@ -93,6 +93,7 @@
     <Compile Include="Renderers\MultiLineLabelRenderer.cs" />
     <Compile Include="Renderers\CustomNavigationPageRenderer.cs" />
     <Compile Include="Renderers\RoundImageRenderer.cs" />
+    <Compile Include="Renderers\VideoPlayerRenderer.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
