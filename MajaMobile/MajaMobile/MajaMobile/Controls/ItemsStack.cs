@@ -68,35 +68,42 @@ namespace MajaMobile.Controls
 
             view.BindingContext = item;
 
+            view.IsVisible = false;
             view.MeasureInvalidated += View_MeasureInvalidated;
 
             return view;
         }
 
-        private async void View_MeasureInvalidated(object sender, EventArgs e)
+        private  void View_MeasureInvalidated(object sender, EventArgs e)
         {
             var view = sender as View;
             if (view != null)
             {
-                uint animationTime = 1000;
-                if (view.BindingContext is ConversationMessage message)
+                view.MeasureInvalidated -= View_MeasureInvalidated;
+                Device.StartTimer(TimeSpan.FromSeconds(.5), () =>
                 {
-                    if (message.Speaker == MajaConversationSpeaker.Maja)
-                    {
-                        view.TranslationX = _deviceInfo.ScreenWidth * -1;
-                    }
-                    else
-                    {
-                        view.TranslationX = _deviceInfo.ScreenWidth;
-                        animationTime = 750;
-                    }
-                }
-                var width = view.Width;
-                if (width > 0)
-                {
-                    view.MeasureInvalidated -= View_MeasureInvalidated;
-                    await view.TranslateTo(0, 0, animationTime, Easing.Linear);
-                }
+                    view.IsVisible = true;
+                    return false;
+                 });
+                //uint animationTime = 1000;
+                //if (view.BindingContext is ConversationMessage message)
+                //{
+                //    if (message.Speaker == MajaConversationSpeaker.Maja)
+                //    {
+                //        view.TranslationX = _deviceInfo.ScreenWidth * -1;
+                //    }
+                //    else
+                //    {
+                //        view.TranslationX = _deviceInfo.ScreenWidth;
+                //        animationTime = 750;
+                //    }
+                //}
+                //var width = view.Width;
+                //if (width > 0)
+                //{
+                //    view.MeasureInvalidated -= View_MeasureInvalidated;
+                //    await view.TranslateTo(0, 0, animationTime, Easing.Linear);
+                //}
             }
         }
 
