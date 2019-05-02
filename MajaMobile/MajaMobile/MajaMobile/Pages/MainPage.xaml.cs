@@ -112,6 +112,7 @@ namespace MajaMobile.Pages
             catch (Exception) { }
         }
         #endregion
+        
     }
 
     public enum MajaListeningStatus
@@ -423,7 +424,7 @@ namespace MajaMobile.ViewModels
                             speakingText = answers.First().Response;
                             foreach (var answer in answers)//TODO: only certain messages?
                             {
-                                foreach (var message in MajaConversationMessage.Factory((answer)))
+                                foreach (var message in MajaConversationMessage.Factory(answer))
                                 {
                                     Messages.Add(message);
                                 }
@@ -488,7 +489,7 @@ namespace MajaMobile.ViewModels
                 }
                 catch { }
             }
-            SendText("Abbrechen", "Dialog abbrechen");
+            SendText("Abbrechen", "Neue Frage stellen");
         }
 
         private void SwitchMajaSpeakingEnabled()

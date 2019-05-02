@@ -4,6 +4,7 @@ using MajaMobile.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -109,18 +110,20 @@ namespace MajaMobile.Messages
                     return new[] { new MajaConversationMessageNews(queryAnswer) };
                 case MajaQueryAnswerProposalType.Simple when string.Equals(queryAnswer.Action, "flightstatus", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(queryAnswer.Data):
                     var list = new List<MajaConversationMessage>();
-                    foreach(var flightStatus in FlightStatus.GetFlightStatusesFromJson(queryAnswer.Data))
+                    foreach (var flightStatus in FlightStatus.GetFlightStatusesFromJson(queryAnswer.Data))
                     {
                         list.Add(new MajaConversationMessageFlightStatus(queryAnswer, flightStatus));
                     }
                     if (list.Count > 0)
                         return list;
                     break;
+                case MajaQueryAnswerProposalType.Simple when string.Equals(queryAnswer.Action, "poi", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(queryAnswer.Response) && queryAnswer.Entities.Any(e => string.Equals(e.EntityProvider, "poi", StringComparison.OrdinalIgnoreCase)):
+                    return new[] { new MajaConversationMessagePoi(queryAnswer) };
+                case MajaQueryAnswerProposalType.Link:
+                    return new[] { new MajaConversationMessageLink(queryAnswer) };
             }
-            if (!string.IsNullOrEmpty(queryAnswer.Url))
-            {
-                return new[] { new MajaConversationMessageLink(queryAnswer) };
-            }
+            if (string.IsNullOrWhiteSpace(queryAnswer.Response))
+                return new MajaConversationMessage[0];
             return new[] { new MajaConversationMessage(queryAnswer) };
         }
 

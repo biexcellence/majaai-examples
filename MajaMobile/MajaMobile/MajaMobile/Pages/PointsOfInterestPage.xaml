@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:ContentPageBase xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:MajaMobile.Pages"
+             xmlns:sync="clr-namespace:Syncfusion.ListView.XForms;assembly=Syncfusion.SfListView.XForms"
+             xmlns:utils="clr-namespace:MajaMobile.Utilities"
+             x:Class="MajaMobile.Pages.PointsOfInterestPage" Title="Sehenswürdigkeiten">
+    <Grid>
+        <Image Source="background.png" Aspect="Fill"/>
+        <Grid Padding="10,0">
+            <sync:SfListView x:Name="listview" ItemsSource="{Binding Message.Pois}" ItemSpacing="5" ItemSize="150">
+                <sync:SfListView.LayoutManager>
+                    <sync:GridLayout SpanCount="{Binding SpanCount}" />
+                </sync:SfListView.LayoutManager>
+                <sync:SfListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid RowSpacing="5" WidthRequest="150" Padding="0,10,0,0">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding TappedCommand}"/>
+                            </Grid.GestureRecognizers>
+                            <Image HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Aspect="AspectFill" Source="{Binding Image}"/>
+                            <Grid BackgroundColor="{x:Static utils:ColorScheme.ImageOverlayColor}" VerticalOptions="End" Padding="5">
+                                <Label Text="{Binding Name}" TextColor="White" LineBreakMode="TailTruncation"/>
+                            </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </sync:SfListView.ItemTemplate>
+            </sync:SfListView>
+        </Grid>
+    </Grid>
+</pages:ContentPageBase>

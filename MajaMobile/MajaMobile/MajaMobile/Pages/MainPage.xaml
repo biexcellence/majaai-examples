@@ -26,7 +26,7 @@
 
             <ControlTemplate x:Key="RealEstateControlTemplate">
                 <Frame CornerRadius="10" Padding="5" HasShadow="False" BorderColor="Transparent" BackgroundColor="White">
-                    <Grid x:Name="RealEstateGrid" HeightRequest="{Binding Width, Source={x:Reference RealEstateGrid}}" BindingContext="{TemplateBinding BindingContext}" RowSpacing="2">
+                    <Grid x:Name="grid" HeightRequest="{Binding Width, Source={x:Reference grid}}" BindingContext="{TemplateBinding BindingContext}">
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding TappedCommand}"/>
                         </Grid.GestureRecognizers>
@@ -36,6 +36,22 @@
                         </Grid.RowDefinitions>
                         <Image HorizontalOptions="FillAndExpand" VerticalOptions="Start" Aspect="AspectFill" Source="{Binding Image}" Grid.Row="0"/>
                         <controls:MultiLineLabel Lines="3" Text="{Binding Name}" FontSize="{StaticResource SmallFontSize}" Grid.Row="1"/>
+                    </Grid>
+                </Frame>
+            </ControlTemplate>
+
+            <ControlTemplate x:Key="PoiControlTemplate">
+                <Frame x:Name="frame" HeightRequest="{Binding Width, Source={x:Reference frame}}" WidthRequest="150" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="10" Padding="5" HasShadow="False" BorderColor="Transparent" BackgroundColor="White">
+                    <Grid BindingContext="{TemplateBinding BindingContext}">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TappedCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Image HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Aspect="AspectFill" Source="{Binding Image}" Grid.Row="0"/>
+                        <Label Text="{Binding Name}" FontSize="{StaticResource SmallFontSize}" LineBreakMode="TailTruncation" Grid.Row="1"/>
                     </Grid>
                 </Frame>
             </ControlTemplate>
@@ -387,6 +403,33 @@
                     </Grid>
                 </ContentView>
             </DataTemplate>
+            <DataTemplate x:Key="PoiTemplate">
+                <ContentView ControlTemplate="{StaticResource MessageTemplate}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <TemplatedView ControlTemplate="{StaticResource PoiControlTemplate}" BindingContext="{Binding Pois, Converter={StaticResource ListConverter}, ConverterParameter=0}" IsVisible="{Binding ., Converter={StaticResource NotNullConverter}}" Grid.Row="0" Grid.Column="0"/>
+                        <TemplatedView ControlTemplate="{StaticResource PoiControlTemplate}" BindingContext="{Binding Pois, Converter={StaticResource ListConverter}, ConverterParameter=1}" IsVisible="{Binding ., Converter={StaticResource NotNullConverter}}" Grid.Row="0" Grid.Column="1"/>
+                        <TemplatedView ControlTemplate="{StaticResource PoiControlTemplate}" BindingContext="{Binding Pois, Converter={StaticResource ListConverter}, ConverterParameter=2}" IsVisible="{Binding ., Converter={StaticResource NotNullConverter}}" Grid.Row="1" Grid.Column="0"/>
+                        <TemplatedView ControlTemplate="{StaticResource PoiControlTemplate}" BindingContext="{Binding Pois, Converter={StaticResource ListConverter}, ConverterParameter=3}" IsVisible="{Binding ., Converter={StaticResource NotNullConverter}}" Grid.Row="1" Grid.Column="1"/>
+                        <Label Text="{Binding LinkText}" TextColor="#1fb8dd" Grid.Row="2" Grid.ColumnSpan="2">
+                            <Label.Effects>
+                                <effects:UnderlineEffect/>
+                            </Label.Effects>
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding PoisTappedCommand}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Grid>
+                </ContentView>
+            </DataTemplate>
 
             <controls:MessageDataTemplateSelector x:Key="TemplateSelector"
                                             TextTemplate="{StaticResource TextTemplate}"
@@ -398,7 +441,8 @@
                                             LocationTemplate="{StaticResource LocationTemplate}"
                                             AudioTemplate="{StaticResource AudioTemplate}"
                                             ThinkingTemplate="{StaticResource ThinkingTemplate}"
-                                            FlightStatusTemplate ="{StaticResource FlightStatusTemplate}"/>
+                                            FlightStatusTemplate ="{StaticResource FlightStatusTemplate}"
+                                            PoiTemplate ="{StaticResource PoiTemplate}"/>
             <ControlTemplate x:Key="MessageTemplate">
                 <Frame BindingContext="{TemplateBinding BindingContext}" HasShadow="True" BorderColor="Transparent" CornerRadius="10" Padding="8" HorizontalOptions="{Binding Speaker, Converter={StaticResource AlignmentConverter}}"
                            Margin="{Binding Speaker, Converter={StaticResource MarginConverter}}" BackgroundColor="{Binding Speaker, Converter={StaticResource ColorConverter}}">
@@ -471,7 +515,7 @@
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
         <controls:ItemsStack ItemsSource="{Binding Messages}" ItemTemplate="{StaticResource TemplateSelector}" Grid.Row="0" Grid.ColumnSpan="2"/>
-        <Label Text="Dialog abbrechen" TextColor="#1fb8dd" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding DialogActive}" Margin="5,0,0,5" x:Name="CancelLabel">
+            <Label Text="Neue Frage stellen" TextColor="#1fb8dd" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="{Binding DialogActive}" Margin="5,0,0,5" x:Name="CancelLabel">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding CancelDialogCommand}"/>
             </Label.GestureRecognizers>

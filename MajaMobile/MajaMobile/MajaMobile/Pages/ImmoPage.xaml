@@ -1,62 +1,55 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <pages:ContentPageBase xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:converters="clr-namespace:MajaMobile.Converters"
              xmlns:pages="clr-namespace:MajaMobile.Pages"
              xmlns:utils="clr-namespace:MajaMobile.Utilities"
              x:Class="MajaMobile.Pages.ImmoPage" Title="Immobiliensuche">
     <Grid>
         <Image Source="background.png" Aspect="Fill"/>
         <Grid>
-        <Grid.Resources>
-            <ResourceDictionary>
-                <converters:ImmoItemSizeConverter x:Key="ItemSizeConverter"/>
-                <x:Int32 x:Key="ItemLimit">9</x:Int32>
-            </ResourceDictionary>
-        </Grid.Resources>
-        <ScrollView Orientation="Vertical">
-            <StackLayout Spacing="0" BindableLayout.ItemsSource="{Binding Message.Immos}" Orientation="Vertical">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate>
-                        <Frame CornerRadius="10" Padding="10" Margin="20,10" HasShadow="True" BorderColor="Transparent" BackgroundColor="{x:Static utils:ColorScheme.MajaMessageColor}">
-                            <Grid RowSpacing="5">
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding TappedCommand}"/>
-                                </Grid.GestureRecognizers>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-                                <Image HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Aspect="AspectFill" Source="{Binding Image}" Grid.Row="0"/>
-                                <Frame HasShadow="True" CornerRadius="5" Grid.Row="1" Padding="5" BackgroundColor="#1396E2" HorizontalOptions="Start">
-                                    <Label Text="{Binding PurchasePrice}" FontFamily="{StaticResource UiFontBold}" TextColor="White"/>
-                                </Frame>
-                                <StackLayout Orientation="Vertical" Grid.Row="2" Spacing="0">
-                                    <Label>
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <Span Text="Wohnfläche: "/>
-                                                <Span Text="{Binding LivingSpace, StringFormat={StaticResource StringFormatDecimalZeroPlaces}}" FontFamily="{StaticResource UiFontSemiBold}"/>
-                                                <Span Text=" m²" FontFamily="{StaticResource UiFontSemiBold}"/>
-                                            </FormattedString>
-                                        </Label.FormattedText>
-                                    </Label>
-                                    <Label>
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <Span Text="Zimmer: "/>
-                                                <Span Text="{Binding Rooms}" FontFamily="{StaticResource UiFontSemiBold}"/>
-                                            </FormattedString>
-                                        </Label.FormattedText>
-                                    </Label>
-                                </StackLayout>
-                            </Grid>
-                        </Frame>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </StackLayout>
-        </ScrollView>
+            <ScrollView Orientation="Vertical">
+                <StackLayout Spacing="0" BindableLayout.ItemsSource="{Binding Message.Immos}" Orientation="Vertical">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Frame CornerRadius="10" Padding="10" Margin="20,10" HasShadow="True" BorderColor="Transparent" BackgroundColor="{x:Static utils:ColorScheme.MajaMessageColor}">
+                                <Grid RowSpacing="5">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding TappedCommand}"/>
+                                    </Grid.GestureRecognizers>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Image HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Aspect="AspectFill" Source="{Binding Image}" Grid.Row="0"/>
+                                    <Frame HasShadow="True" CornerRadius="5" Grid.Row="1" Padding="5" BackgroundColor="#1396E2" HorizontalOptions="Start">
+                                        <Label Text="{Binding PurchasePrice}" FontFamily="{StaticResource UiFontBold}" TextColor="White"/>
+                                    </Frame>
+                                    <StackLayout Orientation="Vertical" Grid.Row="2" Spacing="0">
+                                        <Label>
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="Wohnfläche: "/>
+                                                    <Span Text="{Binding LivingSpace, StringFormat={StaticResource StringFormatDecimalZeroPlaces}}" FontFamily="{StaticResource UiFontSemiBold}"/>
+                                                    <Span Text=" m²" FontFamily="{StaticResource UiFontSemiBold}"/>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                        <Label>
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="Zimmer: "/>
+                                                    <Span Text="{Binding Rooms}" FontFamily="{StaticResource UiFontSemiBold}"/>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </StackLayout>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+            </ScrollView>
         </Grid>
     </Grid>
 </pages:ContentPageBase>

@@ -57,6 +57,7 @@ namespace MajaMobile.Pages
             MessagingCenter.Subscribe<MajaConversationMessageLink>(this, ConversationMessage.ConversationMessageTappedMessage, LinkTapped);
             MessagingCenter.Subscribe<MajaConversationMessageLocation>(this, ConversationMessage.ConversationMessageTappedMessage, LocationTapped);
             MessagingCenter.Subscribe<MajaConversationMessageImmo>(this, ConversationMessage.ConversationMessageTappedMessage, ImmoMessageTapped);
+            MessagingCenter.Subscribe<MajaConversationMessagePoi>(this, ConversationMessage.ConversationMessageTappedMessage, PoiMessageTapped);
             MessagingCenter.Subscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.RegisterMessage, Register);
             MessagingCenter.Subscribe(this, MainPageMasterViewModel.SelectTalentsMessage, async (MainPageMasterViewModel viewmodel) =>
             {
@@ -76,6 +77,7 @@ namespace MajaMobile.Pages
                 }
             });
             MessagingCenter.Subscribe<ImmoObject>(this, ImmoObject.TappedMessage, ImmoTapped);
+            MessagingCenter.Subscribe<PointOfInterest>(this, PointOfInterest.TappedMessage, PoiTapped);
         }
 
         protected override void OnDisappearing()
@@ -84,10 +86,12 @@ namespace MajaMobile.Pages
             MessagingCenter.Unsubscribe<MajaConversationMessageLink>(this, ConversationMessage.ConversationMessageTappedMessage);
             MessagingCenter.Unsubscribe<MajaConversationMessageLocation>(this, ConversationMessage.ConversationMessageTappedMessage);
             MessagingCenter.Unsubscribe<MajaConversationMessageImmo>(this, ConversationMessage.ConversationMessageTappedMessage);
+            MessagingCenter.Unsubscribe<MajaConversationMessagePoi>(this, ConversationMessage.ConversationMessageTappedMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.RegisterMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.SelectTalentsMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.LoginMessage);
             MessagingCenter.Unsubscribe<ImmoObject>(this, ImmoObject.TappedMessage);
+            MessagingCenter.Unsubscribe<PointOfInterest>(this, PointOfInterest.TappedMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel, IUser>(this, MainPageMasterViewModel.EditUserProfileMessage);
         }
 
@@ -96,6 +100,15 @@ namespace MajaMobile.Pages
             try
             {
                 await Browser.OpenAsync(immo.Link, BrowserLaunchMode.SystemPreferred);
+            }
+            catch (Exception) { }
+        }
+
+        private async void PoiTapped(PointOfInterest poi)
+        {
+            try
+            {
+                await Browser.OpenAsync(poi.Url, BrowserLaunchMode.SystemPreferred);
             }
             catch (Exception) { }
         }
@@ -136,6 +149,14 @@ namespace MajaMobile.Pages
                     await Browser.OpenAsync(message.MajaQueryAnswer.Url, BrowserLaunchMode.SystemPreferred);
                 }
                 catch (Exception) { }
+            }
+        }
+
+        private async void PoiMessageTapped(MajaConversationMessagePoi message)
+        {
+            if (PrepareNavigation())
+            {
+                await Detail.Navigation.PushAsync(new PointsOfInterestPage(message));
             }
         }
 
