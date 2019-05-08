@@ -1,5 +1,4 @@
-﻿using BiExcellence.OpenBi.Api;
-using BiExcellence.OpenBi.Api.Commands.MajaAi;
+﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
 using MajaUWP.Utilities;
 using System;
 using System.Collections.Generic;
@@ -13,13 +12,11 @@ namespace MajaUWP
 {
     public class MajaConversation : PropertyChangedOnMainThread
     {
-        private const string MajaApiKey = "";
-        private const string MajaApiSecret = "";
-        private IOpenBiSession _openbiSession;
-        private SpeechRecognitionService _speechRecognitionService;
-        private static IOpenBiConfiguration _openBiConfiguration = new OpenBiConfiguration(Protocol.HTTPS, "maja.ai", 443, "Maja UWP");
+        public SessionHandler SessionHandler { get; }
+        public ObservableCollection<ConversationMessage> Messages { get; } = new ObservableCollection<ConversationMessage>();
+        public ObservableCollection<IPossibleUserReply> PossibleUserReplies { get; } = new ObservableCollection<IPossibleUserReply>();
 
-        public ObservableCollection<MajaConversationMessage> Messages { get; } = new ObservableCollection<MajaConversationMessage>();
+        public event EventHandler<MajaQueryEventArgs> AnswersReceived;
 
         private MajaListeningStatus _majaStatus = MajaListeningStatus.Idle;
         public MajaListeningStatus MajaStatus
@@ -36,25 +33,21 @@ namespace MajaUWP
             }
         }
 
-        //private object _lock = new object();
-        private MajaConversationMessage _userMessage;
+        private UserConversationMessage _speechRecognitionMessage;
 
-        private IMajaQueryAnswer _majaQueryAnswer;
-        public IMajaQueryAnswer MajaQueryAnswer
+        private bool _dialogActive;
+        public bool DialogActive
         {
-            get => _majaQueryAnswer;
-            set { _majaQueryAnswer = value; OnPropertyChanged(); }
+            get => _dialogActive;
+            set { _dialogActive = value; OnPropertyChanged(); }
         }
 
-        public MajaConversation(SpeechRecognitionService speechRecognitionService)
+        public MajaConversation(SessionHandler sessionHandler)
         {
-            _openbiSession = new OpenBiSession(_openBiConfiguration);
-            _speechRecognitionService = speechRecognitionService;
+            SessionHandler = sessionHandler;
         }
-
 
         private MajaConversationMessage _thinkingMessage;
-
         private async void StartThinking()
         {
             if (_thinkingMessage == null)
@@ -62,7 +55,7 @@ namespace MajaUWP
                 var tcs = new TaskCompletionSource<bool>();
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    _thinkingMessage = new MajaConversationMessage(".", MajaConversationSpeaker.Maja);
+                    _thinkingMessage = new MajaConversationMessage(".");
                     Messages.Add(_thinkingMessage);
                     tcs.TrySetResult(true);
                 });
@@ -88,121 +81,105 @@ namespace MajaUWP
             }
         }
 
+        public void StopListening()
+        {
+            _speechRecognitionMessage = null;
+        }
 
         public async void SetUserText(string text)
         {
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (_clearMessages || (MajaQueryAnswer != null && MajaQueryAnswer.Completed))
+                if (!string.IsNullOrEmpty(text))
                 {
-                    Messages.Clear();
-                    _clearMessages = false;
+                    if (_speechRecognitionMessage == null)
+                    {
+                        if (!DialogActive)
+                        {
+                            Messages.Clear();
+                        }
+                        _speechRecognitionMessage = new UserConversationMessage(text);
+                        Messages.Add(_speechRecognitionMessage);
+                    }
+                    _speechRecognitionMessage.Text = text;
                 }
-                MajaQueryAnswer = null;
-                MajaConversationMessage userMessage = _userMessage;
-                if (userMessage == null)
-                {
-                    //lock (_lock)
-                    //if (_userMessage == null)
-                    //{
-                    userMessage = _userMessage = new MajaConversationMessage(text, MajaConversationSpeaker.User);
-                    Messages.Add(userMessage);
-                    //}
-                }
-                _userMessage.Text = text;
             });
         }
 
-        public async Task<MajaListeningStatus> SendMajaQuery(string value, string text = null, bool speak = true)
+        public async Task QueryMajaForAnswers(string value, string text = null, bool addMessage = true, CancellationToken cancellationToken = default(CancellationToken))
         {
-            try
+            _speechRecognitionMessage = null;
+            if (MajaStatus == MajaListeningStatus.Thinking)
+                return;
+            if (!string.IsNullOrEmpty(value))
             {
-                await _speechRecognitionService.StopMaja();
-            }
-            catch { }
-            MajaListeningStatus status = MajaListeningStatus.Unknown;
-            try
-            {
-                status = await _speechRecognitionService.SendMajaQuery(value, text = null, speak);
-                if (status == MajaListeningStatus.Listening)
+                if (!DialogActive && addMessage)
                 {
-                    if (speak)
-                        _speechRecognitionService.StartSpeechRecognition();
-                    else
-                        MajaStatus = MajaListeningStatus.Idle;
+                    Messages.Clear();
                 }
-                else
-                {
-                    MajaStatus = status;
-                }
-            }
-            catch (Exception)
-            {
-                MajaStatus = MajaListeningStatus.Idle;
-            }
-            return status;
-        }
-
-        private bool _clearMessages;
-
-        public async Task<IList<IMajaQueryAnswer>> QueryMajaForAnswers(string value, string text = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (_clearMessages || (MajaQueryAnswer != null && MajaQueryAnswer.Completed))
-            {
-                Messages.Clear();
-                _clearMessages = false;
-            }
-            MajaConversationMessage userMessage = _userMessage;
-            if (userMessage != null)
-                userMessage.Text = text ?? value;
-            else if (Messages.Count == 0 || Messages.Last().Speaker == MajaConversationSpeaker.Maja)
-                Messages.Add(new MajaConversationMessage(value, MajaConversationSpeaker.User));
-            _userMessage = null;
-            MajaQueryAnswer = null;
-
-            try
-            {
-                MajaStatus = MajaListeningStatus.Thinking;
+                PossibleUserReplies.Clear();
+                if (addMessage)
+                    Messages.Add(new UserConversationMessage(text ?? value));
+                string speakingText = "";
                 IList<IMajaQueryAnswer> answers = null;
                 try
                 {
-                    answers = await _openbiSession.QueryMajaForAnswers(value, MajaApiKey, MajaApiSecret, cancellationToken);
+                    MajaStatus = MajaListeningStatus.Thinking;
+                    answers = await SessionHandler.ExecuteOpenbiCommand((s, t) => s.QueryMajaForAnswers(value, Utils.MajaApiKey, Utils.MajaApiSecret, Utils.DefaultPackages, t), cancellationToken);
+                    
+                    if (answers == null || answers.Count == 0)
+                    {
+                        DialogActive = false;
+                        speakingText = "Entschuldigung. Darauf habe ich keine Antwort.";
+                        Messages.Add(new MajaConversationMessage(speakingText));
+                    }
+                    else
+                    {
+                        var completed = true;
+                        speakingText = answers.First().Response;
+                        foreach (var answer in answers)//TODO: only certain messages?
+                        {
+                            Messages.Add(new MajaConversationMessage(answer));
+                            foreach (var possibleUserReply in answer.PossibleUserReplies)
+                            {
+                                if (string.Equals(possibleUserReply.ControlType, PossibleUserReplyControlType.Button, StringComparison.OrdinalIgnoreCase) || (!(string.IsNullOrEmpty(possibleUserReply.Value)) && !string.Equals(possibleUserReply.Type, PossibleUserReplyType.Entity, StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    PossibleUserReplies.Add(possibleUserReply);
+                                }
+                            }
+                            completed = completed && answer.Completed;
+                            //don't speak when answer is AudioFile or VideoFile
+                            if (answer.ProposalType == MajaQueryAnswerProposalType.AudioFile || answer.ProposalType == MajaQueryAnswerProposalType.VideoFile)
+                                speakingText = "";
+                        }
+                        DialogActive = !completed;
+                    }
                 }
-                catch (OpenBiServerErrorException requestEx) when (requestEx.Response.Code == -97)
+                catch (OperationCanceledException)
                 {
-                    _openbiSession = new OpenBiSession(_openBiConfiguration);
-                    answers = await _openbiSession.QueryMajaForAnswers(value, MajaApiKey, MajaApiSecret, cancellationToken);
+                    //DialogActive = false;
+                    speakingText = "Die Anfrage wurde abgebrochen";
+                    Messages.Add(new MajaConversationMessage(speakingText));
                 }
-                MajaQueryAnswer = answers.FirstOrDefault();
-                if (answers.Count == 0)
+                catch (Exception ex)
                 {
-                    Messages.Add(new MajaConversationMessage("Entschuldigung. Darauf habe ich keine Antwort.", MajaConversationSpeaker.Maja));
-                    _clearMessages = true;
+                    DialogActive = false;
+                    Messages.Add(new MajaConversationMessage(ex.Message));
                 }
-                else
+                finally
                 {
-                    foreach (var answer in answers)//TODO: only certain messages?
-                        Messages.Add(new MajaConversationMessage(answer));
+                    MajaStatus = MajaListeningStatus.Idle;
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        AnswersReceived?.Invoke(this, new MajaQueryEventArgs(answers, speakingText));
+                    });
                 }
-                return answers;
             }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Messages.Add(new MajaConversationMessage(ex.Message, MajaConversationSpeaker.Maja));
-                throw new MajaServerException();
-            }
-            finally
-            {
-                MajaStatus = MajaListeningStatus.Processing;
-            }
+
         }
     }
 
-    public class MajaConversationMessage : PropertyChangedOnMainThread
+    public class ConversationMessage : PropertyChangedOnMainThread
     {
         private string _text;
         public string Text
@@ -211,26 +188,35 @@ namespace MajaUWP
             set { _text = value; OnPropertyChanged(); }
         }
 
-        public string Image { get; }
+        public string Image { get; protected set; }
         public MajaConversationSpeaker Speaker { get; }
 
-        public MajaConversationMessage(string text, MajaConversationSpeaker speaker)
+        protected ConversationMessage(string text, MajaConversationSpeaker speaker)
         {
             Text = text;
             Speaker = speaker;
         }
+    }
 
-        public MajaConversationMessage(IMajaQueryAnswer queryAnswer)
+    public class UserConversationMessage : ConversationMessage
+    {
+        public UserConversationMessage(string text) : base(text, MajaConversationSpeaker.User)
         {
-            Text = queryAnswer.Response;
-            Speaker = MajaConversationSpeaker.Maja;
-            Image = queryAnswer.Image;
+
         }
     }
 
-    public class MajaServerException : Exception
+    public class MajaConversationMessage : ConversationMessage
     {
+        public MajaConversationMessage(IMajaQueryAnswer queryAnswer) : base(queryAnswer.Response, MajaConversationSpeaker.Maja)
+        {
+            Text = queryAnswer.Response;
+            Image = queryAnswer.Image;
+        }
+        public MajaConversationMessage(string text) : base(text, MajaConversationSpeaker.Maja)
+        {
 
+        }
     }
 
     public enum MajaConversationSpeaker
@@ -246,6 +232,16 @@ namespace MajaUWP
         Thinking,
         Speaking,
         Listening,
-        Processing,
+    }
+
+    public class MajaQueryEventArgs : EventArgs
+    {
+        public IList<IMajaQueryAnswer> Answers { get; }
+        public string SpeakingText { get; }
+        public MajaQueryEventArgs(IList<IMajaQueryAnswer> answers, string speakingText)
+        {
+            Answers = answers;
+            SpeakingText = speakingText;
+        }
     }
 }

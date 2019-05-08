@@ -26,9 +26,8 @@ namespace MajaUWP
     public sealed partial class MainPage : Page
     {
         private SpeechRecognitionService _speechRecognitionService;
-        public static DispatcherTimer IdleTimer = new DispatcherTimer();
-        private List<string> _idleQuestions = new List<string>() {"Wie ist das Wetter in Dossenheim", "Haus kaufen Heidelberg", "Wo liegt Heidelberg", "Was ist Dossenheim", "Wer bist du" };
-        private int _idleQuestionIndex = 0;
+        private SessionHandler _sessionHandler;
+        private MajaConversation _majaConversation;
 
         public MainPage()
         {
@@ -37,46 +36,36 @@ namespace MajaUWP
                 _speechRecognitionService = new SpeechRecognitionService(AudioPlayer);
             else
                 _speechRecognitionService.SetAudioPlayer(AudioPlayer);
-            _speechRecognitionService.MajaQueryAnswersReceived += Service_MajaQueryAnswersReceived;
-            IdleTimer.Interval = TimeSpan.FromSeconds(30);
-            IdleTimer.Tick += IdleTimer_Tick;
-            IdleTimer.Start();
-            ContentFrame.Navigate(typeof(ChatPage), _speechRecognitionService);
-        }
-
-        private async void IdleTimer_Tick(object sender, object e)
-        {
-            IdleTimer.Stop();
-            while (!(ContentFrame.Content is ChatPage))
-                ContentFrame.GoBack();
-            var text = _idleQuestions[_idleQuestionIndex];
-            await _speechRecognitionService.MajaConversation.SendMajaQuery(text, speak: false);
-            var answer = _speechRecognitionService.MajaConversation.MajaQueryAnswer;
-            if (answer != null && !answer.Completed && answer.PossibleUserReplies.Count > 0)
-                await _speechRecognitionService.MajaConversation.SendMajaQuery(answer.PossibleUserReplies.Last().Value, speak: false);
-            IdleTimer.Start();
-            _idleQuestionIndex++;
-            if (_idleQuestionIndex >= _idleQuestions.Count)
-                _idleQuestionIndex = 0;
+            if (_sessionHandler == null)
+                _sessionHandler = new SessionHandler();
+            if (_majaConversation == null)
+            {
+                _majaConversation = new MajaConversation(_sessionHandler);
+                _majaConversation.AnswersReceived += MajaQueryAnswersReceived;
+            }
+            ContentFrame.Navigate(typeof(ChatPage), new object[] { _majaConversation, _speechRecognitionService });
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
             base.OnNavigatingFrom(e);
-            IdleTimer.Tick -= IdleTimer_Tick;
-            IdleTimer.Stop();
-            _speechRecognitionService.MajaQueryAnswersReceived -= Service_MajaQueryAnswersReceived;
             _speechRecognitionService.Dispose();
+            if (_majaConversation != null)
+            {
+                _majaConversation.AnswersReceived -= MajaQueryAnswersReceived;
+            }
         }
 
-        private async void Service_MajaQueryAnswersReceived(object sender, MajaQueryEventArgs e)
+        private async void MajaQueryAnswersReceived(object sender, MajaQueryEventArgs e)
         {
-            IdleTimer.Stop();
-            if (e.MajaQueryAnswers.Count > 0)
+            if (e.Answers != null && e.Answers.Count > 0)
             {
-                var answer = e.MajaQueryAnswers.First();
+                var answer = e.Answers.First();
                 switch (answer.ProposalType)
                 {
+                    case MajaQueryAnswerProposalType.AudioFile:
+                        _speechRecognitionService.PlayAudio(answer.Action);
+                        break;
                     case MajaQueryAnswerProposalType.VideoFile:
                         if (!string.IsNullOrEmpty(answer.Action))
                         {
@@ -89,7 +78,7 @@ namespace MajaUWP
 
                         foreach (var entity in answer.Entities)
                         {
-                            if (entity.CustomAttributes.TryGetValue("lat", out var lat) && entity.CustomAttributes.TryGetValue("lon", out var @long))
+                            if (entity.DisplayAttributes.TryGetValue("lat", out var lat) && entity.DisplayAttributes.TryGetValue("lon", out var @long))
                             {
                                 if (!dict.TryGetValue("lat", out var lats))
                                 {
@@ -124,34 +113,33 @@ namespace MajaUWP
                     case MajaQueryAnswerProposalType.ImmoSuche:
                         ContentFrame.Navigate(typeof(ImmoPage), answer, new DrillInNavigationTransitionInfo());
                         return;
-                    default:
-                        if (string.Equals(answer.Action, MajaQueryAnswerAction.Weather, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(answer.Data) && answer.DeserializeData() is WeatherForecast forecast)
+                    case MajaQueryAnswerProposalType.Link when !string.IsNullOrEmpty(answer.Url):
+                        try
                         {
-                            ContentFrame.Navigate(typeof(WeatherPage), forecast);
+                            var uri = new Uri(answer.Url);
+                            if (string.Equals(uri.Scheme, "http", StringComparison.OrdinalIgnoreCase) || string.Equals(uri.Scheme, "https", StringComparison.OrdinalIgnoreCase))
+                                ContentFrame.Navigate(typeof(BrowserPage), uri);
+                            else
+                                await Launcher.LaunchUriAsync(uri);
                             return;
                         }
-                        if (!string.IsNullOrEmpty(answer.Url))
+                        catch { }
+                        break;
+                    default:
+                        if (string.Equals(answer.Action, MajaQueryAnswerAction.Weather, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(answer.Data))
                         {
-                            try
-                            {
-                                var uri = new Uri(answer.Url);
-                                if (string.Equals(uri.Scheme, "http", StringComparison.OrdinalIgnoreCase) || string.Equals(uri.Scheme, "https", StringComparison.OrdinalIgnoreCase))
-                                    ContentFrame.Navigate(typeof(BrowserPage), uri);
-                                else
-                                    await Launcher.LaunchUriAsync(uri);
-                                return;
-                            }
-                            catch { }
+                            ContentFrame.Navigate(typeof(WeatherPage), new WeatherForecast(answer.Data));
+                            return;
                         }
                         break;
                 }
             }
-            IdleTimer.Start();
+            if (!string.IsNullOrEmpty(e.SpeakingText))
+                await _speechRecognitionService.SpeakTextAsync(e.SpeakingText);
         }
 
         private async void ShowMessage(string message)
         {
-            IdleTimer.Stop();
             //TODO: remove when in release mode? do we want to show error messages?
             if (Dispatcher.HasThreadAccess)
             {
@@ -166,25 +154,20 @@ namespace MajaUWP
                     await messageDialog.ShowAsync();
                 });
             }
-            IdleTimer.Start();
         }
 
         private async void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            IdleTimer.Stop();
-            IdleTimer.Start();
             if (sender is TextBox txt && e.Key == VirtualKey.Enter && !string.IsNullOrEmpty(txt.Text))
             {
                 var text = txt.Text;
                 txt.Text = "";
-                await _speechRecognitionService.MajaConversation.SendMajaQuery(text, speak: false);
+                await _majaConversation.QueryMajaForAnswers(text);
             }
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            IdleTimer.Stop();
-            IdleTimer.Start();
             if (!(ContentFrame.Content is ChatPage))
                 ContentFrame.GoBack();
         }
@@ -193,22 +176,6 @@ namespace MajaUWP
 
 namespace MajaUWP.Converters
 {
-    public class PossibleUserRepliesConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            if (value is IEnumerable<IPossibleUserReply> list)
-            {
-                return list.Where(r => !string.IsNullOrEmpty(r.Value)).ToList();
-            }
-            return null;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
 
     public class MajaConversationMessageConverter : IValueConverter
     {

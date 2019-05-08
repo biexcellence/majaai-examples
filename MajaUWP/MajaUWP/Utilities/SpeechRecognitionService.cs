@@ -1,11 +1,8 @@
-﻿using BiExcellence.OpenBi.Api.Commands.MajaAi;
-using MajaUWP.Extensions;
+﻿using MajaUWP.Extensions;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Globalization;
 using Windows.Media.SpeechRecognition;
@@ -23,23 +20,13 @@ namespace MajaUWP.Utilities
         private static VoiceInformation _majaVoice;
         private SpeechRecognizer _speechRecognizer;
         private MediaElement _audioPlayer;
-        public event EventHandler<MajaQueryEventArgs> MajaQueryAnswersReceived;
+        public event EventHandler<SpeechRecognitionHypothesisGeneratedEventArgs> HypothesisGenerated;
 
         public CoreDispatcher Dispatcher => Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
-
-        /// <summary>
-        /// This HResult represents the scenario where a user is prompted to allow in-app speech, but 
-        /// declines. This should only happen on a Phone device, where speech is enabled for the entire device,
-        /// not per-app.
-        /// </summary>
-        private static uint HResultPrivacyStatementDeclined = 0x80045509;
-
-        public MajaConversation MajaConversation { get; private set; }
 
         public SpeechRecognitionService(MediaElement audioPlayer)
         {
             _audioPlayer = audioPlayer;
-            MajaConversation = new MajaConversation(this);
             if (_majaVoice == null)
                 _majaVoice = SpeechSynthesizer.AllVoices.FirstOrDefault(v => v.Id == @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech_OneCore\Voices\Tokens\MSTTS_V110_deDE_KatjaM");
             InitializeRecognizer();
@@ -55,7 +42,8 @@ namespace MajaUWP.Utilities
             _audioPlayer = null;
         }
 
-        private async void ShowMessage(string message)
+        //TODO:move somewhere else
+        public async void ShowMessage(string message)
         {
             if (Dispatcher.HasThreadAccess)
             {
@@ -112,186 +100,95 @@ namespace MajaUWP.Utilities
             }
         }
 
-        private CancellationTokenSource _speechCancellationTokenSource;
-        public async Task StopMaja()
+        public async Task Stop()
         {
             try
             {
-                if (_speechRecognizer.State == SpeechRecognizerState.Capturing)
+                if (_speechRecognizer.State == SpeechRecognizerState.Capturing || _speechRecognizer.State == SpeechRecognizerState.SpeechDetected)
                     await _speechRecognizer.StopRecognitionAsync();
-                MajaConversation.MajaStatus = MajaListeningStatus.Idle;
             }
             catch { }
-
-            var speechCancellationTokenSource = _speechCancellationTokenSource;
-            if (speechCancellationTokenSource != null)
-            {
-                try
-                {
-                    speechCancellationTokenSource.Cancel();
-                }
-                catch { }
-                speechCancellationTokenSource.Dispose();
-            }
-            _speechCancellationTokenSource = null;
             if (_audioPlayer.CurrentState == Windows.UI.Xaml.Media.MediaElementState.Playing)
                 _audioPlayer.Stop();
         }
 
-        public async void StartSpeechRecognition()
+        public async Task<SpeechRecognitionResult> RecognizeAsync()
         {
-            await StopMaja();
+            await Stop();
             try
             {
-                MajaConversation.MajaStatus = MajaListeningStatus.Listening;
-                var result = await _speechRecognizer.RecognizeAsync();
-                if (result.Confidence == SpeechRecognitionConfidence.Medium || result.Confidence == SpeechRecognitionConfidence.High)
-                {
-                    var status = await SendMajaQuery(result.Text);
-                    if (status == MajaListeningStatus.Listening)
-                    {
-                        StartSpeechRecognition();
-                        //_speechCancellationTokenSource = null;
-                    }
-                    else
-                    {
-                        MajaConversation.MajaStatus = status;
-                    }
-                }
-                else if (!string.IsNullOrEmpty(result.Text))
-                {
-                    MajaConversation.Messages.Add(new MajaConversationMessage("Das habe ich akustisch nicht verstanden, bitte sprich direkt in das Mikrofon", MajaConversationSpeaker.Maja));
-                    MajaConversation.MajaStatus = MajaListeningStatus.Idle;
-                }
+                return await _speechRecognizer.RecognizeAsync();
             }
             catch (InvalidOperationException invalidEx) when (invalidEx.HResult == -2146233079)
             {
                 //TODO: is this correct?
                 //_speechCancellationTokenSource = null;
                 await InitializeRecognizer();
-                StartSpeechRecognition();
-            }
-            catch (OperationCanceledException)
-            {
-                //_speechCancellationTokenSource = null;
-                MajaConversation.MajaStatus = MajaListeningStatus.Idle;
-            }
-            catch (MajaServerException)
-            {
-                MajaConversation.MajaStatus = MajaListeningStatus.Idle;
-            }
-            catch (Exception ex)
-            {
-                //_speechCancellationTokenSource = null;
-                MajaConversation.MajaStatus = MajaListeningStatus.Idle;
-
-                if ((uint)ex.HResult == HResultPrivacyStatementDeclined)
-                {
-                    // Show a UI link to the privacy settings.
-                    ShowMessage("Please restart the program, permission of microphone denied");
-                    await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-speechtyping"));
-                }
-                else
-                {
-                    MajaConversation.Messages.Add(new MajaConversationMessage("Es kam beim Zugriff auf das Mikrofon zu einem Fehler. Bitte versuche es erneut.", MajaConversationSpeaker.Maja));
-                }
+                return await RecognizeAsync();
             }
         }
 
         private void SpeechRecognizer_HypothesisGenerated(SpeechRecognizer sender, SpeechRecognitionHypothesisGeneratedEventArgs args)
         {
-            string hypothesis = args.Hypothesis.Text.ToLower();
-            MajaConversation.SetUserText(hypothesis);
+            HypothesisGenerated?.Invoke(this, args);
         }
 
-        public async Task<MajaListeningStatus> SendMajaQuery(string value, string text = null, bool speak = true)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                MajaConversation.MajaStatus = MajaListeningStatus.Idle;
-                return MajaConversation.MajaStatus;
-            }
-            var tokenSource = _speechCancellationTokenSource;
-            if (tokenSource != null)
-                tokenSource.Dispose();
-            tokenSource = _speechCancellationTokenSource = new CancellationTokenSource();
-            MajaListeningStatus status = MajaListeningStatus.Idle;
-            IList<IMajaQueryAnswer> answers = null;
-            try
-            {
-                answers = await MajaConversation.QueryMajaForAnswers(value, text, tokenSource.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                MajaConversation.MajaQueryAnswer = null;
-                MajaConversation.Messages.Clear();
-                throw;
-            }
-            var tcs = new TaskCompletionSource<MajaListeningStatus>();
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                try
-                {
-                    status = await ReadMajaQueryAnswers(answers, speak);
-                    tokenSource.Token.ThrowIfCancellationRequested();
-                    tcs.TrySetResult(status != MajaListeningStatus.Unknown ? status : MajaListeningStatus.Idle);
-                }
-                catch (Exception e)
-                {
-                    tcs.TrySetException(e);
-                    tcs.TrySetResult(MajaListeningStatus.Idle);
-                }
-            });
-            status = await tcs.Task;
-            return status;
-        }
+        //public async Task<MajaListeningStatus> SendMajaQuery(string value, string text = null, bool speak = true)
+        //{
+        //    if (string.IsNullOrWhiteSpace(value))
+        //    {
+        //        MajaConversation.MajaStatus = MajaListeningStatus.Idle;
+        //        return MajaConversation.MajaStatus;
+        //    }
+        //    var tokenSource = _speechCancellationTokenSource;
+        //    if (tokenSource != null)
+        //        tokenSource.Dispose();
+        //    tokenSource = _speechCancellationTokenSource = new CancellationTokenSource();
+        //    MajaListeningStatus status = MajaListeningStatus.Idle;
+        //    IList<IMajaQueryAnswer> answers = null;
+        //    try
+        //    {
+        //        answers = await MajaConversation.QueryMajaForAnswers(value, text, tokenSource.Token);
+        //    }
+        //    catch (OperationCanceledException)
+        //    {
+        //        MajaConversation.MajaQueryAnswer = null;
+        //        MajaConversation.Messages.Clear();
+        //        throw;
+        //    }
+        //    var tcs = new TaskCompletionSource<MajaListeningStatus>();
+        //    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+        //    {
+        //        try
+        //        {
+        //            status = await ReadMajaQueryAnswers(answers, speak);
+        //            tokenSource.Token.ThrowIfCancellationRequested();
+        //            tcs.TrySetResult(status != MajaListeningStatus.Unknown ? status : MajaListeningStatus.Idle);
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            tcs.TrySetException(e);
+        //            tcs.TrySetResult(MajaListeningStatus.Idle);
+        //        }
+        //    });
+        //    status = await tcs.Task;
+        //    return status;
+        //}
 
-        private async Task<MajaListeningStatus> ReadMajaQueryAnswers(IList<IMajaQueryAnswer> answers, bool speak = true)
+        public async Task PlayAudio(string uri)
         {
-            if (answers.Count > 0)
+            using (var client = new HttpClient())
+            using (var stream = await client.GetStreamAsync(uri))
+            using (var memstream = new MemoryStream())
             {
-                var answer = answers.FirstOrDefault();
-                if (answer == null)
-                {
-                    return MajaListeningStatus.Idle;
-                }
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    MajaQueryAnswersReceived?.Invoke(this, new MajaQueryEventArgs(answers));
-                });
-                switch (answer.ProposalType)
-                {
-                    case MajaQueryAnswerProposalType.AudioFile:
-                        using (var client = new HttpClient())
-                        using (var stream = await client.GetStreamAsync(answer.Action))
-                        using (var memstream = new MemoryStream())
-                        {
-                            stream.CopyTo(memstream);
-                            memstream.Position = 0;
-                            await _audioPlayer.PlayStreamAsync(memstream.AsRandomAccessStream());
-                        }
-                        break;
-                    case MajaQueryAnswerProposalType.VideoFile:
-                    case MajaQueryAnswerProposalType.Location:
-                    case MajaQueryAnswerProposalType.ImmoSuche:
-                    case MajaQueryAnswerProposalType.Simple when (string.Equals(answer.Action, MajaQueryAnswerAction.Weather, StringComparison.OrdinalIgnoreCase)):
-                        break;
-                    default:
-                        if (speak && string.IsNullOrEmpty(answer.Url) && !string.IsNullOrEmpty(answer.Response))
-                        {
-                            await SpeakTextAsync(answer.Response);
-                        }
-                        break;
-                }
-                return answer.Completed ? MajaListeningStatus.Idle : MajaListeningStatus.Listening;
+                stream.CopyTo(memstream);
+                memstream.Position = 0;
+                await _audioPlayer.PlayStreamAsync(memstream.AsRandomAccessStream());
             }
-            return MajaListeningStatus.Unknown;
         }
 
         public async Task SpeakTextAsync(string text)
         {
-            var status = MajaConversation.MajaStatus;
-            MajaConversation.MajaStatus = MajaListeningStatus.Speaking;
             try
             {
                 using (var stream = await SynthesizeTextToSpeechAsync(text))
@@ -302,7 +199,7 @@ namespace MajaUWP.Utilities
             catch (Exception) { }
         }
 
-        async Task<IRandomAccessStream> SynthesizeTextToSpeechAsync(string text)
+        private async Task<IRandomAccessStream> SynthesizeTextToSpeechAsync(string text)
         {
             IRandomAccessStream stream = null;
 
@@ -312,17 +209,9 @@ namespace MajaUWP.Utilities
                 stream = await synthesizer.SynthesizeTextToStreamAsync(text);
             }
 
-            return (stream);
+            return stream;
         }
 
         #endregion
-    }
-    public class MajaQueryEventArgs : EventArgs
-    {
-        public IList<IMajaQueryAnswer> MajaQueryAnswers { get; }
-        public MajaQueryEventArgs(IList<IMajaQueryAnswer> majaQueryAnswers)
-        {
-            MajaQueryAnswers = majaQueryAnswers;
-        }
     }
 }

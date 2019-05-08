@@ -158,7 +158,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyChangedOnMainThread.cs" />
     <Compile Include="Utilities\Command.cs" />
+    <Compile Include="Utilities\SessionHandler.cs" />
     <Compile Include="Utilities\SpeechRecognitionService.cs" />
+    <Compile Include="Utilities\Utils.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="WeatherControls\CloudGrayControl.xaml.cs">
       <DependentUpon>CloudGrayControl.xaml</DependentUpon>
@@ -385,7 +387,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BiExcellence.OpenBi.Api.MajaAi">
-      <Version>0.0.11-ci-5331</Version>
+      <Version>0.0.11-ci-5900</Version>
+    </PackageReference>
+    <PackageReference Include="BiExcellence.OpenBi.Api.User">
+      <Version>0.0.11-ci-5900</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.2</Version>
