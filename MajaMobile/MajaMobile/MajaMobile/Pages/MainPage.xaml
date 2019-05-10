@@ -430,6 +430,17 @@
                     </Grid>
                 </ContentView>
             </DataTemplate>
+            <DataTemplate x:Key="HtmlMessageTemplate">
+                <ContentView ControlTemplate="{StaticResource MessageTemplate}">
+                    <Grid RowSpacing="0" WidthRequest="{Binding MessageWidth}">
+                        <WebView HorizontalOptions="FillAndExpand">
+                            <WebView.Source>
+                                <HtmlWebViewSource Html="{Binding Html}"/>
+                            </WebView.Source>
+                        </WebView>
+                    </Grid>
+                </ContentView>
+            </DataTemplate>
 
             <controls:MessageDataTemplateSelector x:Key="TemplateSelector"
                                             TextTemplate="{StaticResource TextTemplate}"
@@ -442,7 +453,8 @@
                                             AudioTemplate="{StaticResource AudioTemplate}"
                                             ThinkingTemplate="{StaticResource ThinkingTemplate}"
                                             FlightStatusTemplate ="{StaticResource FlightStatusTemplate}"
-                                            PoiTemplate ="{StaticResource PoiTemplate}"/>
+                                            PoiTemplate ="{StaticResource PoiTemplate}"
+                                            HtmlTemplate="{StaticResource HtmlMessageTemplate}"/>
             <ControlTemplate x:Key="MessageTemplate">
                 <Frame BindingContext="{TemplateBinding BindingContext}" HasShadow="True" BorderColor="Transparent" CornerRadius="10" Padding="8" HorizontalOptions="{Binding Speaker, Converter={StaticResource AlignmentConverter}}"
                            Margin="{Binding Speaker, Converter={StaticResource MarginConverter}}" BackgroundColor="{Binding Speaker, Converter={StaticResource ColorConverter}}">

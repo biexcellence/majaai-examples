@@ -18,6 +18,7 @@ namespace MajaMobile.Controls
         public DataTemplate ThinkingTemplate { get; set; }
         public DataTemplate FlightStatusTemplate { get; set; }
         public DataTemplate PoiTemplate { get; set; }
+        public DataTemplate HtmlTemplate { get; set; }
 
         protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
         {
@@ -42,6 +43,8 @@ namespace MajaMobile.Controls
                 return FlightStatusTemplate;
             if (message is MajaConversationMessagePoi)
                 return PoiTemplate;
+            if (message is MajaConversationMessageHml)
+                return HtmlTemplate;
             return TextTemplate;
         }
     }

@@ -1,15 +1,14 @@
 ﻿using BiExcellence.OpenBi.Api;
 using BiExcellence.OpenBi.Api.Commands;
 using BiExcellence.OpenBi.Api.Commands.Users;
-using MajaMobile.Extensions;
 using MajaMobile.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Xamarin.Auth;
+using Xamarin.Essentials;
 
 namespace MajaMobile.Utilities
 {
@@ -79,18 +78,21 @@ namespace MajaMobile.Utilities
         public async Task OpenbiUserLogin(string username = null, string password = null)
         {
             await Task.Yield();
-            Account account;
+            AccountUser account = null;
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
             {
-                var accstore = DeleteAccountFromAccountStore();
-                account = new Account();
+                account = new AccountUser();
                 account.Username = username;
-                account.SetPassword(password);
-                accstore.Save(account, _accountStoreServiceId);
+                account.Password = password;
+                await SecureStorage.SetAsync(_accountStoreServiceId, JsonConvert.SerializeObject(account));
             }
             else
             {
-                account = AccountStore.Create().FindAccountsForService(_accountStoreServiceId).FirstOrDefault();
+                var json = await SecureStorage.GetAsync(_accountStoreServiceId);
+                if (json != null)
+                {
+                    account = JsonConvert.DeserializeObject<AccountUser>(json);
+                }
             }
 
             var oldsession = Session;
@@ -100,7 +102,7 @@ namespace MajaMobile.Utilities
             {
                 if (account != null)
                 {
-                    await sess.OpenBiLogin(account.Username, account.GetPassword());
+                    await sess.OpenBiLogin(account.Username, account.Password);
                     OpenBiUser = await sess.GetUserByUsername(account.Username);
                 }
             }
@@ -123,7 +125,7 @@ namespace MajaMobile.Utilities
 
         public void Logout()
         {
-            DeleteAccountFromAccountStore();
+            SecureStorage.Remove(_accountStoreServiceId);
 
             var session = Session;
             Session = null;
@@ -137,16 +139,6 @@ namespace MajaMobile.Utilities
             }
             if (_packages.Count == 0)
                 _packages.AddRange(Utils.DefaultPackages);
-        }
-
-        private AccountStore DeleteAccountFromAccountStore()
-        {
-            var accountstore = AccountStore.Create();
-            foreach (var acc in accountstore.FindAccountsForService(_accountStoreServiceId))
-            {
-                accountstore.Delete(acc, _accountStoreServiceId);
-            }
-            return accountstore;
         }
 
         private object _lock = new object();

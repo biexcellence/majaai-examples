@@ -119,9 +119,11 @@ namespace MajaMobile.Messages
                     break;
                 case MajaQueryAnswerProposalType.Simple when string.Equals(queryAnswer.Action, "poi", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(queryAnswer.Response) && queryAnswer.Entities.Any(e => string.Equals(e.EntityProvider, "poi", StringComparison.OrdinalIgnoreCase)):
                     return new[] { new MajaConversationMessagePoi(queryAnswer) };
-                case MajaQueryAnswerProposalType.Link:
+                case MajaQueryAnswerProposalType.Link when !string.IsNullOrEmpty(queryAnswer.Url):
                     return new[] { new MajaConversationMessageLink(queryAnswer) };
             }
+            if (!string.IsNullOrEmpty(queryAnswer.HtmlResponse))
+                return new[] { new MajaConversationMessageHml(queryAnswer) };
             if (string.IsNullOrWhiteSpace(queryAnswer.Response))
                 return new MajaConversationMessage[0];
             return new[] { new MajaConversationMessage(queryAnswer) };
