@@ -15,8 +15,6 @@ namespace MajaUWP.Utilities
 {
     public class SpeechRecognitionService : IDisposable
     {
-
-        #region SpeechRecognizer
         private static VoiceInformation _majaVoice;
         private SpeechRecognizer _speechRecognizer;
         private MediaElement _audioPlayer;
@@ -83,11 +81,6 @@ namespace MajaUWP.Utilities
             {
                 ShowMessage("Grammar Compilation Failed: ");
             }
-
-            // Handle continuous recognition events. Completed fires when various error states occur. ResultGenerated fires when
-            // some recognized phrases occur, or the garbage rule is hit. HypothesisGenerated fires during recognition, and
-            // allows us to provide incremental feedback based on what the user's currently saying.
-
         }
         public void DisposeSpeechRecognizer()
         {
@@ -117,12 +110,17 @@ namespace MajaUWP.Utilities
             await Stop();
             try
             {
-                return await _speechRecognizer.RecognizeAsync();
+                System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!RecognizeAsync");
+                var res = await _speechRecognizer.RecognizeAsync();
+                System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!RecognizeAsync END");
+                return res;
             }
             catch (InvalidOperationException invalidEx) when (invalidEx.HResult == -2146233079)
             {
-                //TODO: is this correct?
-                //_speechCancellationTokenSource = null;
+                return null;
+            }
+            catch (InvalidOperationException invalidEx) when (invalidEx.HResult == -2147483629)
+            {
                 await InitializeRecognizer();
                 return await RecognizeAsync();
             }
@@ -133,48 +131,6 @@ namespace MajaUWP.Utilities
             HypothesisGenerated?.Invoke(this, args);
         }
 
-        //public async Task<MajaListeningStatus> SendMajaQuery(string value, string text = null, bool speak = true)
-        //{
-        //    if (string.IsNullOrWhiteSpace(value))
-        //    {
-        //        MajaConversation.MajaStatus = MajaListeningStatus.Idle;
-        //        return MajaConversation.MajaStatus;
-        //    }
-        //    var tokenSource = _speechCancellationTokenSource;
-        //    if (tokenSource != null)
-        //        tokenSource.Dispose();
-        //    tokenSource = _speechCancellationTokenSource = new CancellationTokenSource();
-        //    MajaListeningStatus status = MajaListeningStatus.Idle;
-        //    IList<IMajaQueryAnswer> answers = null;
-        //    try
-        //    {
-        //        answers = await MajaConversation.QueryMajaForAnswers(value, text, tokenSource.Token);
-        //    }
-        //    catch (OperationCanceledException)
-        //    {
-        //        MajaConversation.MajaQueryAnswer = null;
-        //        MajaConversation.Messages.Clear();
-        //        throw;
-        //    }
-        //    var tcs = new TaskCompletionSource<MajaListeningStatus>();
-        //    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-        //    {
-        //        try
-        //        {
-        //            status = await ReadMajaQueryAnswers(answers, speak);
-        //            tokenSource.Token.ThrowIfCancellationRequested();
-        //            tcs.TrySetResult(status != MajaListeningStatus.Unknown ? status : MajaListeningStatus.Idle);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            tcs.TrySetException(e);
-        //            tcs.TrySetResult(MajaListeningStatus.Idle);
-        //        }
-        //    });
-        //    status = await tcs.Task;
-        //    return status;
-        //}
-
         public async Task PlayAudio(string uri)
         {
             using (var client = new HttpClient())
@@ -183,7 +139,10 @@ namespace MajaUWP.Utilities
             {
                 stream.CopyTo(memstream);
                 memstream.Position = 0;
-                await _audioPlayer.PlayStreamAsync(memstream.AsRandomAccessStream());
+                using (var accessStream = memstream.AsRandomAccessStream())
+                {
+                    await _audioPlayer.PlayStreamAsync(accessStream);
+                }
             }
         }
 
@@ -211,7 +170,5 @@ namespace MajaUWP.Utilities
 
             return stream;
         }
-
-        #endregion
     }
 }

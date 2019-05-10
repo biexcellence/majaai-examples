@@ -16,16 +16,29 @@ namespace MajaUWP.Extensions
             // like MediaEnded to fire.
             RoutedEventHandler endOfPlayHandler = (s, e) =>
             {
-                stream.Dispose();
+                taskCompleted.SetResult(true);
+            };
+            RoutedEventHandler stateChangedHandler = (s, e) =>
+            {
+                if (mediaElement.CurrentState == Windows.UI.Xaml.Media.MediaElementState.Stopped)
+                {
+                    taskCompleted.SetResult(true);
+                }
+            };
+            ExceptionRoutedEventHandler failedHandler = (s, e) =>
+            {
                 taskCompleted.SetResult(true);
             };
             mediaElement.MediaEnded += endOfPlayHandler;
+            mediaElement.CurrentStateChanged += stateChangedHandler;
+            mediaElement.MediaFailed += failedHandler;
 
             mediaElement.SetSource(stream, string.Empty);
             mediaElement.Play();
-
             await taskCompleted.Task;
             mediaElement.MediaEnded -= endOfPlayHandler;
+            mediaElement.CurrentStateChanged -= stateChangedHandler;
+            mediaElement.MediaFailed -= failedHandler;
         }
     }
 }

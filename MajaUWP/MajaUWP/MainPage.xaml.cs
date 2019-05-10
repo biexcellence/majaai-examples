@@ -64,7 +64,7 @@ namespace MajaUWP
                 switch (answer.ProposalType)
                 {
                     case MajaQueryAnswerProposalType.AudioFile:
-                        _speechRecognitionService.PlayAudio(answer.Action);
+                        await _speechRecognitionService.PlayAudio(answer.Action);
                         break;
                     case MajaQueryAnswerProposalType.VideoFile:
                         if (!string.IsNullOrEmpty(answer.Action))
@@ -135,7 +135,11 @@ namespace MajaUWP
                 }
             }
             if (!string.IsNullOrEmpty(e.SpeakingText))
+            {
+                _majaConversation.MajaStatus = MajaListeningStatus.Speaking;
                 await _speechRecognitionService.SpeakTextAsync(e.SpeakingText);
+                _majaConversation.MajaStatus = MajaListeningStatus.Idle;
+            }
         }
 
         private async void ShowMessage(string message)

@@ -48,7 +48,6 @@ namespace MajaUWP.Pages
                     break;
                 case MajaListeningStatus.Listening:
                 case MajaListeningStatus.Speaking:
-                case MajaListeningStatus.Thinking:
                     _viewModel.MajaConversation.StopListening();
                     await _viewModel.SpeechRecognitionService.Stop();
                     _viewModel.MajaConversation.MajaStatus = MajaListeningStatus.Idle;
@@ -86,7 +85,7 @@ namespace MajaUWP.ViewModels
             SpeechRecognitionService.HypothesisGenerated -= Service_HypothesisGenerated;
         }
 
-        private void Service_HypothesisGenerated(object sender, Windows.Media.SpeechRecognition.SpeechRecognitionHypothesisGeneratedEventArgs e)
+        private void Service_HypothesisGenerated(object sender, SpeechRecognitionHypothesisGeneratedEventArgs e)
         {
             MajaConversation.SetUserText(e.Hypothesis.Text.ToLower());
         }
@@ -95,6 +94,7 @@ namespace MajaUWP.ViewModels
         {
             if (obj is IPossibleUserReply possibleUserReply)
             {
+                await SpeechRecognitionService.Stop();
                 await MajaConversation.QueryMajaForAnswers(possibleUserReply.Value, possibleUserReply.Text);
             }
         }
@@ -102,11 +102,12 @@ namespace MajaUWP.ViewModels
         public async void StartListening()
         {
             //TODO: cancel option with cancellationtoken
-            MajaConversation.MajaStatus = MajaListeningStatus.Listening;
             try
             {
                 MajaConversation.MajaStatus = MajaListeningStatus.Listening;
                 var result = await SpeechRecognitionService.RecognizeAsync();
+                if (result == null)
+                    return;
                 if (result.Confidence == SpeechRecognitionConfidence.Medium || result.Confidence == SpeechRecognitionConfidence.High)
                 {
                     await MajaConversation.QueryMajaForAnswers(result.Text, addMessage: false);
@@ -134,7 +135,8 @@ namespace MajaUWP.ViewModels
                     MajaConversation.Messages.Add(new MajaConversationMessage("Es kam beim Zugriff auf das Mikrofon zu einem Fehler. Bitte versuche es erneut."));
                 }
             }
-            MajaConversation.MajaStatus = MajaListeningStatus.Idle;
+            if (MajaConversation.MajaStatus != MajaListeningStatus.Speaking)
+                MajaConversation.MajaStatus = MajaListeningStatus.Idle;
         }
     }
 }
