@@ -433,11 +433,11 @@
             <DataTemplate x:Key="HtmlMessageTemplate">
                 <ContentView ControlTemplate="{StaticResource MessageTemplate}">
                     <Grid RowSpacing="0" WidthRequest="{Binding MessageWidth}">
-                        <WebView HorizontalOptions="FillAndExpand">
+                        <controls:CustomWebView HorizontalOptions="FillAndExpand" MajaCommand="{Binding ViewModel.SendTextCommand, Source={Reference mainPage}}">
                             <WebView.Source>
                                 <HtmlWebViewSource Html="{Binding Html}"/>
                             </WebView.Source>
-                        </WebView>
+                        </controls:CustomWebView>
                     </Grid>
                 </ContentView>
             </DataTemplate>

@@ -1,5 +1,4 @@
-﻿using System;
-using Foundation;
+﻿using Foundation;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
@@ -9,6 +8,28 @@ namespace MajaMobile.iOS.Renderers
 {
     class WebViewRendereriOS : WebViewRenderer
     {
+        protected override void OnElementChanged(VisualElementChangedEventArgs e)
+        {
+            base.OnElementChanged(e);
+
+            if (e.OldElement == null)
+            {
+                var webView = (UIWebView)NativeView;
+                webView.ScrollView.ScrollEnabled = false;
+                webView.ScrollView.Bounces = false;
+
+                webView.Delegate = new WebViewDelegate(Delegate, this);
+            }
+        }
+
+        //public override void ZoomingStarted(UIScrollView scrollView, UIView view)
+        //{
+        //    base.ZoomingStarted(scrollView, view);
+        //    var webView = (UIWebView)NativeView;
+        //    if (scrollView.PinchGestureRecognizer != null)
+        //        scrollView.PinchGestureRecognizer.Enabled = false;
+        //}
+
         class WebViewDelegate : UIWebViewDelegate
         {
             private readonly IUIWebViewDelegate _base;
@@ -55,20 +76,6 @@ namespace MajaMobile.iOS.Renderers
             public override bool ShouldStartLoad(UIWebView webView, NSUrlRequest request, UIWebViewNavigationType navigationType)
             {
                 return _base.ShouldStartLoad(webView, request, navigationType);
-            }
-        }
-
-        protected override void OnElementChanged(VisualElementChangedEventArgs e)
-        {
-            base.OnElementChanged(e);
-
-            if (e.OldElement == null)
-            {
-                var webView = (UIWebView)NativeView;
-                webView.ScrollView.ScrollEnabled = false;
-                webView.ScrollView.Bounces = false;
-
-                webView.Delegate = new WebViewDelegate(Delegate, this);
             }
         }
     }

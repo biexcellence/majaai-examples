@@ -112,7 +112,7 @@ namespace MajaMobile.Pages
             catch (Exception) { }
         }
         #endregion
-        
+
     }
 
     public enum MajaListeningStatus
@@ -243,6 +243,10 @@ namespace MajaMobile.ViewModels
                 var dict = new Dictionary<string, string>();
                 dict["ENTITY_ID"] = entity.Id;
                 SendText(entity.Name, parameters: dict);
+            }
+            else if (parameter is string s)
+            {
+                SendText(s);
             }
             else
             {
