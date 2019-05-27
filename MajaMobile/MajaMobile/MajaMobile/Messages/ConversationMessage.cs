@@ -124,7 +124,7 @@ namespace MajaMobile.Messages
             }
             if (!string.IsNullOrEmpty(queryAnswer.HtmlResponse))
                 return new[] { new MajaConversationMessageHml(queryAnswer) };
-            if (string.IsNullOrWhiteSpace(queryAnswer.Response))
+            if (string.IsNullOrWhiteSpace(queryAnswer.Response) && string.IsNullOrWhiteSpace(queryAnswer.Image))
                 return new MajaConversationMessage[0];
             return new[] { new MajaConversationMessage(queryAnswer) };
         }
