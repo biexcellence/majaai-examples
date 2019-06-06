@@ -35,8 +35,8 @@ namespace MajaMobile.Controls
             SetLayoutBounds(indicator, new Rectangle(0.5, 0.5, 1, 1));
             indicator.HorizontalOptions = indicator.VerticalOptions = LayoutOptions.CenterAndExpand;
             indicator.Color = Utilities.ColorScheme.UserMessageColor;
-            indicator.SetBinding(IsVisibleProperty, "IsBusy");
-            indicator.SetBinding(ActivityIndicator.IsRunningProperty, "IsBusy");
+            indicator.SetBinding(IsVisibleProperty, nameof(ViewModels.ViewModelBase.IsBusy));
+            indicator.SetBinding(ActivityIndicator.IsRunningProperty, nameof(ViewModels.ViewModelBase.IsBusy));
             indicator.WidthRequest = Device.RuntimePlatform == Device.UWP ? 400 : 100;
 
             layout.Children.Add(indicator);

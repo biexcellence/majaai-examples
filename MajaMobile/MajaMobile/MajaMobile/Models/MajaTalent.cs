@@ -34,6 +34,8 @@ namespace MajaMobile.Models
             Id = talent.Id;
             Name = talent.Name;
             ImagePath = talent.ImagePath;
+            if (!string.IsNullOrEmpty(ImagePath) && !ImagePath.ToLower().StartsWith("http"))
+                ImagePath = "https:" + ImagePath;
             IsPublic = talent.IsPublic;
             if (string.IsNullOrEmpty(ImagePath))
                 ImagePath = "maja.png";
