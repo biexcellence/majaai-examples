@@ -125,11 +125,15 @@ static async Task MainAsync(string[] args)
 
 private static async Task<MajaAiActionResponse> HandleMajaAiAction(IMajaAiActionRequest request, CancellationToken cancellationToken)
 {
-    Console.WriteLine($"Query: {request.Query}");
+    if (!request.ActionCompleted)
+    {
+        Console.WriteLine($"Query: {request.Query}");
 
-    await Task.Delay(1000);
+        await Task.Delay(1000);
 
-    return new MajaAiActionResponse(new MajaAiSimpleAnswer("Hello World!"));
+        return new MajaAiActionResponse(new MajaAiSimpleAnswer("Hello World!"));
+    }
+    return null;
 }
 ```
 
@@ -147,11 +151,15 @@ public class Startup
 
     private async Task<MajaAiActionResponse> HandleMajaAiAction(IMajaAiActionRequest request, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Query: {request.Query}");
+        if (!request.ActionCompleted)
+        {
+            Console.WriteLine($"Query: {request.Query}");
 
-        await Task.Delay(1000);
+            await Task.Delay(1000);
 
-        return new MajaAiActionResponse(new MajaAiSimpleAnswer("Hello World!"));
+            return new MajaAiActionResponse(new MajaAiSimpleAnswer("Hello World!"));
+        }
+        return null;
     }
 }
 ```
