@@ -35,6 +35,10 @@
 	<string>Wir benötigen die Spracherkennung, damit du mit Maja sprechen kannst.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Wir müssen auf deine Fotos zugreifen, damit du dein Profilbild auswählen kannst.</string>
+	<key>NSLocationAlwaysUsageDescription </key>
+	<string>Wir müssen auf deinen Standort zugreifen, damit wir diesen auf einer Karte darstellen können.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Wir müssen auf deinen Standort zugreifen, damit wir diesen auf einer Karte darstellen können.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>segoeui.ttf</string>
@@ -52,6 +56,6 @@
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>CFBundleVersion</key>
-	<string>4</string>
+	<string>5</string>
 </dict>
 </plist>
