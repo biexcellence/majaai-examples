@@ -14,20 +14,9 @@ namespace MajaMobile.Controls
             set { SetValue(MajaCommandProperty, value); }
         }
 
-        public event EventHandler<WebNavigatingEventArgs> NavigatingFixed;
-
-        public void SendNavigatingEvent(WebNavigatingEventArgs args)
-        {
-            NavigatingFixed?.Invoke(this, args);
-        }
-
         public CustomWebView()
         {
-            //https://github.com/xamarin/Xamarin.Forms/pull/5458
-            if (Device.RuntimePlatform == Device.Android)
-                NavigatingFixed += CustomWebView_Navigating;
-            else
-                Navigating += CustomWebView_Navigating;
+            Navigating += CustomWebView_Navigating;
         }
 
         private void CustomWebView_Navigating(object sender, WebNavigatingEventArgs e)

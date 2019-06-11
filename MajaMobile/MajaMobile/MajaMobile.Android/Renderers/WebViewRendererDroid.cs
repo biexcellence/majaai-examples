@@ -37,24 +37,6 @@ namespace MajaMobile.Droid.Renderers
             _renderer = renderer;
         }
 
-        public override void OnPageStarted(Android.Webkit.WebView view, string url, Bitmap favicon)
-        {
-            if (_renderer.Element is CustomWebView customWebView)
-            {
-                var args = new WebNavigatingEventArgs(WebNavigationEvent.NewPage, new UrlWebViewSource { Url = url }, url);
-
-                customWebView.SendNavigatingEvent(args);
-
-                if (args.Cancel)
-                {
-                    view.StopLoading();
-                    return;
-                }
-            }
-
-            base.OnPageStarted(view, url, favicon);
-        }
-
         public override void OnPageFinished(Android.Webkit.WebView view, string url)
         {
             base.OnPageFinished(view, url);
