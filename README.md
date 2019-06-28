@@ -27,6 +27,7 @@ Please note that the maja.AI Chat JS currently requires jQuery and Bootstrap.
 | hidePoweredBy | `boolean` | `false` | If the powered by text should be displayed |
 | majaAvatar | `string` | `"//cdn.biexcellence.com/majaai/img/MajaAI_AI_120px.png"` | The avatar for Maja.AI answers |
 | onInit | `function` | `undefined` | Callback after chat initilization |
+| onQuery | `function` | `undefined` | Callback for user queries |
 | onResult | `function` | `undefined` | Callback for answers |
 | onError | `function` | `undefined` | Callback for server errors |
 | bubblePopupTime| `Integer` | `20000` | Time after the help bubble shows up |
@@ -76,6 +77,7 @@ var majaAi = new MajaAi({
     visible: true,
     majaAvatar: "//cdn.biexcellence.com/majaai/img/MajaAI_AI_120px.png",
     onInit: function() { /* ... */ },
+    onQuery: function(query) { /* ... */ },
     onResult: function(query, answers) { /* ... */ },
     onError: function(error) { /* ... */ },
     bubblePopupTime: 10000,
