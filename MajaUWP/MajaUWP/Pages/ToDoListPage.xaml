@@ -1,0 +1,132 @@
+﻿<Page
+    x:Class="MajaUWP.Pages.ToDoListPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MajaUWP.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:converters="using:MajaUWP.Converters"
+    Background="Transparent">
+
+
+
+
+    <Grid>
+        <Grid.Resources>
+            <converters:ConvertUrgencyToColor x:Key="urgToColor"/>
+            <converters:ConvertISDONTETOStrikeThrough x:Key="doneToStrike"/>
+            <converters:ConvertIsDoneToFontColor x:Key="doneToFontColot"/>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--Option Button Flyout-->
+
+       
+            <Button Width="auto" Height="50" FontSize="30" Margin="0,5,13,0" HorizontalAlignment="Right" Background="Transparent">
+
+            <FontIcon Glyph="&#xE712;" FontSize="30"/>
+
+
+
+            <Button.Flyout>
+                    <MenuFlyout>
+                    <MenuFlyoutItem Text="Hinzufügen" Icon="Add" Click="AddButton_Click"/>
+                    <MenuFlyoutSeparator/>
+                    <MenuFlyoutItem Text="Alle Erledigt" Click="AllDoneButton_Click">
+                        <MenuFlyoutItem.Icon>
+                            <FontIcon Glyph="&#xE73E;"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Alle nicht erledigt" Click="AllNoteDoneButton_Click">
+                        <MenuFlyoutItem.Icon>
+                            <FontIcon Glyph="&#xE711;"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                    
+                    <MenuFlyoutSeparator/>
+                    <MenuFlyoutSubItem Icon="Sort" Text="Sortieren">
+
+                        <MenuFlyoutItem Text="Priorität absteigend" Click="SortPriorityDesButton_Clicked">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xF0AE;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+
+                        <MenuFlyoutItem Text="Priorität aufsteigend" Click="SortPriorityAscButton_Clicked">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xF0AD;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutSeparator/>
+                        <MenuFlyoutItem Text="Erledigt absteigend" Click="SortDoneDesButton_Clicked">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xF0AE;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+
+                        <MenuFlyoutItem Text="Erledigt aufsteigend" Click="SortDoneAscButton_Clicked">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xF0AD;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+
+                       
+                    </MenuFlyoutSubItem>
+                    <MenuFlyoutSeparator/>
+                    <MenuFlyoutSubItem Text="Löschen" Icon="Delete">
+                        <MenuFlyoutItem Text="Alle löschen" Click="DeleteAllButton_Clicked" Icon="Delete"/>
+                        <MenuFlyoutItem Text="Alle erledigten löschnen" Click="DeleteDoneButton_Clicked">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xE73E;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyoutSubItem>
+                    
+                </MenuFlyout>
+            </Button.Flyout>
+        </Button>
+       
+        
+
+        <TextBlock Text="Todo Liste" FontSize="50" FontWeight="Bold" TextAlignment="Center" Margin="200,0,200,0"/>
+        <ListView HorizontalContentAlignment="Stretch" Name="ListView" Grid.Row="1" ItemsSource="{Binding TodoList}"  SelectionMode="None" >
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,5,0,5" CornerRadius="10"  Background="{Binding Urgency, Converter={StaticResource urgToColor}}" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock  Tapped="ItemTapped" Padding="5" Margin="10,0,0,0" TextDecorations="{Binding IsDone, Converter={StaticResource doneToStrike}}"
+                                    Grid.Row="0" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" TextAlignment="Left" 
+                                    FontSize="30" Foreground="{Binding IsDone, Converter={StaticResource doneToFontColot}}" Text="{Binding Text}">
+                        </TextBlock>
+                        
+                        <!--Context Menu Flyout-->
+                        
+                        <AppBarButton Grid.Column="1"  Icon="More" Tapped="AppBarButton_Tapped">
+                            <AppBarButton.Flyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Bearbeiten" Icon="Edit" Click="ContextEditButton_Clicked"/>
+                                    <MenuFlyoutItem Text="Löschen"  Icon="Delete" Click="ContextDeleteButton_Clicked"/>
+                                </MenuFlyout>
+                            </AppBarButton.Flyout>
+                        </AppBarButton>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            
+        </ListView>
+
+    </Grid>
+</Page>

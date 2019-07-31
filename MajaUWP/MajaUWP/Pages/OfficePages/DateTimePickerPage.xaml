@@ -1,0 +1,39 @@
+﻿<Page
+    x:Class="MajaUWP.Pages.DateTimePickerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MajaUWP.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:MajaUWP.Converters"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <converters:BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        </Grid.Resources>
+        <Viewbox Margin="30">
+            <TextBlock Text="{Binding Text}"></TextBlock>
+        </Viewbox>
+        <Viewbox  Grid.Row="3" Margin="30" >
+            <Button HorizontalAlignment="Center" Click="Button_Click">Übernehmen</Button>
+        </Viewbox>
+
+        <DatePicker  DayFormat="{} {dayofweek.full} {day.integer}." MonthFormat="{}{month.integer(2)} ({month.full})" Date="{Binding date, Mode=TwoWay}"  Grid.Row="1" MaxWidth="800" FontSize="26" HorizontalAlignment="Stretch" Margin="50,0,50,0"/>
+
+
+        <TimePicker  Grid.Row="2" MaxWidth="800" Time="{Binding time, Mode=TwoWay}" FontSize="26"  HorizontalAlignment="Stretch" Margin="50,30,50,0"></TimePicker>
+       
+            
+       
+        
+
+    </Grid>
+</Page>

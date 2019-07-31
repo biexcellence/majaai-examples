@@ -6,23 +6,78 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:MajaUWP.Converters"
     mc:Ignorable="d">
-    <Grid Margin="25">
+    <Grid Margin="15">
         <Grid.Resources>
             <converters:MajaConversationMessageConverter x:Key="MessageConverter"/>
             <converters:IntNotZeroToVisibilityConverter x:Key="NotZeroToVis"/>
             <converters:NullToVisibilityConverter x:Key="NullToVis"/>
+            <converters:BooleanToVisibilityConverter x:Key="BoolToVis"/>
+            <converters:ColorMessageConverter x:Key="MessageFontColor"/>
+            <converters:MajaStatusToImageConverter x:Key="StatusToImag"/>
+            <converters:UserRepliesButtonVisibilityConverter x:Key="ReplyButtonVisConverter"/>
+            <converters:UserRepliesDateVisibilityConverter x:Key="ReplyDateVisConverter"/>
+            <converters:UserRepliesFileVisibilityConverter x:Key="ReplyFileVisConverter"/>
+
+            <Style TargetType="Border" x:Key="ReplyBorderStyle">
+                <Setter Property="CornerRadius" Value="7"/>
+                <Setter Property="Background" Value="LightGray"/>
+                <Setter Property="BorderThickness" Value=".5"/>
+                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="Padding" Value="10,5"/>
+            </Style>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Image Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,25,0" Source="../Assets/maja.png" Tapped="Maja_Tapped"/>
-        <Grid Grid.Column="1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Image Height="150" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,25,0" Source="../Assets/BackgroundDot.png" Tapped="Maja_Tapped"/>
+        <Image Height="150" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,25,0" Source="{Binding MajaConversation.MajaStatus, Converter={StaticResource StatusToImag}}" Tapped="Maja_Tapped"/>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            
+            <Border CornerRadius="10" Grid.Row="0" Margin="0,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
+                <Button Height="65" Width="150" Background="#e55b5b" FontSize="30" Command="{Binding StopCommand}">
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="45" Margin="0,-7,0,0">Stop!</TextBlock>
+                </Button>
+            </Border>
+
+            <Border Grid.Row="2" CornerRadius="10" Margin="0,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+               
+                <Button Background="Navy" Foreground="White"   Height="65" Width="150" FontSize="20" Command="{Binding SettingsCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon Glyph="&#xE713;" FontSize="20"/>
+                        <TextBlock Text=" Einstellungen" TextAlignment="Center" FontSize="18" Margin="0,0,0,3"/>
+                    </StackPanel>
+                </Button>
+            </Border>
+
+            <Border Margin="0,25,0,0" Width="150" HorizontalAlignment="Left" Grid.Row="3" VerticalAlignment="Bottom"  Background="#ededed" CornerRadius="10">
+                <Viewbox>
+                    <TextBlock Margin="7" Foreground="Black" TextAlignment="Center" Text="{Binding DateTimeString}"></TextBlock>
+                </Viewbox>
+            </Border>
+
+        </Grid>
+
+
+
+
+        <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center" SizeChanged="ChatScrollBox_SizeChanged">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer Loaded="Button_Loaded" Name="ChatScrollBox" SizeChanged="ChatScrollBox_SizeChanged" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Auto">
                 <ItemsControl Grid.Row="0" ItemsSource="{Binding MajaConversation.Messages}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -34,37 +89,75 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Text="{Binding Text}" TextWrapping="WrapWholeWords"/>
-                                    <Image Visibility="{Binding Image, Converter={StaticResource NullToVis}}" Grid.Row="1" Source="{Binding Image}" Height="250" Width="250" HorizontalAlignment="Left" Stretch="Uniform"/>
+                                    <TextBlock Text="{Binding Text}" Foreground="{Binding Speaker, Converter={StaticResource MessageFontColor}}"  FontSize="20" Visibility="{Binding Text, Converter={StaticResource NullToVis}}" TextWrapping="WrapWholeWords"/>
+
+                                    <Image ImageOpened="Button_Loaded" Visibility="{Binding Image, Converter={StaticResource NullToVis}}" Grid.Row="1" Source="{Binding Image}" Margin="0,5,0,5" Width="350" Height="auto" HorizontalAlignment="Left" Stretch="Uniform"/>
+                                    <WebView Loaded="WebView_Loaded" NavigationCompleted="WebView_NavigationCompleted" NavigationStarting="WebView_NavigationStarting" Grid.Row="2" Visibility="{Binding Html, Converter={StaticResource NullToVis}}" Width="300" Height="1" HorizontalAlignment="Left" ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.HorizontalScrollMode="Disabled"  ></WebView>
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-            <ItemsControl Visibility="{Binding MajaConversation.PossibleUserReplies.Count, Converter={StaticResource NotZeroToVis}}"
-                                      ItemsSource="{Binding MajaConversation.PossibleUserReplies}" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" x:Name="ReplyList" Margin="0,10,0,0">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <ItemsStackPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Margin="5,0" Content="{Binding Text}" Command="{Binding DataContext.UserReplyCommand, ElementName=ReplyList}" CommandParameter="{Binding}">
-                            <Button.Template>
-                                <ControlTemplate>
-                                    <Border CornerRadius="7" Background="LightGray" BorderThickness=".5" BorderBrush="Black" Padding="10,5">
-                                        <ContentPresenter/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+
+
+            <ScrollViewer Grid.Row="1" HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto">
+                <ItemsControl  Visibility="{Binding MajaConversation.PossibleUserReplies.Count, Converter={StaticResource NotZeroToVis}}" Loaded="Button_Loaded" 
+                                      ItemsSource="{Binding MajaConversation.PossibleUserReplies}"  VerticalAlignment="Bottom" HorizontalAlignment="Right" x:Name="ReplyList" Margin="0,10,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsStackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                            <!--Button Response-->
+                                <Button Margin="5,0" Content="{Binding Text}" Visibility="{Binding Converter={StaticResource ReplyButtonVisConverter}}" FontSize="20"  Foreground="Black" Command="{Binding DataContext.UserReplyCommand, ElementName=ReplyList}"  Loaded="Button_Loaded" CommandParameter="{Binding}">
+                                <Button.Template>
+                                    <ControlTemplate>
+                                            <Border Style="{StaticResource ReplyBorderStyle}">
+                                            <ContentPresenter/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            
+                            <!--Date Response-->
+                                <Button Margin="5,0" Content="Datum auswählen" Visibility="{Binding Converter={StaticResource ReplyDateVisConverter}}" FontSize="20"  Foreground="Black" >
+                                    <Button.Template>
+                                        <ControlTemplate>
+                                            <Border Style="{StaticResource ReplyBorderStyle}">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <Button.Flyout>
+                                        <DatePickerFlyout DatePicked="DatePickerFlyout_DatePicked"/>
+                                    </Button.Flyout>
+                                </Button>
+                                
+                            <!--File Upload Response-->
+
+                                <Button Margin="5,0" Content="Datei Auswählen" Visibility="{Binding Converter={StaticResource ReplyFileVisConverter}}" FontSize="20"  Foreground="Black" Click="FilePickerButton_Clicked"  Loaded="Button_Loaded">
+                                    <Button.Template>
+                                        <ControlTemplate>
+                                            <Border Style="{StaticResource ReplyBorderStyle}">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+
+                            </Grid>
+                        </DataTemplate>
+                        
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
         </Grid>
-        <TextBlock FontSize="40" Foreground="White" Text="{Binding MajaConversation.MajaStatus}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </Grid>
 </Page>

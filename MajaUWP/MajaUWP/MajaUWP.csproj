@@ -128,16 +128,34 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\AccountsToVisibilityConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\DoubleToStringConverter.cs" />
+    <Compile Include="Converters\StringToVisibilityConverter.cs" />
+    <Compile Include="Converters\UserRepliesConverter.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="MajaConversation.cs" />
+    <Compile Include="Office\CalendarDeserialization.cs" />
+    <Compile Include="Office\ContactsDeserialization.cs" />
+    <Compile Include="Office\MailDeserialization.cs" />
+    <Compile Include="Office\TodoHandler.cs" />
+    <Compile Include="Pages\DatPickerPageViewmodel.cs" />
+    <Compile Include="Pages\FrameNavigationOptions.cs" />
+    <Compile Include="Pages\OfficePages\Alarm Page.xaml.cs">
+      <DependentUpon>Alarm Page.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\BrowserPage.xaml.cs">
       <DependentUpon>BrowserPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\OfficePages\ContactPickerPage.xaml.cs">
+      <DependentUpon>ContactPickerPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\OfficePages\CalendarPage.xaml.cs">
+      <DependentUpon>CalendarPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\ChatPage.xaml.cs">
       <DependentUpon>ChatPage.xaml</DependentUpon>
@@ -148,7 +166,26 @@
     <Compile Include="Pages\LocationPage.xaml.cs">
       <DependentUpon>LocationPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\OfficePages\DateTimePickerPage.xaml.cs">
+      <DependentUpon>DateTimePickerPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\OfficePages\MailPage.xaml.cs">
+      <DependentUpon>MailPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\MajaPage.cs" />
+    <Compile Include="Pages\OfficePages\MicrosoftLoginPage.xaml.cs">
+      <DependentUpon>MicrosoftLoginPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SettingsPage.xaml.cs">
+      <DependentUpon>SettingsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SettingsPageViewmodel.cs" />
+    <Compile Include="Pages\TalentPickerPage.xaml.cs">
+      <DependentUpon>TalentPickerPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\ToDoListPage.xaml.cs">
+      <DependentUpon>ToDoListPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\VideoPage.xaml.cs">
       <DependentUpon>VideoPage.xaml</DependentUpon>
     </Compile>
@@ -157,6 +194,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyChangedOnMainThread.cs" />
+    <Compile Include="Utilities\AppSettings.cs" />
     <Compile Include="Utilities\Command.cs" />
     <Compile Include="Utilities\SessionHandler.cs" />
     <Compile Include="Utilities\SpeechRecognitionService.cs" />
@@ -225,17 +263,27 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\background.png" />
+    <Content Include="Assets\BackgroundDot.png" />
     <Content Include="Assets\BadgeLogo.scale-100.png" />
     <Content Include="Assets\BadgeLogo.scale-125.png" />
     <Content Include="Assets\BadgeLogo.scale-150.png" />
     <Content Include="Assets\BadgeLogo.scale-200.png" />
     <Content Include="Assets\BadgeLogo.scale-400.png" />
+    <Content Include="Assets\Ding_end.mp3" />
+    <Content Include="Assets\Ding_start.mp3" />
     <Content Include="Assets\LargeTile.scale-100.png" />
     <Content Include="Assets\LargeTile.scale-125.png" />
     <Content Include="Assets\LargeTile.scale-150.png" />
     <Content Include="Assets\LargeTile.scale-200.png" />
     <Content Include="Assets\LargeTile.scale-400.png" />
+    <Content Include="Assets\maja_idle.png" />
+    <Content Include="Assets\maja_no_bg.png" />
+    <Content Include="Assets\maja_thumbnail.png" />
     <Content Include="Assets\maja.png" />
+    <Content Include="Assets\maja_listening.png" />
+    <Content Include="Assets\maja_speaking.png" />
+    <Content Include="Assets\alarmTone.mp3" />
+    <Content Include="Assets\Popup_Background.png" />
     <Content Include="Assets\SmallTile.scale-100.png" />
     <Content Include="Assets\SmallTile.scale-125.png" />
     <Content Include="Assets\SmallTile.scale-150.png" />
@@ -245,6 +293,8 @@
     <Content Include="Assets\SplashScreen.scale-125.png" />
     <Content Include="Assets\SplashScreen.scale-150.png" />
     <Content Include="Assets\SplashScreen.scale-400.png" />
+    <Content Include="Assets\Sprachausgabe.png" />
+    <Content Include="Assets\Spracheingabe.png" />
     <Content Include="Assets\Square150x150Logo.scale-100.png" />
     <Content Include="Assets\Square150x150Logo.scale-125.png" />
     <Content Include="Assets\Square150x150Logo.scale-150.png" />
@@ -288,7 +338,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Pages\OfficePages\Alarm Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\BrowserPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\OfficePages\ContactPickerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\OfficePages\CalendarPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -301,6 +363,30 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\LocationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\OfficePages\DateTimePickerPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\OfficePages\MailPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\OfficePages\MicrosoftLoginPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TalentPickerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\ToDoListPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -387,16 +473,28 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BiExcellence.OpenBi.Api.MajaAi">
-      <Version>0.0.11-ci-5900</Version>
+      <Version>0.0.12-ci-6215</Version>
+    </PackageReference>
+    <PackageReference Include="BiExcellence.OpenBi.Api.Organisation">
+      <Version>0.0.12-ci-6215</Version>
     </PackageReference>
     <PackageReference Include="BiExcellence.OpenBi.Api.User">
-      <Version>0.0.11-ci-5900</Version>
+      <Version>0.0.12-ci-6215</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Graph">
+      <Version>1.16.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Identity.Client">
+      <Version>4.2.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.2</Version>
+      <Version>6.2.8</Version>
+    </PackageReference>
+    <PackageReference Include="MvvmLight">
+      <Version>5.4.1.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.1</Version>
+      <Version>12.0.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Security.Credentials;
 
 namespace MajaUWP.Utilities
 {
@@ -16,7 +17,7 @@ namespace MajaUWP.Utilities
         public IReadOnlyList<string> Packages => _packages;
 
         private static IOpenBiConfiguration _openBiConfiguration = new OpenBiConfiguration(Protocol.HTTPS, "maja.ai", 443, "Maja UWP");
-        
+
         public IUser OpenBiUser { get; set; }
 
         public SessionHandler(IEnumerable<string> packages)
@@ -29,10 +30,25 @@ namespace MajaUWP.Utilities
         /// </summary>
         public SessionHandler()
         {
-            _packages.AddRange(Utils.DefaultPackages);
+            var utilsPackages = Utils.MajaPackages;
+            _packages.AddRange(utilsPackages);
         }
 
         private Task _currentUserLoginTask;
+
+        public async Task<bool> LoginWithSavedCredential()
+        {
+            PasswordCredential credentials = await AppSettingHandler.GetCredentials();
+            if (credentials != null)
+            {
+                credentials.RetrievePassword();
+                await OpenbiUserLogin(credentials.UserName, credentials.Password);
+                return true;
+            }
+            return false;
+        
+        }
+
 
         public async Task OpenbiUserLogin(string username = null, string password = null)
         {
@@ -125,6 +141,9 @@ namespace MajaUWP.Utilities
                 session = Session;
                 var result = await fn(session, token);
                 return result;
+            }
+            catch (TaskCanceledException) {
+                throw new OperationCanceledException();
             }
             catch (Exception)
             {

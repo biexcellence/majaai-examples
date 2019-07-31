@@ -1,7 +1,9 @@
 ﻿using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Foundation;
 using Windows.Globalization;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -21,6 +23,9 @@ namespace MajaUWP
         {
             //ApplicationLanguages.PrimaryLanguageOverride = "de-DE";
             this.InitializeComponent();
+
+        
+
             this.Suspending += OnSuspending;
         }
 

@@ -1,4 +1,5 @@
-﻿using MajaUWP.Extensions;
+﻿using GalaSoft.MvvmLight.Messaging;
+using MajaUWP.Extensions;
 using System;
 using System.IO;
 using System.Linq;
@@ -21,13 +22,15 @@ namespace MajaUWP.Utilities
         public event EventHandler<SpeechRecognitionHypothesisGeneratedEventArgs> HypothesisGenerated;
 
         public CoreDispatcher Dispatcher => Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
+        Uri BaseUri;
 
-        public SpeechRecognitionService(MediaElement audioPlayer)
+        public SpeechRecognitionService(MediaElement audioPlayer, Uri baseUri)
         {
+            BaseUri = baseUri;
             _audioPlayer = audioPlayer;
             if (_majaVoice == null)
                 _majaVoice = SpeechSynthesizer.AllVoices.FirstOrDefault(v => v.Id == @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech_OneCore\Voices\Tokens\MSTTS_V110_deDE_KatjaM");
-            InitializeRecognizer();
+              InitializeRecognizer();
         }
 
         public void SetAudioPlayer(MediaElement audioPlayer)
@@ -107,6 +110,7 @@ namespace MajaUWP.Utilities
 
         public async Task<SpeechRecognitionResult> RecognizeAsync()
         {
+           
             await Stop();
             try
             {
@@ -152,6 +156,7 @@ namespace MajaUWP.Utilities
             {
                 using (var stream = await SynthesizeTextToSpeechAsync(text))
                 {
+                    _audioPlayer.Volume = (double) AppSettingHandler.GetAppSetting("speakVolume");
                     await _audioPlayer.PlayStreamAsync(stream);
                 }
             }

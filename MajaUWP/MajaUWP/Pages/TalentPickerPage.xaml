@@ -1,0 +1,160 @@
+﻿<Page
+    x:Class="MajaUWP.Pages.TalentPickerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MajaUWP.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:converters="using:MajaUWP.Converters"
+    Background="Transparent"
+    
+    >
+
+    <Page.Resources>
+        <converters:MajaImageConverter x:Key="imgNullAvoider"/>
+        <converters:SelectedCountToStringConvert x:Key="countStringConverter"/>
+        <converters:IntNotZeroToVisibilityConverter x:Key="InteZeroConverter"/>
+    </Page.Resources>
+
+
+
+    <Grid>
+
+        <Grid.Resources>
+            <CollectionViewSource x:Key="cvs" x:Name="cvs" IsSourceGrouped="True" Source="{Binding DisplayList}"/>
+        </Grid.Resources>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" MinHeight="80"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <TextBlock  FontWeight="Bold" FontSize="40" TextAlignment="Center" Margin="0,10,0,0">Talent Hinzufügen</TextBlock>
+
+        <Grid Grid.Row="1" Padding="10" Margin="0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="{Binding SelectedCount, Converter={StaticResource countStringConverter}}"  VerticalAlignment="Center" FontSize="20"/>
+            <Button Click="AcceptButton_click" Visibility="{Binding SelectedCount, Converter={StaticResource InteZeroConverter}}" Grid.Column="2" FontSize="20" HorizontalAlignment="Right" Content="Auswahl übernehmen"/>
+            <AutoSuggestBox Name="TalentAutoSuggestionBox" Visibility="Collapsed" QueryIcon="Find" QuerySubmitted="AutoSuggestBox_QuerySubmitted" TextChanged="AutoSuggestBox_TextChanged" VerticalAlignment="Center" 
+                            ItemsSource="{Binding DisplayList}" TextMemberPath="Name" DisplayMemberPath="Name" 
+                            Width="300" Grid.Column="1" PlaceholderText="Talent"></AutoSuggestBox>
+            
+        </Grid>
+
+        <CheckBox Name="PublicTalentsCheckbox" Visibility="Collapsed"  Grid.Row="2" Margin="30,5" IsChecked="{Binding ShowPublicTalents, Mode=TwoWay}">Öffentliche Talente Anzeigen</CheckBox>
+
+        <StackPanel Name="LoadingAnimationPanel" Grid.Row="3">
+            <TextBlock Margin="20" FontSize="20" TextAlignment="Center">Talente werden geladen</TextBlock>
+            <ProgressRing  IsActive="True" MinHeight="100" MinWidth="100" ></ProgressRing>
+        </StackPanel>
+
+
+        <ListView Visibility="Collapsed" SelectionChanged="TalentListView_SelectionChanged" Name="TalentListView" Grid.Row="3" SelectionMode="Multiple" ItemsSource="{Binding Source={StaticResource cvs}}">
+
+            
+
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel GroupHeaderPlacement="Top" AreStickyGroupHeadersEnabled="False"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+
+                        <Border BorderBrush="Black" BorderThickness="1" Margin="5" CornerRadius="10" Background="#ededed">
+                            <StackPanel Orientation="Horizontal" >
+                                <Image Source="{Binding ImagePath, Converter={StaticResource imgNullAvoider}}" Height="auto" MaxWidth="40" MaxHeight="40" Margin="5"></Image>
+                                <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center" Padding="10" FontSize="18"/>
+                            </StackPanel>
+
+                            <Border.ContextFlyout>
+                                <Flyout Placement="Full">
+
+                                    <!--Talent Display-->
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="1"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.Resources>
+                                            <Style x:Key="DescriptionStyl" TargetType="TextBlock">
+                                                <Setter Property="FontSize" Value="20"/>
+                                            </Style>
+
+                                            <Style x:Key="StackBorderStyle" TargetType="StackPanel">
+                                                <Setter Property="Padding" Value="5,5,5,5"/>
+                                                <Setter Property="BorderBrush" Value="DarkGray"/>
+                                                <Setter Property="BorderThickness" Value="2"/>
+                                                <Setter Property="Margin" Value="0,5,0,5"/>
+                                                <Setter Property="CornerRadius" Value="5"/>
+                                            </Style>
+                                        </Grid.Resources>
+
+                                        <Image Grid.Row="1" Grid.ColumnSpan="2" Source="../Assets/Popup_Background.png" Stretch="Fill" MaxHeight="250"/>
+                                        <Image Grid.Row="1" Grid.ColumnSpan="2" Source="{Binding Path=ImagePath, Converter={StaticResource imgNullAvoider}, ConverterParameter='highRes'}" MaxWidth="200" MaxHeight="200" Margin="5"></Image>
+
+                                        <StackPanel Margin="0,20,0,0" Grid.Row="2" Orientation="Horizontal" Style="{StaticResource StackBorderStyle}">
+                                            <TextBlock Style="{StaticResource DescriptionStyl}" Text="Talent:" Margin="0,0,5,0" FontWeight="SemiBold"></TextBlock>
+                                            <TextBlock Style="{StaticResource DescriptionStyl}" Text="{Binding Path=Name}"/>
+                                        </StackPanel>
+
+
+                                        <StackPanel Grid.Row="3" Orientation="Horizontal" Style="{StaticResource StackBorderStyle}">
+                                            <TextBlock Style="{StaticResource DescriptionStyl}" Text="Kategorie:" Margin="0,0,5,0" FontWeight="SemiBold"></TextBlock>
+                                            <TextBlock Style="{StaticResource DescriptionStyl}" Text="{Binding Path=Category}"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Row="4" Orientation="Horizontal" Style="{StaticResource StackBorderStyle}">
+                                            <TextBlock Style="{StaticResource DescriptionStyl}" Text="Autor:" Margin="0,0,5,0" FontWeight="SemiBold"></TextBlock>
+                                            <TextBlock Style="{StaticResource DescriptionStyl}" Text="{Binding Path=Author}"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Row="5" Orientation="Horizontal" Style="{StaticResource StackBorderStyle}">
+                                            <TextBlock Style="{StaticResource DescriptionStyl}" Text="Beschreibung:" Margin="0,0,5,0" VerticalAlignment="Center" FontWeight="SemiBold"></TextBlock>
+                                            <TextBlock Style="{StaticResource DescriptionStyl}" MaxWidth="280" TextWrapping="WrapWholeWords" Text="{Binding Path=Description}"/>
+                                        </StackPanel>
+
+                                    </Grid>
+
+                                </Flyout>
+                            </Border.ContextFlyout>
+                        </Border>
+
+                    </StackPanel>
+                    
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+            <ListView.GroupStyle>
+                <GroupStyle >
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Key}" FontSize="30" FontWeight="SemiBold"/>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
+
+            
+
+        </ListView>
+        
+    </Grid>
+</Page>
