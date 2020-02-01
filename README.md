@@ -1,23 +1,23 @@
-# maja.AI Examples
+# majaAI Examples
 
-This repository contains examples for using [maja.ai](https://maja.ai).
-If you want to make use of Maja.ai simply fill out the contact at https://www.maja.ai.
+This repository contains examples for using [majaAI](https://maja.ai).
+If you want to make use of majaAI simply fill out the [contact](https://maja.ai/kontakt).
 
-- [maja.AI Chat JS](#majaai-chat-js)
-- [maja.AI Action Examples](#majaai-action-examples)
+- [majaAI Chat JS](#majaai-chat-js)
+- [majaAI Action Examples](#majaai-action-examples)
 
-## maja.AI Chat JS
+## majaAI Chat JS
 
-Here are the options for embedding maja.AI into your homepage.
-Please note that the maja.AI Chat JS currently requires jQuery and Bootstrap.
+Here are the options for embedding majaAI into your homepage.
+Please note that the majaAI Chat JS currently requires jQuery and Bootstrap.
 
 ### JavaScript options
 
 | Name | Type | Default Value | Description |
 |-----------|-----------|-----------|-----------|
 | apiKey | `string` | **required** | The API key |
-| title | `string` | `"maja.AI"` | The title of the chat box |
-| teaserTitle | `string` | `"Frag maja.AI"` | The title of the teaser |
+| title | `string` | `"majaAI"` | The title of the chat box |
+| teaserTitle | `string` | `"Frag majaAI"` | The title of the teaser |
 | teaserImage | `string` | `"//cdn.biexcellence.com/majaai/img/maja_head.png"` | The image of the teaser |
 | placeholderText | `string` | `"Ihre Frage..."` | The default placeholder for the input field |
 | language | `string` | `"de"` | The primary chat language |
@@ -25,7 +25,7 @@ Please note that the maja.AI Chat JS currently requires jQuery and Bootstrap.
 | welcomeText | `string` | `undefined` | The welcome chat text |
 | theme | `string` | `undefined` | Additional css file which is loaded dynamically |
 | hidePoweredBy | `boolean` | `false` | If the powered by text should be displayed |
-| majaAvatar | `string` | `"//cdn.biexcellence.com/majaai/img/MajaAI_AI_120px.png"` | The avatar for Maja.AI answers |
+| majaAvatar | `string` | `"//cdn.biexcellence.com/majaai/img/MajaAI_AI_120px.png"` | The avatar for majaAI answers |
 | onInit | `function` | `undefined` | Callback after chat initilization |
 | onQuery | `function` | `undefined` | Callback for user queries |
 | onResult | `function` | `undefined` | Callback for answers |
@@ -46,8 +46,8 @@ Please note that the maja.AI Chat JS currently requires jQuery and Bootstrap.
 
 | Name | Description |
 |-----------|-----------|
-| send(query) | Sends a query to Maja.AI |
-| destroy() | Destroys the Maja.AI chat UI |
+| send(query) | Sends a query to majaAI |
+| destroy() | Destroys the majaAI chat UI |
 
 ### Usage Example
 
@@ -61,14 +61,14 @@ Please note that the maja.AI Chat JS currently requires jQuery and Bootstrap.
 <!-- Bootstrap library -->
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
-<!-- maja.AI Chat JS -->
+<!-- majaAI Chat JS -->
 <script src="//cdn.biexcellence.com/majaai/js/chat.js"></script>
 <script>
 var majaAi = new MajaAi({
     apiKey: "123",
     welcomeText: "Hallo, Mein Name ist Maja, wie kann ich behilflich sein?",
-    title: "maja.AI rocks",
-    teaserTitle: "maja.AI",
+    title: "majaAI rocks",
+    teaserTitle: "majaAI",
     teaserImage: "//cdn.biexcellence.com/majaai/img/maja_head.png",
     placeholderText: "Deine Frage...",
     language: "de",
@@ -102,13 +102,13 @@ majaAi.destroy();
 </script>
 ```
 
-## maja.AI Action Examples
+## majaAI Action Examples
 
-You can create custom actions for maja.ai to return custom answers for user queries.
+You can create custom actions for majaAI to return custom answers for user queries.
 Before you start create a new Action on https://partner.maja.ai.
 
 
-### maja.AI Action using WebSockets
+### majaAI Action using WebSockets
 
 Add a reference to the [`BiExcellence.MajaAi.Action.WebSocket`](https://www.nuget.org/packages/BiExcellence.MajaAi.Action.WebSocket/) NuGet package to your project.
 
@@ -139,7 +139,7 @@ private static async Task<MajaAiActionResponse> HandleMajaAiAction(IMajaAiAction
 }
 ```
 
-### maja.AI Action using AspNet.Core Webhook
+### majaAI Action using AspNet.Core Webhook
 
 Add a reference to the [`BiExcellence.MajaAi.Action.AspNetCore`](https://www.nuget.org/packages/BiExcellence.MajaAi.Action.AspNetCore/) NuGet package to your project.
 
