@@ -21,6 +21,7 @@ Please note that the majaAI Chat JS currently requires jQuery and Bootstrap.
 | teaserImage | `string` | `"//cdn.biexcellence.com/majaai/img/maja_head.png"` | The image of the teaser |
 | placeholderText | `string` | `"Ihre Frage..."` | The default placeholder for the input field |
 | language | `string` | `"de"` | The primary chat language |
+| languageRegion | `string` | `"de-DE"` | The primary chat language region |
 | visible | `boolean` | `false` | If the chat box should be visible on start |
 | welcomeText | `string` | `undefined` | The welcome chat text |
 | theme | `string` | `undefined` | Additional css file which is loaded dynamically |
@@ -72,6 +73,7 @@ var majaAi = new MajaAi({
     teaserImage: "//cdn.biexcellence.com/majaai/img/maja_head.png",
     placeholderText: "Deine Frage...",
     language: "de",
+    languageRegion: "de-DE",
     theme: "mytheme.css",
     hidePoweredBy: true,
     visible: true,
