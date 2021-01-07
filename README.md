@@ -24,14 +24,13 @@ Please note that the majaAI Chat JS currently requires jQuery and Bootstrap.
 | languageRegion | `string` | `"de-DE"` | The primary chat language region |
 | visible | `boolean` | `false` | If the chat box should be visible on start |
 | welcomeText | `string` | `undefined` | The welcome chat text |
-| theme | `string` | `undefined` | Additional css file which is loaded dynamically |
+| theme | `string` / `Array` | `undefined` | Additional css file(s) which is loaded dynamically |
 | hidePoweredBy | `boolean` | `false` | If the powered by text should be displayed |
 | majaAvatar | `string` | `"//cdn.biexcellence.com/majaai/img/MajaAI_AI_120px.png"` | The avatar for majaAI answers |
 | onInit | `function` | `undefined` | Callback after chat initilization |
 | onQuery | `function` | `undefined` | Callback for user queries |
 | onResult | `function` | `undefined` | Callback for answers |
 | onError | `function` | `undefined` | Callback for server errors |
-| bubblePopupTime| `Integer` | `20000` | Time after the help bubble shows up |
 | tabs | `Array` | `undefined` | QuickTabs on the left side of Maja |
 
 ### JavaScript Tab options
@@ -82,7 +81,6 @@ var majaAi = new MajaAi({
     onQuery: function(query) { /* ... */ },
     onResult: function(query, answers) { /* ... */ },
     onError: function(error) { /* ... */ },
-    bubblePopupTime: 10000,
     tabs: [{
         html: '<i class="fas fa-question-circle"></i><span>Hilfe</span>',
         toggle: true,
