@@ -11,6 +11,7 @@ namespace MajaMobile
         public App()
         {
             InitializeComponent();
+
             AppDatabase.UpdateDatabase(); 
             MainPage = new MainPageMasterDetail();
         }

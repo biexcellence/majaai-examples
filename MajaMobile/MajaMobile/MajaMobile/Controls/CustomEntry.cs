@@ -72,6 +72,8 @@ namespace MajaMobile.Controls
             _entry.BindingContext = this;
             _entry.HorizontalTextAlignment = TextAlignment.Start;
             _entry.SetBinding(Entry.TextProperty, new Binding(nameof(Text), BindingMode.TwoWay));
+            _entry.TextColor = Color.FromHex("#706F6F");
+            _entry.PlaceholderColor = Color.FromHex("#64706F6F");
             var behavior = new EventToCommandBehavior() { EventName = nameof(Entry.Completed) };
             behavior.SetBinding(EventToCommandBehavior.CommandProperty, new Binding(nameof(CompletedCommand)));
             _entry.Behaviors.Add(behavior);
@@ -83,7 +85,7 @@ namespace MajaMobile.Controls
                     Content = _entry;
                     break;
                 default:
-                    Content = new Frame() { HasShadow = true, CornerRadius = 5.0f, Padding = new Thickness(10, 1, 10, 4), BackgroundColor = Utilities.ColorScheme.EntryBackgroundColor, Content = _entry };
+                    Content = new Frame() { HasShadow = true, CornerRadius = 25.0f, Padding = new Thickness(10, 1, 10, 4), BackgroundColor = Utilities.ColorScheme.EntryBackgroundColor, Content = _entry, IsClippedToBounds = true };
                     break;
             }
         }

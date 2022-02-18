@@ -90,4 +90,19 @@ namespace MajaMobile.Converters
             throw new NotImplementedException();
         }
     }
+
+    public class DateTimeOffsetToLocalConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is DateTimeOffset d)
+                return d.ToLocalTime();
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

@@ -5,6 +5,7 @@ using Android.Runtime;
 using Plugin.CurrentActivity;
 using Syncfusion.Licensing;
 using System;
+using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace MajaMobile.Droid
@@ -17,11 +18,17 @@ namespace MajaMobile.Droid
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
-            SyncfusionLicenseProvider.RegisterLicense("");//TODO: Your Syncfusion License
+            SyncfusionLicenseProvider.RegisterLicense("NTY4MzA4QDMxMzkyZTM0MmUzMG1SRC90QVd0V3RHcHJoVVMwcU85WTNHQmhaZ0czSVllbTZ0Y1NwZVNDY0E9");
 
             base.OnCreate(savedInstanceState);
+
+            Rg.Plugins.Popup.Popup.Init(this);
+
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
+            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            FormsMaterial.Init(this, savedInstanceState);
+
             LoadApplication(new App());
 
             App.Current.On<Xamarin.Forms.PlatformConfiguration.Android>().UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Resize);
@@ -38,7 +45,13 @@ namespace MajaMobile.Droid
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
         {
-            Plugin.Permissions.PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        public override void OnBackPressed()
+        {
+            Rg.Plugins.Popup.Popup.SendBackPressed(base.OnBackPressed);
         }
     }
 }

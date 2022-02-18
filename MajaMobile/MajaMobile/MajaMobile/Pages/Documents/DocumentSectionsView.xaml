@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:awesome="clr-namespace:FontAwesome"
+             xmlns:controls="clr-namespace:MajaMobile.Controls"
+             xmlns:documents="clr-namespace:MajaMobile.Pages.Documents"
+             xmlns:util="clr-namespace:MajaMobile.Utilities"
+             xmlns:shadows="clr-namespace:Sharpnado.Shades;assembly=Sharpnado.Shadows"
+             x:Class="MajaMobile.Pages.Documents.DocumentSectionsView">
+    <Grid Padding="16" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <shadows:Shadows HorizontalOptions="Fill" VerticalOptions="Fill" CornerRadius="10" Padding="2">
+            <shadows:Shadows.Shades>
+                <shadows:ImmutableShades>
+                    <shadows:Shade BlurRadius="3" Opacity="0.6" Offset="0,0" Color="{x:Static util:ColorScheme.ShadowColor}"/>
+                </shadows:ImmutableShades>
+            </shadows:Shadows.Shades>
+            <Frame Padding="0" CornerRadius="10" HasShadow="False">
+                <Grid RowSpacing="16" ColumnSpacing="16" BackgroundColor="{x:Static util:ColorScheme.PopupColor}" Padding="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Style="{StaticResource CloseButton}" HorizontalOptions="Start" Command="{Binding LastSectionCommand}" IsVisible="{Binding CanGoBack}" Text="{x:Static awesome:FontAwesomeIcons.ArrowLeft}"/>
+                    <Button Style="{StaticResource CloseButton}" Command="{Binding Source={x:RelativeSource AncestorType={x:Type documents:DocumentSectionsPage}}, Path=CloseCommand}" Grid.Column="1"/>
+                    <Entry Placeholder="Texterkennung" Text="{Binding CurrentSection.Name}" Grid.Row="1" IsReadOnly="True" Grid.ColumnSpan="2"/>
+                    <controls:CustomComboBox ItemsSource="{Binding BaseEntities}" VerticalOptions="Start" Grid.Row="2" Grid.ColumnSpan="2"
+                                    SelectedItem="{Binding SelectedBaseEntity}" Placeholder="Basisentität" SelectionChanged="BaseEntities_SelectionChanged"/>
+                    <controls:CustomComboBox ItemsSource="{Binding Entities}" VerticalOptions="Start" Grid.Row="3" Grid.ColumnSpan="2"
+                                    SelectedItem="{Binding SelectedEntity}" Placeholder="Entität"/>
+                    <controls:ImageButton Command="{Binding Source={x:RelativeSource AncestorType={x:Type documents:DocumentSectionsPage}}, Path=DeleteCommand}" Style="{StaticResource BorderlessImageButtonStyle}" Text="Löschen"
+                                          FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.TrashAlt}" HorizontalOptions="Center" VerticalOptions="End" Grid.Row="4"/>
+                    <controls:ImageButton Command="{Binding SaveSectionCommand}" Style="{StaticResource BorderlessImageButtonStyle}" Text="Anwenden"
+                                          FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.Check}" IsEnabled="{Binding Text, Converter={StaticResource NotNullConverter}}"
+                                          HorizontalOptions="Center" VerticalOptions="End" Grid.Row="4" Grid.Column="1"/>
+                </Grid>
+            </Frame>
+        </shadows:Shadows>
+        <ProgressBar HorizontalOptions="Fill" VerticalOptions="Center" ProgressColor="#539f90" x:Name="SectionsProgress" Grid.Row="1" HeightRequest="8" Margin="2,0"/>
+    </Grid>
+</ContentView>

@@ -39,6 +39,8 @@
 	<string>Wir müssen auf deinen Standort zugreifen, damit wir diesen auf einer Karte darstellen können.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Wir müssen auf deinen Standort zugreifen, damit wir diesen auf einer Karte darstellen können.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Wir müssen auf deine Kamera zugreifen, damit wir das Dokumente scannen Feature verwenden können.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>segoeui.ttf</string>
@@ -48,6 +50,9 @@
 		<string>segoeuib.ttf</string>
 		<string>segoeuisl.ttf</string>
 		<string>seguisb.ttf</string>
+    <string>FontAwesomeLight.otf</string>
+    <string>FontAwesomeRegular.otf</string>
+    <string>FontAwesomeSolid.otf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

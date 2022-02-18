@@ -1,13 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Application xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:awesome="clr-namespace:FontAwesome"
+             xmlns:buttons="clr-namespace:Syncfusion.XForms.Buttons;assembly=Syncfusion.Buttons.XForms"
+             xmlns:controls="clr-namespace:MajaMobile.Controls"
              xmlns:converters="clr-namespace:MajaMobile.Converters"
+             xmlns:util="clr-namespace:MajaMobile.Utilities"
              x:Class="MajaMobile.App">
     <Application.Resources>
         <ResourceDictionary>
             <converters:NotNullConverter x:Key="NotNullConverter"/>
             <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayImageConverter"/>
             <converters:GreaterThanConverter x:Key="GreaterThanConverter"/>
+
+            <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeLight">
+                <On Platform="Android" Value="FontAwesomeLight.otf#Regular"/>
+                <On Platform="iOS" Value="FontAwesome5Pro-Light"/>
+            </OnPlatform>
+
+            <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesome">
+                <On Platform="Android" Value="FontAwesomeRegular.otf#Regular"/>
+                <On Platform="iOS" Value="FontAwesome5Pro-Regular"/>
+            </OnPlatform>
+
+            <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeSolid">
+                <On Platform="Android" Value="FontAwesomeSolid.otf#Regular"/>
+                <On Platform="iOS" Value="FontAwesome5Pro-Solid"/>
+            </OnPlatform>
 
             <OnPlatform x:TypeArguments="x:String" Android="segoeui.ttf#segoeui" iOS="SegoeUI" x:Key="UiFontNormal"/>
             <OnPlatform x:TypeArguments="x:String" Android="seguisli.ttf#seguisli" iOS="SegoeUI-SemilightItalic" x:Key="UiFontSemiLightItalic"/>
@@ -41,9 +60,10 @@
             <Style TargetType="Entry">
                 <Setter Property="HorizontalOptions" Value="FillAndExpand"/>
                 <Setter Property="VerticalOptions" Value="Center"/>
-                <Setter Property="HorizontalTextAlignment" Value="Center"/>
+                <Setter Property="HorizontalTextAlignment" Value="Start"/>
                 <Setter Property="TextColor" Value="{StaticResource InputTextColor}"/>
                 <Setter Property="PlaceholderColor" Value="{StaticResource InputHintColor}"/>
+                <Setter Property="BackgroundColor" Value="{x:Static util:ColorScheme.PopupColor}"/>
             </Style>
 
             <Style TargetType="Picker">
@@ -71,8 +91,70 @@
                 <Setter Property="Padding" Value="10,0"/>
             </Style>
 
+            <Style TargetType="controls:ImageButton" x:Key="ImageButtonStyle">
+                <Setter Property="BackgroundColor" Value="#fcfefe"/>
+                <Setter Property="TextColor" Value="{x:Static util:ColorScheme.TextColor}"/>
+                <Setter Property="CornerRadius" Value="20"/>
+                <Setter Property="Padding" Value="8"/>
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="FontFamily" Value="{StaticResource UiFontBold}"/>
+                <Setter Property="FontSize" Value="{StaticResource MediumFontSize}"/>
+                <Setter Property="ContentTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <StackLayout Orientation="Horizontal" Spacing="12" HorizontalOptions="Center">
+                                <Label FontSize="{StaticResource MediumFontSize}" TextColor="{Binding Source={RelativeSource AncestorType={x:Type controls:ImageButton}}, Path=FontAwesomeIconColor}"
+                                   FontFamily="{Binding Source={RelativeSource AncestorType={x:Type controls:ImageButton}}, Path=FontAwesomeFontFamily}"
+                                   Text="{Binding Source={RelativeSource AncestorType={x:Type controls:ImageButton}}, Path=FontAwesomeIcon}" VerticalOptions="Center" Margin="0,4,0,0"/>
+                                <Label Text="{Binding Source={RelativeSource AncestorType={x:Type controls:ImageButton}}, Path=Text}" TextColor="{Binding Source={RelativeSource AncestorType={x:Type controls:ImageButton}}, Path=TextColor}"
+                                       FontSize="{Binding Source={RelativeSource AncestorType={x:Type controls:ImageButton}}, Path=FontSize}" VerticalOptions="Center"/>
+                            </StackLayout>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="controls:ImageButton" x:Key="BorderlessImageButtonStyle">
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="TextColor" Value="{x:Static util:ColorScheme.TextColor}"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="HasShadow" Value="False"/>
+                <Setter Property="FontFamily" Value="{StaticResource UiFontBold}"/>
+                <Setter Property="FontSize" Value="{StaticResource MediumFontSize}"/>
+                <Setter Property="ContentTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <StackLayout Orientation="Horizontal" Spacing="12" HorizontalOptions="Center">
+                                <Label FontSize="{StaticResource LargeFontSize}" TextColor="#539f90"
+                                   FontFamily="{Binding Source={RelativeSource AncestorType={x:Type controls:ImageButton}}, Path=FontAwesomeFontFamily}"
+                                   Text="{Binding Source={RelativeSource AncestorType={x:Type controls:ImageButton}}, Path=FontAwesomeIcon}" VerticalOptions="Center" Margin="0,4,0,0"/>
+                                <Label Text="{Binding Source={RelativeSource AncestorType={x:Type controls:ImageButton}}, Path=Text}" TextColor="{x:Static util:ColorScheme.TextColor}"
+                                       FontSize="{Binding Source={RelativeSource AncestorType={x:Type controls:ImageButton}}, Path=FontSize}" VerticalOptions="Center"/>
+                            </StackLayout>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <Style TargetType="Switch">
                 <Setter Property="OnColor" Value="#409088"/>
+            </Style>
+
+            <Style TargetType="Button" x:Key="CloseButton">
+                <Setter Property="HorizontalOptions" Value="End"/>
+                <Setter Property="VerticalOptions" Value="Start"/>
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="HeightRequest" Value="32"/>
+                <Setter Property="WidthRequest" Value="32"/>
+                <Setter Property="FontSize" Value="24"/>
+                <Setter Property="Text" Value="{x:Static awesome:FontAwesomeIcons.Times}"/>
+                <Setter Property="TextColor" Value="#539f90"/>
+                <Setter Property="FontFamily" Value="{StaticResource FontAwesome}"/>
+                <Setter Property="BorderWidth" Value="0"/>
+                <Setter Property="CornerRadius" Value="0"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="Visual" Value="Default"/>
             </Style>
 
         </ResourceDictionary>

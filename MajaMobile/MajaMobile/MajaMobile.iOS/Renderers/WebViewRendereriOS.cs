@@ -1,12 +1,12 @@
-﻿using Foundation;
-using UIKit;
+﻿using System;
+using WebKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
 [assembly: ExportRenderer(typeof(WebView), typeof(MajaMobile.iOS.Renderers.WebViewRendereriOS))]
 namespace MajaMobile.iOS.Renderers
 {
-    class WebViewRendereriOS : WebViewRenderer
+    class WebViewRendereriOS : WkWebViewRenderer
     {
         protected override void OnElementChanged(VisualElementChangedEventArgs e)
         {
@@ -14,68 +14,37 @@ namespace MajaMobile.iOS.Renderers
 
             if (e.OldElement == null)
             {
-                var webView = (UIWebView)NativeView;
+                var webView = (WKWebView)NativeView;
+                //webView.Opaque = false;
+                //webView.BackgroundColor = UIKit.UIColor.Clear;
+                //webView.ScrollView.BackgroundColor = UIKit.UIColor.Clear;
                 webView.ScrollView.ScrollEnabled = false;
                 webView.ScrollView.Bounces = false;
-
-                webView.Delegate = new WebViewDelegate(Delegate, this);
+                webView.ScrollView.MaximumZoomScale = webView.ScrollView.MinimumZoomScale = 1;
+                webView.NavigationDelegate = new NavDelegate(Webview_LoadFinished);
             }
         }
 
-        //public override void ZoomingStarted(UIScrollView scrollView, UIView view)
-        //{
-        //    base.ZoomingStarted(scrollView, view);
-        //    var webView = (UIWebView)NativeView;
-        //    if (scrollView.PinchGestureRecognizer != null)
-        //        scrollView.PinchGestureRecognizer.Enabled = false;
-        //}
-
-        class WebViewDelegate : UIWebViewDelegate
+        private async void Webview_LoadFinished()
         {
-            private readonly IUIWebViewDelegate _base;
-            private readonly WebViewRenderer _renderer;
+            await System.Threading.Tasks.Task.Delay(100); // wait here till content is rendered
+            var webView = (WKWebView)NativeView;
+            Element.HeightRequest = webView.ScrollView.ContentSize.Height;
+        }
 
-            public WebViewDelegate(IUIWebViewDelegate @base, WebViewRenderer renderer)
+        public class NavDelegate : WKNavigationDelegate
+        {
+            Action _loadFinished;
+
+            public NavDelegate(Action loadFinished)
             {
-                _base = @base;
-                _renderer = renderer;
+                _loadFinished = loadFinished;
             }
 
-            public override void LoadFailed(UIWebView webView, NSError error)
+            public override void DidFinishNavigation(WKWebView webView, WKNavigation navigation)
             {
-                _base.LoadFailed(webView, error);
-            }
-
-            public override void LoadingFinished(UIWebView webView)
-            {
-                _base.LoadingFinished(webView);
-
-                var frame = webView.Frame;
-                frame.Height = 1;
-                webView.Frame = frame;
-
-                var scrollHeight = webView.EvaluateJavascript("document.body.offsetHeight");
-                if (int.TryParse(scrollHeight, out var height))
-                {
-                    var element = _renderer.Element;
-                    if (element != null && element.HeightRequest != height)
-                    {
-                        frame = webView.Frame;
-                        frame.Height = height;
-                        webView.Frame = frame;
-                        element.HeightRequest = height;
-                    }
-                }
-            }
-
-            public override void LoadStarted(UIWebView webView)
-            {
-                _base.LoadStarted(webView);
-            }
-
-            public override bool ShouldStartLoad(UIWebView webView, NSUrlRequest request, UIWebViewNavigationType navigationType)
-            {
-                return _base.ShouldStartLoad(webView, request, navigationType);
+                //base.DidFinishNavigation(webView, navigation);
+                _loadFinished?.Invoke();
             }
         }
     }

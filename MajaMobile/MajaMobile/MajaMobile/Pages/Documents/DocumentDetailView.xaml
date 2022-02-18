@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:awesome="clr-namespace:FontAwesome"
+             xmlns:buttons="clr-namespace:Syncfusion.XForms.Buttons;assembly=Syncfusion.Buttons.XForms"
+             xmlns:controls="clr-namespace:MajaMobile.Controls"
+             xmlns:converters="clr-namespace:MajaMobile.Converters"
+             xmlns:cmb="clr-namespace:Syncfusion.XForms.ComboBox;assembly=Syncfusion.SfComboBox.XForms"
+             xmlns:documents="clr-namespace:MajaMobile.Pages.Documents"
+             xmlns:shadows="clr-namespace:Sharpnado.Shades;assembly=Sharpnado.Shadows"
+             xmlns:util="clr-namespace:MajaMobile.Utilities"
+             x:Class="MajaMobile.Pages.Documents.DocumentDetailView">
+    <ContentView.Resources>
+        <converters:DateTimeOffsetToLocalConverter x:Key="DateConverter"/>
+        <documents:ComboboxEntityConverter x:Key="ComboboxConverter"/>
+
+        <DataTemplate x:Key="TagTemplate">
+            <!--<buttons:SfChip Text="{Binding}" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" BackgroundColor="#539f90" Margin="0,4" HasShadow="False" Padding="8,4" BorderThickness="0"/>-->
+            <Frame HasShadow="False" CornerRadius="20" Padding="0" BackgroundColor="Transparent" Margin="2">
+                <StackLayout Spacing="4" Orientation="Horizontal" Padding="8,4" BackgroundColor="#539f90">
+                    <Label HorizontalOptions="Center" Text="{Binding}" TextColor="White"/>
+                    <Button BackgroundColor="Transparent" Padding="0" Text="x" Command="{Binding Source={x:RelativeSource AncestorType={x:Type documents:DocumentDetailPage}}, Path=ViewModel.RemoveTagCommand}" CommandParameter="{Binding}"
+                            BorderWidth="0" CornerRadius="0" Visual="Default" WidthRequest="12" HeightRequest="12" VerticalOptions="Center"/>
+                </StackLayout>
+            </Frame>
+        </DataTemplate>
+
+        <DataTemplate x:Key="AddTemplate">
+            <buttons:SfChip Text="+" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" BackgroundColor="#539f90" Margin="0,4" HasShadow="False" Padding="8,4" BorderThickness="0" Clicked="AddTag_Clicked"/>
+        </DataTemplate>
+
+        <documents:TagTemplateSelector x:Key="tts" TagTemplate="{StaticResource TagTemplate}" AddTagTemplate="{StaticResource AddTemplate}"/>
+    </ContentView.Resources>
+    <Grid Padding="16">
+        <shadows:Shadows HorizontalOptions="Fill" VerticalOptions="Fill" CornerRadius="10" Padding="2">
+            <shadows:Shadows.Shades>
+                <shadows:ImmutableShades>
+                    <shadows:Shade BlurRadius="3" Opacity="0.6" Offset="0,0" Color="{x:Static util:ColorScheme.ShadowColor}"/>
+                </shadows:ImmutableShades>
+            </shadows:Shadows.Shades>
+            <Frame Padding="0" CornerRadius="10" HasShadow="False">
+                <Grid RowSpacing="16" BackgroundColor="{x:Static util:ColorScheme.PopupColor}" Padding="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Button Style="{StaticResource CloseButton}" Clicked="Close_Clicked"/>
+                    <Entry Placeholder="Dokumentname" Text="{Binding Document.Name}" Grid.Row="1"/>
+                    <cmb:SfComboBox DisplayMemberPath="Name" DataSource="{Binding DocumentTypes}" VerticalOptions="Start" ShowClearButton="False" Grid.Row="2" HeightRequest="40">
+                        <cmb:SfComboBox.SelectedItem>
+                            <MultiBinding Converter="{StaticResource ComboboxConverter}">
+                                <Binding Path="Document.OcrDocumentType"/>
+                                <Binding Path="DocumentTypes"/>
+                            </MultiBinding>
+                        </cmb:SfComboBox.SelectedItem>
+                    </cmb:SfComboBox>
+                    <Label Text="{Binding Document.Changed, Converter={StaticResource DateConverter}, StringFormat='{0:d}'}" Grid.Row="3"/>
+                    <!--<buttons:SfChipGroup Type="Action" ItemsSource="{Binding Tags}" VerticalOptions="Start" Margin="0,16" ItemTemplate="{StaticResource tts}">
+                        <buttons:SfChipGroup.ChipLayout>
+                            <controls:CustomFlexLayout HorizontalOptions="Start" VerticalOptions="Center" Direction="Row" Wrap="Wrap" JustifyContent="Start" AlignContent="Start" AlignItems="Start"/>
+                        </buttons:SfChipGroup.ChipLayout>
+                    </buttons:SfChipGroup>-->
+                    <controls:CustomFlexLayout BindableLayout.ItemsSource="{Binding Tags}" Grid.Row="4" VerticalOptions="Start" Margin="0,16"
+                                                HorizontalOptions="Start" Direction="Row" Wrap="Wrap" JustifyContent="Start" AlignContent="Start" AlignItems="Start" BindableLayout.ItemTemplateSelector="{StaticResource tts}"/>
+                    <Label FontFamily="{StaticResource UiFontSemiBold}" VerticalOptions="End" HorizontalOptions="Center" Grid.Row="5">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Entitäten gefunden: "/>
+                                <Span Text="{Binding DocumentSections.Count}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+
+                    <controls:ImageButton Command="{Binding CheckSectionsCommand}" Style="{StaticResource ImageButtonStyle}" FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.Tasks}" BackgroundColor="#539f90"
+                                          FontAwesomeIconColor="White" Text="Entitäten prüfen" TextColor="White" HorizontalOptions="Fill" VerticalOptions="End" Grid.Row="6"/>
+                    <controls:ImageButton Command="{Binding AcceptCommand}" Style="{StaticResource ImageButtonStyle}" FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.Check}" FontAwesomeIconColor="#539f90"
+                                          Text="Alle Entitäten akzeptieren" TextColor="{StaticResource InputTextColor}" HorizontalOptions="Fill" VerticalOptions="End" Grid.Row="7"/>
+                </Grid>
+            </Frame>
+        </shadows:Shadows>
+    </Grid>
+</ContentView>

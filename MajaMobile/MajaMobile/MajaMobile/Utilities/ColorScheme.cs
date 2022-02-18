@@ -22,5 +22,10 @@ namespace MajaMobile.Utilities
 
         public static readonly Color ChatButtonBackground = Color.FromHex("1E8FCC");
         public static readonly Color ChatButtonForeground = Color.White;
+
+        public static readonly Color HeaderGreen = Color.FromHex("539f90");
+
+        public static readonly Color ShadowColor = Color.FromHex("777777");
+        public static readonly Color PopupColor = Color.FromHex("fdfdfd");
     }
 }
