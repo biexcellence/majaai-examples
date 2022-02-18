@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 
 namespace MajaMobile.Models
 {
@@ -13,17 +13,17 @@ namespace MajaMobile.Models
         public string Icao { get; }
         public string Name { get; }
 
-        public Airline(JObject jobj)
+        public Airline(JsonElement jobj)
         {
-            JToken token = null;
-            if (jobj.TryGetValue("fs", out token))
-                FsCode = (string)token;
-            if (jobj.TryGetValue("iata", out token))
-                Iata = (string)token;
-            if (jobj.TryGetValue("icao", out token))
-                Icao = (string)token;
-            if (jobj.TryGetValue("name", out token))
-                Name = (string)token;
+            JsonElement token;
+            if (jobj.TryGetProperty("fs", out token))
+                FsCode = token.GetString();
+            if (jobj.TryGetProperty("iata", out token))
+                Iata = token.GetString();
+            if (jobj.TryGetProperty("icao", out token))
+                Icao = token.GetString();
+            if (jobj.TryGetProperty("name", out token))
+                Name = token.GetString();
         }
     }
 
@@ -43,37 +43,37 @@ namespace MajaMobile.Models
         public double Latitude { get; }
         public double Longitude { get; }
 
-        public Airport(JObject jobj)
+        public Airport(JsonElement jobj)
         {
-            JToken token = null;
-            if (jobj.TryGetValue("fs", out token))
-                FsCode = (string)token;
-            if (jobj.TryGetValue("iata", out token))
-                Iata = (string)token;
-            if (jobj.TryGetValue("icao", out token))
-                Icao = (string)token;
-            if (jobj.TryGetValue("name", out token))
-                Name = (string)token;
-            if (jobj.TryGetValue("city", out token))
-                City = (string)token;
-            if (jobj.TryGetValue("cityCode", out token))
-                CityCode = (string)token;
-            if (jobj.TryGetValue("countryName", out token))
-                Country = (string)token;
-            if (jobj.TryGetValue("countryCode", out token))
-                CountryCode = (string)token;
-            if (jobj.TryGetValue("regionName", out token))
-                Region = (string)token;
-            if (jobj.TryGetValue("timeZoneRegionName", out token))
-                TimeZoneRegionName = (string)token;
-            if (jobj.TryGetValue("localTime", out token))
+            JsonElement token;
+            if (jobj.TryGetProperty("fs", out token))
+                FsCode = token.GetString();
+            if (jobj.TryGetProperty("iata", out token))
+                Iata = token.GetString();
+            if (jobj.TryGetProperty("icao", out token))
+                Icao = token.GetString();
+            if (jobj.TryGetProperty("name", out token))
+                Name = token.GetString();
+            if (jobj.TryGetProperty("city", out token))
+                City = token.GetString();
+            if (jobj.TryGetProperty("cityCode", out token))
+                CityCode = token.GetString();
+            if (jobj.TryGetProperty("countryName", out token))
+                Country = token.GetString();
+            if (jobj.TryGetProperty("countryCode", out token))
+                CountryCode = token.GetString();
+            if (jobj.TryGetProperty("regionName", out token))
+                Region = token.GetString();
+            if (jobj.TryGetProperty("timeZoneRegionName", out token))
+                TimeZoneRegionName = token.GetString();
+            if (jobj.TryGetProperty("localTime", out token))
             {
                 LocalTime = FlightStatus.TokenToDateTime(token);
             }
-            if (jobj.TryGetValue("latitude", out token))
-                Latitude = (double)token;
-            if (jobj.TryGetValue("longitude", out token))
-                Longitude = (double)token;
+            if (jobj.TryGetProperty("latitude", out token))
+                Latitude = token.GetDouble();
+            if (jobj.TryGetProperty("longitude", out token))
+                Longitude = token.GetDouble();
         }
     }
 
@@ -132,109 +132,106 @@ namespace MajaMobile.Models
         public Airport DepartureAirport { get; }
         public Airport ArrivalAirport { get; }
 
-        public FlightStatus(JObject jobj, IEnumerable<Airline> airlines, IEnumerable<Airport> airports)
+        public FlightStatus(JsonElement jobj, IEnumerable<Airline> airlines, IEnumerable<Airport> airports)
         {
-            JToken token = null;
-            if (jobj.TryGetValue("flightId", out token))
-                FlightId = (long)token;
-            if (jobj.TryGetValue("carrierFsCode", out token))
-                CarrierFsCode = (string)token;
-            if (jobj.TryGetValue("flightNumber", out token))
-                FlightNumber = (string)token;
-            if (jobj.TryGetValue("departureAirportFsCode", out token))
-                DepartureAirportFsCode = (string)token;
-            if (jobj.TryGetValue("arrivalAirportFsCode", out token))
-                ArrivalAirportFsCode = (string)token;
-            if (jobj.TryGetValue("status", out token))
-                Status = (string)token;
-            if (jobj.TryGetValue("departureDate", out token))
-                DepartureDate = GetDateLocal((JObject)token);
-            if (jobj.TryGetValue("arrivalDate", out token))
-                ArrivalDate = GetDateLocal((JObject)token);
-            if (jobj.TryGetValue("operationalTimes", out var operationTimesToken))
+            JsonElement token;
+            if (jobj.TryGetProperty("flightId", out token))
+                FlightId = token.GetInt64();
+            if (jobj.TryGetProperty("carrierFsCode", out token))
+                CarrierFsCode = token.GetString();
+            if (jobj.TryGetProperty("flightNumber", out token))
+                FlightNumber = token.GetString();
+            if (jobj.TryGetProperty("departureAirportFsCode", out token))
+                DepartureAirportFsCode = token.GetString();
+            if (jobj.TryGetProperty("arrivalAirportFsCode", out token))
+                ArrivalAirportFsCode = token.GetString();
+            if (jobj.TryGetProperty("status", out token))
+                Status = token.GetString();
+            if (jobj.TryGetProperty("departureDate", out token))
+                DepartureDate = GetDateLocal(token);
+            if (jobj.TryGetProperty("arrivalDate", out token))
+                ArrivalDate = GetDateLocal(token);
+            if (jobj.TryGetProperty("operationalTimes", out var operationTimes))
             {
-                var operationTimes = (JObject)operationTimesToken;
-                if (operationTimes.TryGetValue("publishedDeparture", out token))
-                    PublishedDeparture = GetDateLocal((JObject)token);
-                if (operationTimes.TryGetValue("publishedArrival", out token))
-                    PublishedArrival = GetDateLocal((JObject)token);
+                if (operationTimes.TryGetProperty("publishedDeparture", out token))
+                    PublishedDeparture = GetDateLocal(token);
+                if (operationTimes.TryGetProperty("publishedArrival", out token))
+                    PublishedArrival = GetDateLocal(token);
 
-                if (operationTimes.TryGetValue("actualGateDeparture", out token))
+                if (operationTimes.TryGetProperty("actualGateDeparture", out token))
                 {
-                    ActualGateDeparture = GetDateLocal((JObject)token);
-                    GateDepartureUtc = GetDateUtc((JObject)token);
+                    ActualGateDeparture = GetDateLocal(token);
+                    GateDepartureUtc = GetDateUtc(token);
                 }
-                if (operationTimes.TryGetValue("scheduledGateDeparture", out token))
+                if (operationTimes.TryGetProperty("scheduledGateDeparture", out token))
                 {
-                    ScheduledGateDeparture = GetDateLocal((JObject)token);
+                    ScheduledGateDeparture = GetDateLocal(token);
                     if (!GateDepartureUtc.HasValue)
                     {
-                        GateDepartureUtc = GetDateUtc((JObject)token);
+                        GateDepartureUtc = GetDateUtc(token);
                     }
                 }
-                if (operationTimes.TryGetValue("estimatedGateDeparture", out token))
-                    EstimatedGateDeparture = GetDateLocal((JObject)token);
+                if (operationTimes.TryGetProperty("estimatedGateDeparture", out token))
+                    EstimatedGateDeparture = GetDateLocal(token);
 
-                if (operationTimes.TryGetValue("scheduledRunwayDeparture", out token))
-                    ScheduledRunwayDeparture = GetDateLocal((JObject)token);
-                if (operationTimes.TryGetValue("estimatedRunwayDeparture", out token))
-                    EstimatedRunwayDeparture = GetDateLocal((JObject)token);
-                if (operationTimes.TryGetValue("actualRunwayDeparture", out token))
-                    ActualRunwayDeparture = GetDateLocal((JObject)token);
+                if (operationTimes.TryGetProperty("scheduledRunwayDeparture", out token))
+                    ScheduledRunwayDeparture = GetDateLocal(token);
+                if (operationTimes.TryGetProperty("estimatedRunwayDeparture", out token))
+                    EstimatedRunwayDeparture = GetDateLocal(token);
+                if (operationTimes.TryGetProperty("actualRunwayDeparture", out token))
+                    ActualRunwayDeparture = GetDateLocal(token);
 
-                if (operationTimes.TryGetValue("estimatedGateArrival", out token))
+                if (operationTimes.TryGetProperty("estimatedGateArrival", out token))
                 {
-                    EstimatedGateArrival = GetDateLocal((JObject)token);
-                    GateArrivalUtc = GetDateUtc((JObject)token);
+                    EstimatedGateArrival = GetDateLocal(token);
+                    GateArrivalUtc = GetDateUtc(token);
                 }
-                if (operationTimes.TryGetValue("scheduledGateArrival", out token))
+                if (operationTimes.TryGetProperty("scheduledGateArrival", out token))
                 {
-                    ScheduledGateArrival = GetDateLocal((JObject)token);
+                    ScheduledGateArrival = GetDateLocal(token);
                     if (!GateArrivalUtc.HasValue)
                     {
-                        GateArrivalUtc = GetDateUtc((JObject)token);
+                        GateArrivalUtc = GetDateUtc(token);
                     }
                 }
-                if (operationTimes.TryGetValue("actualGateArrival", out token))
-                    ActualGateArrival = GetDateLocal((JObject)token);
+                if (operationTimes.TryGetProperty("actualGateArrival", out token))
+                    ActualGateArrival = GetDateLocal(token);
 
-                if (operationTimes.TryGetValue("flightPlanPlannedDeparture", out token))
-                    FlightPlanPlannedDeparture = GetDateLocal((JObject)token);
-                if (operationTimes.TryGetValue("flightPlanPlannedArrival", out token))
-                    FlightPlanPlannedArrival = GetDateLocal((JObject)token);
+                if (operationTimes.TryGetProperty("flightPlanPlannedDeparture", out token))
+                    FlightPlanPlannedDeparture = GetDateLocal(token);
+                if (operationTimes.TryGetProperty("flightPlanPlannedArrival", out token))
+                    FlightPlanPlannedArrival = GetDateLocal(token);
 
-                if (operationTimes.TryGetValue("scheduledRunwayArrival", out token))
-                    ScheduledRunwayArrival = GetDateLocal((JObject)token);
-                if (operationTimes.TryGetValue("estimatedRunwayArrival", out token))
-                    EstimatedRunwayArrival = GetDateLocal((JObject)token);
-                if (operationTimes.TryGetValue("actualRunwayArrival", out token))
-                    ActualRunwayArrival = GetDateLocal((JObject)token);
+                if (operationTimes.TryGetProperty("scheduledRunwayArrival", out token))
+                    ScheduledRunwayArrival = GetDateLocal(token);
+                if (operationTimes.TryGetProperty("estimatedRunwayArrival", out token))
+                    EstimatedRunwayArrival = GetDateLocal(token);
+                if (operationTimes.TryGetProperty("actualRunwayArrival", out token))
+                    ActualRunwayArrival = GetDateLocal(token);
             }
 
-            if (jobj.TryGetValue("delays", out var delaysToken))
+            if (jobj.TryGetProperty("delays", out var delays))
             {
-                var delays = (JObject)delaysToken;
-                if (delays.TryGetValue("departureGateDelayMinutes", out token))
-                    DepartureGateDelayMinutes = (int)token;
-                if (delays.TryGetValue("departureRunwayDelayMinutes", out token))
-                    DepartureRunwayDelayMinutes = (int)token;
-                if (delays.TryGetValue("arrivalGateDelayMinutes", out token))
-                    ArrivalGateDelayMinutes = (int)token;
-                if (delays.TryGetValue("arrivalRunwayDelayMinutes", out token))
-                    ArrivalRunwayDelayMinutes = (int)token;
+                if (delays.TryGetProperty("departureGateDelayMinutes", out token))
+                    DepartureGateDelayMinutes = token.GetInt32();
+                if (delays.TryGetProperty("departureRunwayDelayMinutes", out token))
+                    DepartureRunwayDelayMinutes = token.GetInt32();
+                if (delays.TryGetProperty("arrivalGateDelayMinutes", out token))
+                    ArrivalGateDelayMinutes = token.GetInt32();
+                if (delays.TryGetProperty("arrivalRunwayDelayMinutes", out token))
+                    ArrivalRunwayDelayMinutes = token.GetInt32();
             }
 
-            if (jobj.TryGetValue("airportResources", out var airportResourcesToken))
+            if (jobj.TryGetProperty("airportResources", out var airportResources))
             {
-                var airportResources = (JObject)airportResourcesToken;
-                if (airportResources.TryGetValue("departureTerminal", out token))
-                    DepartureTerminal = (string)token;
-                if (airportResources.TryGetValue("departureGate", out token))
-                    DepartureGate = (string)token;
-                if (airportResources.TryGetValue("arrivalTerminal", out token))
-                    ArrivalTerminal = (string)token;
-                if (airportResources.TryGetValue("arrivalGate", out token))
-                    ArrivalGate = (string)token;
+                if (airportResources.TryGetProperty("departureTerminal", out token))
+                    DepartureTerminal = token.GetString();
+                if (airportResources.TryGetProperty("departureGate", out token))
+                    DepartureGate = token.GetString();
+                if (airportResources.TryGetProperty("arrivalTerminal", out token))
+                    ArrivalTerminal = token.GetString();
+                if (airportResources.TryGetProperty("arrivalGate", out token))
+                    ArrivalGate = token.GetString();
             }
 
             Airline = airlines.FirstOrDefault(a => a.FsCode == CarrierFsCode);
@@ -242,29 +239,29 @@ namespace MajaMobile.Models
             ArrivalAirport = airports.FirstOrDefault(a => a.FsCode == ArrivalAirportFsCode);
         }
 
-        private DateTime? GetDateLocal(JObject jobj)
+        private DateTime? GetDateLocal(JsonElement jobj)
         {
-            if (jobj.TryGetValue("dateLocal", out var token))
+            if (jobj.TryGetProperty("dateLocal", out var token))
                 return TokenToDateTime(token);
             return null;
         }
 
-        internal static DateTime? TokenToDateTime(JToken token)
+        internal static DateTime? TokenToDateTime(JsonElement token)
         {
-            if (token.Type == JTokenType.Date)
-                return (DateTime)token;
-            if (DateTime.TryParseExact((string)token, DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var dateTime))
+            if (token.TryGetDateTime(out var date))
+                return date;
+            if (DateTime.TryParseExact(token.GetString(), DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var dateTime))
                 return dateTime;
             return null;
         }
 
-        private DateTime? GetDateUtc(JObject jobj)
+        private DateTime? GetDateUtc(JsonElement jobj)
         {
-            if (jobj.TryGetValue("dateUtc", out var token))
+            if (jobj.TryGetProperty("dateUtc", out var token))
             {
-                if (token.Type == JTokenType.Date)
-                    return (DateTime)token;
-                if (DateTime.TryParseExact((string)token, DateTimeFormatUtc, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var dateTime))
+                if (token.TryGetDateTime(out var date))
+                    return date;
+                if (DateTime.TryParseExact(token.GetString(), DateTimeFormatUtc, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var dateTime))
                     return dateTime;
             }
             return null;
@@ -275,31 +272,30 @@ namespace MajaMobile.Models
             var flightStatuses = new List<FlightStatus>();
             var airports = new List<Airport>();
             var airlines = new List<Airline>();
-            var obj = JObject.Parse(data);
-            JToken token = null;
-            if (obj.TryGetValue("appendix", out var appendixToken))
+            var doc = JsonDocument.Parse(data);
+            JsonElement token;
+            if (doc.RootElement.TryGetProperty("appendix", out var appendix))
             {
-                var appendix = (JObject)appendixToken;
-                if (appendix.TryGetValue("airlines", out token))
+                if (appendix.TryGetProperty("airlines", out token))
                 {
-                    foreach (var airline in token)
+                    foreach (var airline in token.EnumerateArray())
                     {
-                        airlines.Add(new Airline((JObject)airline));
+                        airlines.Add(new Airline(airline));
                     }
                 }
-                if (appendix.TryGetValue("airports", out token))
+                if (appendix.TryGetProperty("airports", out token))
                 {
-                    foreach (var airport in token)
+                    foreach (var airport in token.EnumerateArray())
                     {
-                        airports.Add(new Airport((JObject)airport));
+                        airports.Add(new Airport(airport));
                     }
                 }
             }
-            if (obj.TryGetValue("flightStatuses", out token))
+            if (doc.RootElement.TryGetProperty("flightStatuses", out token))
             {
-                foreach (var status in token)
+                foreach (var status in token.EnumerateArray())
                 {
-                    flightStatuses.Add(new FlightStatus((JObject)status, airlines, airports));
+                    flightStatuses.Add(new FlightStatus(status, airlines, airports));
                 }
             }
             return flightStatuses;

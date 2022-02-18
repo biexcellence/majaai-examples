@@ -25,13 +25,22 @@ namespace MajaMobile.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
+            Rg.Plugins.Popup.Popup.Init();
+
             global::Xamarin.Forms.Forms.Init();
 
             // SYNCFUSION
-            SyncfusionLicenseProvider.RegisterLicense("");//TODO: Your Syncfusion License
+            SyncfusionLicenseProvider.RegisterLicense(""); //TODO: Your Syncfusion License
             SfListViewRenderer.Init();
             SfAutoCompleteRenderer.Init();
             SfImageEditorRenderer.Init();
+            Sharpnado.Shades.iOS.iOSShadowsRenderer.Initialize();
+            Syncfusion.XForms.iOS.Buttons.SfChipRenderer.Init();
+            Syncfusion.XForms.iOS.Buttons.SfChipGroupRenderer.Init();
+            Syncfusion.XForms.iOS.Border.SfBorderRenderer.Init();
+            Syncfusion.XForms.iOS.Buttons.SfButtonRenderer.Init(); 
+            Syncfusion.XForms.iOS.ComboBox.SfComboBoxRenderer.Init();
+            FormsMaterial.Init();
 
             LoadApplication(new App());
 

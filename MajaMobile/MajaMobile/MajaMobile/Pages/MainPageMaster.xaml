@@ -59,6 +59,18 @@
                     </Grid.GestureRecognizers>
                     <Label Text="Meine Talente" FontSize="{StaticResource MediumFontSize}" FontFamily="{StaticResource UiFontSemiBold}" HorizontalOptions="Start" HorizontalTextAlignment="Start" Margin="20,0,0,0"/>
                 </Grid>
+                <Grid VerticalOptions="Start" HorizontalOptions="Fill" BackgroundColor="Transparent" Padding="0,5" IsVisible="{Binding ShowDocuments}">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CreateDocumentCommand}"/>
+                    </Grid.GestureRecognizers>
+                    <Label Text="Dokument anlegen" FontSize="{StaticResource MediumFontSize}" FontFamily="{StaticResource UiFontSemiBold}" HorizontalOptions="Start" HorizontalTextAlignment="Start" Margin="20,0,0,0"/>
+                </Grid>
+                <Grid VerticalOptions="Start" HorizontalOptions="Fill" BackgroundColor="Transparent" Padding="0,5" IsVisible="{Binding ShowDocuments}">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding DocumentsCommand}"/>
+                    </Grid.GestureRecognizers>
+                    <Label Text="Dokumente" FontSize="{StaticResource MediumFontSize}" FontFamily="{StaticResource UiFontSemiBold}" HorizontalOptions="Start" HorizontalTextAlignment="Start" Margin="20,0,0,0"/>
+                </Grid>
                 <!--<Grid VerticalOptions="Start" HorizontalOptions="Fill" BackgroundColor="Red" Padding="0,10" IsVisible="{Binding User, Converter={StaticResource NotNullConverter}, ConverterParameter=invert}">
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding RegisterCommand}"/>

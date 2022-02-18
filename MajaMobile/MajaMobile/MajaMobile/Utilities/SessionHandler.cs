@@ -1,11 +1,13 @@
 ﻿using BiExcellence.OpenBi.Api;
 using BiExcellence.OpenBi.Api.Commands;
+using BiExcellence.OpenBi.Api.Commands.Organisations;
 using BiExcellence.OpenBi.Api.Commands.Users;
 using MajaMobile.Models;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
@@ -28,9 +30,15 @@ namespace MajaMobile.Utilities
             set
             {
                 _openBiUser = value;
+                if (value == null)
+                {
+                    Organisation = null;
+                }
                 UserChanged?.Invoke(this, new UserChangedEventArgs(value));
             }
         }
+
+        public IOrganisation Organisation { get; private set; }
 
         public SessionHandler(IEnumerable<string> packages)
         {
@@ -84,14 +92,14 @@ namespace MajaMobile.Utilities
                 account = new AccountUser();
                 account.Username = username;
                 account.Password = password;
-                await SecureStorage.SetAsync(_accountStoreServiceId, JsonConvert.SerializeObject(account));
+                await SecureStorage.SetAsync(_accountStoreServiceId, JsonSerializer.Serialize(account));
             }
             else
             {
                 var json = await SecureStorage.GetAsync(_accountStoreServiceId);
                 if (json != null)
                 {
-                    account = JsonConvert.DeserializeObject<AccountUser>(json);
+                    account = JsonSerializer.Deserialize<AccountUser>(json);
                 }
             }
 
@@ -103,7 +111,14 @@ namespace MajaMobile.Utilities
                 if (account != null)
                 {
                     await sess.OpenBiLogin(account.Username, account.Password);
-                    OpenBiUser = await sess.GetUserByUsername(account.Username);
+                    var user = await sess.GetUserByUsername(account.Username);
+                    Organisation = (await sess.GetOrganisationsByUser(user.Username)).FirstOrDefault((o) =>
+                    {
+                        if (o.CustomAttributes.TryGetValue("DocumentRole", out var roleId) && !string.IsNullOrEmpty(roleId.ToString()))
+                            return true;
+                        return false;
+                    });
+                    OpenBiUser = user;
                 }
             }
             catch (OpenBiServerErrorException serverException) when (serverException.Response.Code == OpenBiResponseCodes.LoginFailed)
@@ -119,7 +134,8 @@ namespace MajaMobile.Utilities
             {
                 _currentUserLoginTask = null;
             }
-            oldsession?.Dispose();
+            if (oldsession != null)
+                await oldsession.DisposeAsync();
             Session = sess;
         }
 
@@ -129,7 +145,7 @@ namespace MajaMobile.Utilities
 
             var session = Session;
             Session = null;
-            session?.Dispose();
+            session?.DisposeAsync();
             OpenBiUser = null;
 
             using (var db = new AppDatabase())
@@ -160,7 +176,7 @@ namespace MajaMobile.Utilities
                         {
                             handled = true;
                             Session = null;
-                            session.Dispose();
+                            await session.DisposeAsync();
                         }
                     }
                     else if (e is HttpRequestException)
@@ -170,7 +186,7 @@ namespace MajaMobile.Utilities
                         {
                             handled = true;
                             Session = null;
-                            session.Dispose();
+                            await session.DisposeAsync();
                         }
                     }
                     if (!handled)
@@ -214,7 +230,7 @@ namespace MajaMobile.Utilities
         {
             var session = Session;
             Session = null;
-            session?.Dispose();
+            session?.DisposeAsync();
             OpenBiUser = null;
         }
     }

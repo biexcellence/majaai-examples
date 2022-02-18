@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:awesome="clr-namespace:FontAwesome"
+             xmlns:buttons="clr-namespace:Syncfusion.XForms.Buttons;assembly=Syncfusion.Buttons.XForms"
+             xmlns:controls="clr-namespace:MajaMobile.Controls"
+             x:Class="MajaMobile.Pages.Documents.CreateDocumentView">
+    <Grid RowSpacing="30" Padding="30,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <StackLayout Spacing="10" Orientation="Vertical" VerticalOptions="End" HorizontalOptions="Center">
+            <Label Text="Dokumentenanalyse" FontSize="Large"/>
+            <Label Text="Um Ihre Dokumente zu analysieren, laden Sie diese bitte hoch. Dafür können Sie entweder ein Foto machen oder die Dokumente direkt aus Ihren Dateien hochladen."/>
+        </StackLayout>
+        <StackLayout Spacing="5" Orientation="Vertical" Grid.Row="1" VerticalOptions="Start">
+
+            <controls:ImageButton Command="{Binding UploadFileCommand}" Style="{StaticResource ImageButtonStyle}" FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.Upload}" FontAwesomeIconColor="#539f90" FontType="Solid"
+                                          Text="Upload" TextColor="{StaticResource InputTextColor}" HorizontalOptions="Fill" Grid.Row="4"/>
+            <controls:ImageButton Command="{Binding TakePictureCommand}" Style="{StaticResource ImageButtonStyle}" FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.Camera}" FontAwesomeIconColor="#539f90" FontType="Solid"
+                                          Text="Foto" TextColor="{StaticResource InputTextColor}" HorizontalOptions="Fill" Grid.Row="5"/>
+        </StackLayout>
+    </Grid>
+</ContentView>

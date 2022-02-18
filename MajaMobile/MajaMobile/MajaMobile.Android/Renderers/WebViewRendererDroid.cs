@@ -1,11 +1,9 @@
-﻿using Xamarin.Forms.Platform.Android;
-using Xamarin.Forms;
-using Android.Webkit;
-using static Android.Views.View;
+﻿using Android.Content;
 using Android.Views;
-using Android.Content;
-using Android.Graphics;
-using MajaMobile.Controls;
+using Android.Webkit;
+using Xamarin.Forms;
+using Xamarin.Forms.Platform.Android;
+using static Android.Views.View;
 
 [assembly: ExportRenderer(typeof(Xamarin.Forms.WebView), typeof(MajaMobile.Droid.Renderers.WebViewRendererDroid))]
 namespace MajaMobile.Droid.Renderers

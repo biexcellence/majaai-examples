@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:awesome="clr-namespace:FontAwesome"
+             xmlns:controls="clr-namespace:MajaMobile.Controls"
+             xmlns:converters="clr-namespace:MajaMobile.Converters"
+             xmlns:documents="clr-namespace:MajaMobile.Pages.Documents"
+             xmlns:infinite="clr-namespace:Xamarin.Forms.Extended;assembly=Xamarin.Forms.Extended.InfiniteScrolling"
+             xmlns:shadows="clr-namespace:Sharpnado.Shades;assembly=Sharpnado.Shadows"
+             xmlns:util="clr-namespace:MajaMobile.Utilities"
+             x:Class="MajaMobile.Pages.Documents.DocumentsListView">
+    <ContentView.Resources>
+        <converters:DateTimeOffsetToLocalConverter x:Key="DateConverter"/>
+        <documents:TagIdToTagConverter x:Key="TagConverter"/>
+        <documents:TypeIdToStringConverter x:Key="TypeConverter"/>
+    </ContentView.Resources>
+    <Grid RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <controls:CustomEntry Placeholder="Nach Dateiname, Datum suchen" Text="{Binding SearchText}" Margin="16"/>
+        <ListView ItemsSource="{Binding Documents}" HasUnevenRows="False" RowHeight="300" SelectionMode="None" SeparatorVisibility="None" BackgroundColor="Transparent" Grid.Row="1">
+            <ListView.Behaviors>
+                <infinite:InfiniteScrollBehavior IsLoadingMore="{Binding IsBusy}"/>
+            </ListView.Behaviors>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <shadows:Shadows HorizontalOptions="Fill" VerticalOptions="Start" CornerRadius="10" Padding="2">
+                            <shadows:Shadows.Margin>
+                                <Thickness Left="16" Right="16" Top="8" Bottom="8"/>
+                            </shadows:Shadows.Margin>
+                            <shadows:Shadows.Shades>
+                                <shadows:ImmutableShades>
+                                    <shadows:Shade BlurRadius="3" Opacity="0.6" Offset="0,0" Color="{x:Static util:ColorScheme.ShadowColor}"/>
+                                </shadows:ImmutableShades>
+                            </shadows:Shadows.Shades>
+                            <Frame Padding="0" CornerRadius="10" HasShadow="False">
+                                <Grid ColumnSpacing="24" Background="{x:Static util:ColorScheme.PopupColor}" Padding="16" RowSpacing="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Label Text="Dokumentname" FontFamily="{StaticResource UiFontSemiBold}"/>
+                                    <Label Text="Dokumenttyp" FontFamily="{StaticResource UiFontSemiBold}" Grid.Row="1"/>
+                                    <Label Text="Datum" FontFamily="{StaticResource UiFontSemiBold}" Grid.Row="2"/>
+                                    <Label Grid.Column="1" Text="{Binding Name}"/>
+                                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding OcrDocumentType, Converter={StaticResource TypeConverter}}"/>
+                                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding Changed, Converter={StaticResource DateConverter}, StringFormat='{0:d}'}"/>
+                                    <controls:CustomFlexLayout BindableLayout.ItemsSource="{Binding Tags, Converter={StaticResource TagConverter}}" Grid.Row="3" VerticalOptions="Start" Grid.ColumnSpan="2" Margin="0,16"
+                                                HorizontalOptions="Start" Direction="Row" Wrap="Wrap" JustifyContent="Start" AlignContent="Start" AlignItems="Start">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate>
+                                                <Frame HasShadow="False" CornerRadius="20" Padding="0" BackgroundColor="Transparent" Margin="2">
+                                                    <Grid Padding="8,4" BackgroundColor="#539f90">
+                                                        <Label HorizontalOptions="Center" Text="{Binding}" TextColor="White"/>
+                                                    </Grid>
+                                                </Frame>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </controls:CustomFlexLayout>
+                                    <!--<buttons:SfChipGroup Type="Action" ItemsSource="{Binding Tags, Converter={StaticResource TagConverter}}" VerticalOptions="Start" Margin="0,16" Grid.Row="3" Grid.ColumnSpan="2">
+                                        <buttons:SfChipGroup.ChipLayout>
+                                            <controls:CustomFlexLayout HorizontalOptions="Start" VerticalOptions="Center" Direction="Row" Wrap="Wrap" JustifyContent="Start" AlignContent="Start" AlignItems="Start"/>
+                                        </buttons:SfChipGroup.ChipLayout>
+                                        <buttons:SfChipGroup.ItemTemplate>
+                                            <DataTemplate>
+                                                --><!--<buttons:SfChip Text="{Binding}" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" BackgroundColor="#539f90" Margin="0,4" HasShadow="False" Padding="8,4" BorderThickness="0"/>--><!--
+                                                <Frame HasShadow="False" CornerRadius="20" Padding="0" BackgroundColor="Transparent" Margin="0,4">
+                                                    <Grid Padding="8,4" BackgroundColor="#539f90">
+                                                        <Label HorizontalOptions="Center" Text="{Binding}"/>
+                                                    </Grid>
+                                                </Frame>
+                                            </DataTemplate>
+                                        </buttons:SfChipGroup.ItemTemplate>
+                                    </buttons:SfChipGroup>-->
+                                    <controls:ImageButton Command="{Binding Source={x:RelativeSource AncestorType={x:Type documents:DocumentsListPage}}, Path=DeleteCommand}" CommandParameter="{Binding}" Style="{StaticResource BorderlessImageButtonStyle}"
+                                                          Text="Löschen" FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.Times}" HorizontalOptions="Start" Grid.Row="4"/>
+                                    <controls:ImageButton Command="{Binding Source={x:RelativeSource AncestorType={x:Type documents:DocumentsListPage}}, Path=EditCommand}" CommandParameter="{Binding}" Style="{StaticResource BorderlessImageButtonStyle}"
+                                                          Text="Bearbeiten" FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.Edit}" HorizontalOptions="Start" Grid.Row="4" Grid.Column="1" FontType="Solid"/>
+                                </Grid>
+                            </Frame>
+                        </shadows:Shadows>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</ContentView>

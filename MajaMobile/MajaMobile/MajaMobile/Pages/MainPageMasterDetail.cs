@@ -1,6 +1,7 @@
 ﻿using BiExcellence.OpenBi.Api.Commands.Users;
 using MajaMobile.Messages;
 using MajaMobile.Models;
+using MajaMobile.Pages.Documents;
 using MajaMobile.Utilities;
 using MajaMobile.ViewModels;
 using System;
@@ -11,7 +12,7 @@ using Xamarin.Forms;
 
 namespace MajaMobile.Pages
 {
-    public class MainPageMasterDetail : MasterDetailPage
+    public class MainPageMasterDetail : FlyoutPage
     {
         private MainPageMasterViewModel _viewModel;
         private MainPage _mainPage;
@@ -20,7 +21,7 @@ namespace MajaMobile.Pages
         {
             var style = (Style)Application.Current.Resources["ContentPageStyle"];
             Style = style;
-            MasterBehavior = MasterBehavior.Popover;
+            FlyoutLayoutBehavior = FlyoutLayoutBehavior.Popover;
 
             var sessionHandler = new SessionHandler();
 
@@ -28,7 +29,7 @@ namespace MajaMobile.Pages
             SetBinding(IsPresentedProperty, binding);
             BindingContext = _viewModel = new MainPageMasterViewModel(sessionHandler);
 
-            Master = new MainPageMaster(_viewModel);
+            Flyout = new MainPageMaster(_viewModel);
 
             _mainPage = new MainPage(sessionHandler);
             var navigationPage = new NavigationPageBase(_mainPage);//{ Icon = "Icon-Small.png" };
@@ -76,6 +77,16 @@ namespace MajaMobile.Pages
                     await Detail.Navigation.PushAsync(new UserProfilePage(user, _viewModel.SessionHandler));
                 }
             });
+            MessagingCenter.Subscribe(this, MainPageMasterViewModel.CreateDocumentMessage, async (MainPageMasterViewModel viewmodel) =>
+            {
+                if (PrepareNavigation() && _viewModel.IsIdle)
+                    await Detail.Navigation.PushAsync(new CreateDocumentPage(_viewModel.SessionHandler));
+            });
+            MessagingCenter.Subscribe(this, MainPageMasterViewModel.DocumentsMessage, async (MainPageMasterViewModel viewmodel) =>
+            {
+                if (PrepareNavigation() && _viewModel.IsIdle)
+                    await Detail.Navigation.PushAsync(new DocumentsListPage(_viewModel.SessionHandler));
+            });
             MessagingCenter.Subscribe<ImmoObject>(this, ImmoObject.TappedMessage, ImmoTapped);
             MessagingCenter.Subscribe<PointOfInterest>(this, PointOfInterest.TappedMessage, PoiTapped);
         }
@@ -90,6 +101,8 @@ namespace MajaMobile.Pages
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.RegisterMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.SelectTalentsMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.LoginMessage);
+            MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.CreateDocumentMessage);
+            MessagingCenter.Unsubscribe<MainPageMasterViewModel>(this, MainPageMasterViewModel.DocumentsMessage);
             MessagingCenter.Unsubscribe<ImmoObject>(this, ImmoObject.TappedMessage);
             MessagingCenter.Unsubscribe<PointOfInterest>(this, PointOfInterest.TappedMessage);
             MessagingCenter.Unsubscribe<MainPageMasterViewModel, IUser>(this, MainPageMasterViewModel.EditUserProfileMessage);
@@ -183,10 +196,14 @@ namespace MajaMobile.ViewModels
         public ICommand SelectTalentsCommand { get; }
         public ICommand ProfileExpanderCommand { get; }
         public ICommand EditProfileCommand { get; }
+        public ICommand DocumentsCommand { get; }
+        public ICommand CreateDocumentCommand { get; }
         public const string RegisterMessage = "REGISTER";
         public const string LoginMessage = "LOGIN";
         public const string SelectTalentsMessage = "SELECT_TALENTS";
         public const string EditUserProfileMessage = "EDIT_PROFILE";
+        public const string DocumentsMessage = "DOCUMENTS";
+        public const string CreateDocumentMessage = "CREATE_DOCUMENT";
 
         public event EventHandler ExpandStateChanged;
 
@@ -215,6 +232,12 @@ namespace MajaMobile.ViewModels
             set { SetField(value); if (value == null) UserExpanded = false; }
         }
 
+        public bool ShowDocuments
+        {
+            get => GetField<bool>();
+            set { SetField(value); }
+        }
+
         public MainPageMasterViewModel(SessionHandler sessionHandler) : base(sessionHandler)
         {
             LoginCommand = new Command(() => MessagingCenter.Send(this, LoginMessage));
@@ -223,7 +246,13 @@ namespace MajaMobile.ViewModels
             SelectTalentsCommand = new Command(() => MessagingCenter.Send(this, SelectTalentsMessage));
             ProfileExpanderCommand = new Command(() => UserExpanded = !UserExpanded);
             EditProfileCommand = new Command(() => MessagingCenter.Send(this, EditUserProfileMessage, User));
-            SessionHandler.UserChanged += (object sender, UserChangedEventArgs e) => User = e.User;
+            DocumentsCommand = new Command(() => MessagingCenter.Send(this, DocumentsMessage));
+            CreateDocumentCommand = new Command(() => MessagingCenter.Send(this, CreateDocumentMessage));
+            SessionHandler.UserChanged += (object sender, UserChangedEventArgs e) =>
+            {
+                User = e.User;
+                ShowDocuments = SessionHandler.Organisation != null;
+            };
             Login();
         }
 

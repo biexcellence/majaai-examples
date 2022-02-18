@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MajaMobile.Controls"
+             x:Class="MajaMobile.Pages.Documents.DocumentPageBase">
+    <controls:ActivityIndicatorLayout>
+        <Image Source="background.png" Aspect="Fill" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All"/>
+        <ContentView x:Name="PageContent" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All"/>
+    </controls:ActivityIndicatorLayout>
+</ContentPage>

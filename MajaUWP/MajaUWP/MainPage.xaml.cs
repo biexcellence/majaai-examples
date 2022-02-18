@@ -94,7 +94,6 @@ namespace MajaUWP
                                 }
                                 lngs.Add(((double)@long).ToString(CultureInfo.InvariantCulture));
 
-
                                 if (!dict.TryGetValue("name", out var names))
                                 {
                                     names = new List<string>();
