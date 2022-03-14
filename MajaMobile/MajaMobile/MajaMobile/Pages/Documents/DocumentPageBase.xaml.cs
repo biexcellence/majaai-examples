@@ -32,7 +32,7 @@ namespace MajaMobile.Pages.Documents
             PageContent.Content = view;
         }
 
-        protected override void OnAppearing()
+        protected async override void OnAppearing()
         {
             base.OnAppearing();
             _pageActive = true;
@@ -40,10 +40,56 @@ namespace MajaMobile.Pages.Documents
             {
                 ViewModel.GoBackPage += GoBack;
                 ViewModel.ShowException += DisplayException;
+                ViewModel.RequestMenuOpen += ViewModel_RequestMenuOpen;
+                ViewModel.RequestMenuClose += ViewModel_RequestMenuClose;
+                ViewModel.NavigateToPage += ViewModel_NavigateToPage;
                 ViewModel.SendAppearing();
                 if (_content != null)
                     _content.SendAppearing();
             }
+            InnerMenuGrid.FadeTo(0, 100);
+            await MenuGrid.LayoutTo(new Rectangle(0, 0, Width, 0), 100, Easing.CubicOut);
+            MenuGrid.FadeTo(0, 100);
+        }
+
+        private async void ViewModel_NavigateToPage(object sender, AppNavigationEventArgs e)
+        {
+            InnerMenuGrid.FadeTo(0, 100);
+            await MenuGrid.LayoutTo(new Rectangle(0, 0, Width, 0), 100, Easing.CubicOut);
+            MenuGrid.FadeTo(0, 100);
+            switch (e.Target)
+            {
+                case AppNavigation.Root:
+                    while (Navigation.NavigationStack.Count>2)
+                    {
+                        Navigation.RemovePage(Navigation.NavigationStack[Navigation.NavigationStack.Count-2]);
+                    }
+                    await Navigation.PopAsync();
+                    break;
+                case AppNavigation.Talents:
+                    await Navigation.PushAsync(new TalentsPage(ViewModel.SessionHandler));
+                    break;
+                case AppNavigation.NewDocument:
+                    await Navigation.PushAsync(new CreateDocumentPage(ViewModel.SessionHandler));
+                    break;
+                case AppNavigation.Documents:
+                    await Navigation.PushAsync(new DocumentsListPage(ViewModel.SessionHandler));
+                    break;
+            }
+        }
+
+        private async void ViewModel_RequestMenuClose(object sender, EventArgs e)
+        {
+            InnerMenuGrid.FadeTo(0, 500);
+            await MenuGrid.LayoutTo(new Rectangle(0, 0, Width, 0), 700, Easing.CubicOut);
+            MenuGrid.FadeTo(0, 100);
+        }
+
+        private async void ViewModel_RequestMenuOpen(object sender, EventArgs e)
+        {
+            InnerMenuGrid.FadeTo(1, 500);
+            MenuGrid.FadeTo(1, 100);
+            await MenuGrid.LayoutTo(new Rectangle(0, 0, Width, Height*0.75), 700, Easing.CubicOut);
         }
 
         protected override void OnDisappearing()
@@ -54,6 +100,9 @@ namespace MajaMobile.Pages.Documents
             {
                 ViewModel.GoBackPage -= GoBack;
                 ViewModel.ShowException -= DisplayException;
+                ViewModel.RequestMenuOpen -= ViewModel_RequestMenuOpen;
+                ViewModel.RequestMenuClose -= ViewModel_RequestMenuClose;
+                ViewModel.NavigateToPage -= ViewModel_NavigateToPage;
                 ViewModel.SendDisappearing();
                 if (_content != null)
                     _content.SendDisappearing();
@@ -93,6 +142,10 @@ namespace MajaMobile.Pages.Documents
             }
         }
 
+        private void Button_Clicked(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public interface IDocumentPageContent
@@ -114,6 +167,19 @@ namespace MajaMobile.Pages.Documents
 
         public SessionHandler SessionHandler { get; }
         public ICommand GoBackCommand { get; }
+        public ICommand CloseMenuCommand { get; }
+        public ICommand OpenMenuCommand { get; }
+        public ICommand NavigateCommand { get; }
+        public event EventHandler RequestMenuOpen;
+        public event EventHandler RequestMenuClose;
+        public event EventHandler<AppNavigationEventArgs> NavigateToPage;
+
+        public ICommand ExpandDocumentsMenu { get; }
+        public bool DocumentsMenuExpanded
+        {
+            get => GetField<bool>();
+            set => SetField(value);
+        }
 
         public bool NotifyChecked
         {
@@ -132,6 +198,26 @@ namespace MajaMobile.Pages.Documents
         {
             GoBackCommand = new Command(GoBack);
             SessionHandler = sessionHandler;
+            OpenMenuCommand = new Command(OpenMenu);
+            CloseMenuCommand = new Command(CloseMenu);
+            NavigateCommand = new Command((object o) =>
+            {
+                if (o is AppNavigation nav)
+                {
+                    NavigateToPage?.Invoke(this, new AppNavigationEventArgs(nav));
+                }
+            });
+            ExpandDocumentsMenu =  new Command(() => DocumentsMenuExpanded = !DocumentsMenuExpanded);
+        }
+
+        protected void OpenMenu()
+        {
+            RequestMenuOpen?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected void CloseMenu()
+        {
+            RequestMenuClose?.Invoke(this, EventArgs.Empty);
         }
 
         private readonly Dictionary<string, object> _fields = new Dictionary<string, object>();
@@ -267,6 +353,27 @@ namespace MajaMobile.Pages.Documents
                 return new[] { entity.Id };
             }
             return null;
+        }
+    }
+}
+
+namespace MajaMobile.Pages
+{
+    public enum AppNavigation
+    {
+        Root,
+        Talents,
+        NewDocument,
+        Documents,
+        MyProfile
+    }
+
+    public class AppNavigationEventArgs : EventArgs
+    {
+        public AppNavigation Target { get; }
+        public AppNavigationEventArgs(AppNavigation nav)
+        {
+            Target = nav;
         }
     }
 }

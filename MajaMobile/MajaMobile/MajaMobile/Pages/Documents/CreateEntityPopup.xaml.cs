@@ -46,6 +46,11 @@ namespace MajaMobile.Pages.Documents
 
         private async void Accept_Clicked(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(Text))
+            {
+                await DisplayAlert("Kein Name", "Bitte geben Sie einen Namen ein", "Ok");
+                return;
+            }
             try
             {
                 var entity = new Entity();

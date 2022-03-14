@@ -13,9 +13,6 @@
     <popup:PopupPage.Animation>
         <animations:ScaleAnimation PositionIn="Center" PositionOut="Center" ScaleIn="1.2" ScaleOut="0.8" DurationIn="400" DurationOut="300" EasingIn="SinOut" EasingOut="SinIn" HasBackgroundAnimation="True"/>
     </popup:PopupPage.Animation>
-    <popup:PopupPage.Resources>
-        <converters:NotNullConverter x:Key="NotNullConverter"/>
-    </popup:PopupPage.Resources>
     <Grid BackgroundColor="Transparent" Padding="16">
         <shadows:Shadows HorizontalOptions="Fill" VerticalOptions="Center" CornerRadius="10" Padding="2">
             <shadows:Shadows.Shades>
@@ -42,8 +39,7 @@
                     <controls:ImageButton Clicked="Close_Clicked" Style="{StaticResource BorderlessImageButtonStyle}" Text="Verwerfen"
                                           FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.Times}" HorizontalOptions="Start" VerticalOptions="End" Grid.Row="2"/>
                     <controls:ImageButton Clicked="Accept_Clicked" Style="{StaticResource BorderlessImageButtonStyle}" Text="Anwenden"
-                                          FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.Check}" IsEnabled="{Binding Text, Converter={StaticResource NotNullConverter}}"
-                                          HorizontalOptions="End" VerticalOptions="End" Grid.Row="2"/>
+                                          FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.Check}" HorizontalOptions="End" VerticalOptions="End" Grid.Row="2"/>
                 </Grid>
             </Frame>
         </shadows:Shadows>

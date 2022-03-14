@@ -101,20 +101,23 @@ namespace MajaMobile.Pages.Documents
         {
             try
             {
-                using (var stream = await file.OpenReadAsync())
+                using (Busy())
                 {
-                    using (var client = new HttpClient())
-                    using (var formData = new MultipartFormDataContent())
+                    using (var stream = await file.OpenReadAsync())
                     {
-                        formData.Add(new StreamContent(stream), "file1", file.FileName);
+                        using (var client = new HttpClient())
+                        using (var formData = new MultipartFormDataContent())
+                        {
+                            formData.Add(new StreamContent(stream), "file1", file.FileName);
 
-                        formData.Headers.TryAddWithoutValidation("session-handle", (await SessionHandler.Session.Ping()).Handle);
+                            formData.Headers.TryAddWithoutValidation("session-handle", (await SessionHandler.Session.Ping()).Handle);
 
-                        var response = await client.PostAsync(new Uri(SessionHandler.Session.Configuration.Uri(), "/majaocr"), formData);
-                        response.EnsureSuccessStatusCode();
-                        var id = await response.Content.ReadAsStringAsync();
-                        await SessionHandler.ExecuteOpenbiCommand((s, t) => s.AnalyzeOcrDocument(id));
-                        FileUploaded?.Invoke(this, new StringEventArgs(id));
+                            var response = await client.PostAsync(new Uri(SessionHandler.Session.Configuration.Uri(), "/majaocr"), formData);
+                            response.EnsureSuccessStatusCode();
+                            var id = await response.Content.ReadAsStringAsync();
+                            await SessionHandler.ExecuteOpenbiCommand((s, t) => s.AnalyzeOcrDocument(id));
+                            FileUploaded?.Invoke(this, new StringEventArgs(id));
+                        }
                     }
                 }
             }

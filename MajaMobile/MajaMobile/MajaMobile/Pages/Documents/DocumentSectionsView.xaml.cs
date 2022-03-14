@@ -1,5 +1,6 @@
 ﻿using BiExcellence.OpenBi.Api.Commands.Entities;
 using MajaMobile.Utilities;
+using Rg.Plugins.Popup.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -36,8 +37,7 @@ namespace MajaMobile.Pages.Documents
 
         private async void Vm_Finished(object sender, EventArgs e)
         {
-            Navigation.RemovePage(Navigation.NavigationStack[Navigation.NavigationStack.Count-2]);
-            await Navigation.PopAsync();
+            await Navigation.PushAsync(new DocumentCreatedPage(true));
         }
 
         private async void Vm_ProgressChanged(object sender, EventArgs e)
@@ -50,9 +50,33 @@ namespace MajaMobile.Pages.Documents
 
         private void BaseEntities_SelectionChanged(object sender, Controls.CustomSelectionChangedEventArgs e)
         {
-            if (e.NewItem is IBaseEntity baseEntity && BindingContext is DocumentSectionsViewModel vm)
+            if (e.SelectedItem is IBaseEntity baseEntity && BindingContext is DocumentSectionsViewModel vm)
             {
                 vm.ChangeBaseEntity(baseEntity);
+            }
+        }
+
+        private async void Entities_SelectionChanged(object sender, Controls.CustomSelectionChangedEventArgs e)
+        {
+            if (e.SelectedItem is DocumentSectionsViewModel.NewEntityDummy && BindingContext is DocumentSectionsViewModel vm)
+            {
+                vm.SelectedEntity = null;
+                var popup = new CreateEntityPopup(vm.SessionHandler, vm.SelectedBaseEntity.Id, vm.SelectedBaseEntity.Name);
+                popup.PopupClosed += Popup_PopupClosed;
+                await Navigation.PushPopupAsync(popup);
+            }
+        }
+
+        private void Popup_PopupClosed(object sender, EntityEventArgs e)
+        {
+            if (sender is CreateEntityPopup popup)
+            {
+                popup.PopupClosed -= Popup_PopupClosed;
+            }
+            if (e.Entity != null && BindingContext is DocumentSectionsViewModel vm)
+            {
+                vm.Entities.Add(e.Entity);
+                vm.SelectedEntity = e.Entity;
             }
         }
     }
@@ -138,6 +162,14 @@ namespace MajaMobile.Pages.Documents
         {
             try
             {
+                if (SelectedBaseEntity == null)
+                {
+                    throw new Exception("Bitte wählen Sie eine Basisentität aus");
+                }
+                if (SelectedEntity == null)
+                {
+                    throw new Exception("Bitte wählen Sie eine Entität aus");
+                }
                 using (Busy())
                 {
                     CurrentSection.BaseEntity = SelectedBaseEntity?.Id;
@@ -198,7 +230,9 @@ namespace MajaMobile.Pages.Documents
                         Entities.Clear();
                         if (!string.IsNullOrEmpty(CurrentSection.BaseEntity))
                         {
-                            foreach (var entity in await SessionHandler.ExecuteOpenbiCommand((s, t) => s.GetEntities(CurrentSection.BaseEntity).AddField("ID").AddField("Name").SortAscending("Name").Send()))
+                            var entities = await SessionHandler.ExecuteOpenbiCommand((s, t) => s.GetEntities(CurrentSection.BaseEntity).AddField("ID").AddField("Name").SortAscending("Name").Send());
+                            Entities.Add(new NewEntityDummy());
+                            foreach (var entity in entities)
                             {
                                 Entities.Add(entity);
                                 if (entity.Id == CurrentSection.EntityId)
@@ -234,7 +268,9 @@ namespace MajaMobile.Pages.Documents
                 {
                     SelectedEntity = null;
                     Entities.Clear();
-                    foreach (var entity in await SessionHandler.ExecuteOpenbiCommand((s, t) => s.GetEntities(baseEntity).AddField("ID").AddField("Name").SortAscending("Name").Send()))
+                    var entities = await SessionHandler.ExecuteOpenbiCommand((s, t) => s.GetEntities(baseEntity).AddField("ID").AddField("Name").SortAscending("Name").Send());
+                    Entities.Add(new NewEntityDummy());
+                    foreach (var entity in entities)
                     {
                         Entities.Add(entity);
                     }
@@ -243,6 +279,14 @@ namespace MajaMobile.Pages.Documents
             catch (Exception ex)
             {
                 DisplayException(ex);
+            }
+        }
+
+        public class NewEntityDummy : Entity
+        {
+            public NewEntityDummy()
+            {
+                Name = "Neue Entität anlegen";
             }
         }
     }

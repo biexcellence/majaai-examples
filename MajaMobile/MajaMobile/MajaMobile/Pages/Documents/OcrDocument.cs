@@ -8,6 +8,16 @@ namespace MajaMobile.Pages.Documents
 {
     public class OcrDocument : EntityBase
     {
+        private bool _selected;
+        public bool Selected
+        {
+            get => _selected;
+            set
+            {
+                _selected =value;
+                OnPropertyChanged();
+            }
+        }
 
         private IList<string> _tags;
         public IList<string> Tags

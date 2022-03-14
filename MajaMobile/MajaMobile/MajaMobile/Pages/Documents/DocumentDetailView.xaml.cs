@@ -97,7 +97,7 @@ namespace MajaMobile.Pages.Documents
         {
             await Device.InvokeOnMainThreadAsync(async () =>
             {
-                await Navigation.PopAsync();
+                await Navigation.PushAsync(new DocumentCreatedPage(false));
             });
         }
     }

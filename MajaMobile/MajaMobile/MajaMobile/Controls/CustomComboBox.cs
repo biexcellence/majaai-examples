@@ -1,9 +1,11 @@
 ﻿using MajaMobile.Extensions;
+using MajaMobile.Pages.Documents;
 using MajaMobile.Utilities;
 using Sharpnado.Shades;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -58,8 +60,8 @@ namespace MajaMobile.Controls
             ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Auto) });
 
             _caretDownLabel = new Label();
-            _caretDownLabel.FontFamily = ((OnPlatform<string>)Application.Current.Resources["FontAwesomeSolid"]).GetRuntimePlatformValue();
-            _caretDownLabel.Text = FontAwesome.FontAwesomeIcons.CaretDown;
+            _caretDownLabel.FontFamily = ((OnPlatform<string>)Application.Current.Resources["FontAwesomeLight"]).GetRuntimePlatformValue();
+            _caretDownLabel.Text = FontAwesome.FontAwesomeIcons.AngleDown;
             _caretDownLabel.FontSize = Device.GetNamedSize(NamedSize.Large, _caretDownLabel);
             _caretDownLabel.HorizontalOptions = LayoutOptions.End;
             _caretDownLabel.VerticalOptions = LayoutOptions.End;
@@ -84,6 +86,8 @@ namespace MajaMobile.Controls
             _textLabel.VerticalOptions = LayoutOptions.End;
             _textLabel.TextColor = ColorScheme.TextColor;
             _textLabel.Margin = new Thickness(15, 0, 0, 8);
+            _textLabel.FontFamily = ((OnPlatform<string>)Application.Current.Resources["UiFontSemiBold"]).GetRuntimePlatformValue();
+            _textLabel.FontSize= (double)Application.Current.Resources["MediumFontSize"];
             Children.Add(_textLabel);
 
             _placeHolderLabel = new Label();
@@ -92,7 +96,7 @@ namespace MajaMobile.Controls
             _placeHolderLabel.HorizontalOptions = LayoutOptions.Start;
             _placeHolderLabel.VerticalOptions = LayoutOptions.Start;
             _placeHolderLabel.TextColor = ColorScheme.TextColor;
-            _placeHolderLabel.FontSize =12;
+            _placeHolderLabel.FontSize = (double)Application.Current.Resources["SemiSmallFontSize"];
             _placeHolderLabel.Margin = new Thickness(15, 4, 0, 0);
             Children.Add(_placeHolderLabel);
         }
@@ -157,7 +161,7 @@ namespace MajaMobile.Controls
             var parentGrid = getParentGrid();
             if (ItemsSource != null && ItemsSource.Count > 0 && parentGrid != null)
             {
-                _backgroundGrid = new Grid() { BindingContext = this, BackgroundColor = ColorScheme.OverlayColor };
+                _backgroundGrid = new Grid() { BindingContext = this, BackgroundColor = Color.Transparent };
                 _backgroundGrid.GestureRecognizers.Add(new TapGestureRecognizer() { Command = new Command(BackgroundTapped) });
                 if (parentGrid.RowDefinitions.Count > 1)
                     SetRowSpan(_backgroundGrid, parentGrid.RowDefinitions.Count);
@@ -176,7 +180,9 @@ namespace MajaMobile.Controls
                 {
                     var cell = new ViewCell();
                     var label = new Label() { TextColor = ColorScheme.TextColor };
+                    label.SetBinding(Label.TextColorProperty, new Binding(".", converter: new FontConverter()));
                     label.SetBinding(Label.TextProperty, new Binding("."));
+                    label.FontFamily = ((OnPlatform<string>)Application.Current.Resources["UiFontSemiBold"]).GetRuntimePlatformValue();
                     cell.View = label;
                     return cell;
                 });
@@ -187,11 +193,11 @@ namespace MajaMobile.Controls
                 shadow.Content = grid;
 
                 var width = Width;
-                var height = Math.Min(parentGrid.Width, parentGrid.Height) * 0.8;
+                var height = Math.Min(parentGrid.Width, parentGrid.Height) * 0.5;
                 _dropdownGrid.WidthRequest = width;
                 _dropdownGrid.HeightRequest = height;
-                var x = X;
-                var y = Y + Height;
+                var x = X - parentGrid.Padding.Left;
+                var y = Y + Height - parentGrid.Padding.Top;
 
                 if (x + width >= parentGrid.Width)
                 {
@@ -254,15 +260,32 @@ namespace MajaMobile.Controls
         {
             SelectedItem = null;
         }
+
+        private class FontConverter : IValueConverter
+        {
+            public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                if (value is DocumentSectionsViewModel.NewEntityDummy)
+                {
+                    return ColorScheme.HeaderGreen;
+                }
+                return ColorScheme.TextColor;
+            }
+
+            public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 
     public class CustomSelectionChangedEventArgs : EventArgs
     {
-        public object NewItem { get; }
+        public object SelectedItem { get; }
 
-        public CustomSelectionChangedEventArgs(object newItem)
+        public CustomSelectionChangedEventArgs(object item)
         {
-            NewItem = newItem;
+            SelectedItem = item;
         }
     }
 }

@@ -7,7 +7,7 @@
              xmlns:util="clr-namespace:MajaMobile.Utilities"
              xmlns:shadows="clr-namespace:Sharpnado.Shades;assembly=Sharpnado.Shadows"
              x:Class="MajaMobile.Pages.Documents.DocumentSectionsView">
-    <Grid Padding="16" RowSpacing="16">
+    <Grid Padding="16" RowSpacing="32">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
@@ -37,12 +37,12 @@
                     <controls:CustomComboBox ItemsSource="{Binding BaseEntities}" VerticalOptions="Start" Grid.Row="2" Grid.ColumnSpan="2"
                                     SelectedItem="{Binding SelectedBaseEntity}" Placeholder="Basisentität" SelectionChanged="BaseEntities_SelectionChanged"/>
                     <controls:CustomComboBox ItemsSource="{Binding Entities}" VerticalOptions="Start" Grid.Row="3" Grid.ColumnSpan="2"
-                                    SelectedItem="{Binding SelectedEntity}" Placeholder="Entität"/>
+                                    SelectedItem="{Binding SelectedEntity}" Placeholder="Entität" SelectionChanged="Entities_SelectionChanged"/>
                     <controls:ImageButton Command="{Binding Source={x:RelativeSource AncestorType={x:Type documents:DocumentSectionsPage}}, Path=DeleteCommand}" Style="{StaticResource BorderlessImageButtonStyle}" Text="Löschen"
-                                          FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.TrashAlt}" HorizontalOptions="Center" VerticalOptions="End" Grid.Row="4"/>
+                                          FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.TrashAlt}" HorizontalOptions="Center" VerticalOptions="End" Grid.Row="4" Margin="0,0,0,16"/>
                     <controls:ImageButton Command="{Binding SaveSectionCommand}" Style="{StaticResource BorderlessImageButtonStyle}" Text="Anwenden"
                                           FontAwesomeIcon="{x:Static awesome:FontAwesomeIcons.Check}" IsEnabled="{Binding Text, Converter={StaticResource NotNullConverter}}"
-                                          HorizontalOptions="Center" VerticalOptions="End" Grid.Row="4" Grid.Column="1"/>
+                                          HorizontalOptions="Center" VerticalOptions="End" Grid.Row="4" Grid.Column="1" Margin="0,0,0,16"/>
                 </Grid>
             </Frame>
         </shadows:Shadows>

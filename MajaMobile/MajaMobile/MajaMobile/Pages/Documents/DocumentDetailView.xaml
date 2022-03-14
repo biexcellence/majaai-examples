@@ -5,7 +5,6 @@
              xmlns:buttons="clr-namespace:Syncfusion.XForms.Buttons;assembly=Syncfusion.Buttons.XForms"
              xmlns:controls="clr-namespace:MajaMobile.Controls"
              xmlns:converters="clr-namespace:MajaMobile.Converters"
-             xmlns:cmb="clr-namespace:Syncfusion.XForms.ComboBox;assembly=Syncfusion.SfComboBox.XForms"
              xmlns:documents="clr-namespace:MajaMobile.Pages.Documents"
              xmlns:shadows="clr-namespace:Sharpnado.Shades;assembly=Sharpnado.Shadows"
              xmlns:util="clr-namespace:MajaMobile.Utilities"
@@ -39,7 +38,7 @@
                 </shadows:ImmutableShades>
             </shadows:Shadows.Shades>
             <Frame Padding="0" CornerRadius="10" HasShadow="False">
-                <Grid RowSpacing="16" BackgroundColor="{x:Static util:ColorScheme.PopupColor}" Padding="16">
+                <Grid RowSpacing="12" BackgroundColor="{x:Static util:ColorScheme.PopupColor}" Padding="24,16">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
@@ -52,22 +51,32 @@
                     </Grid.RowDefinitions>
                     <Button Style="{StaticResource CloseButton}" Clicked="Close_Clicked"/>
                     <Entry Placeholder="Dokumentname" Text="{Binding Document.Name}" Grid.Row="1"/>
-                    <cmb:SfComboBox DisplayMemberPath="Name" DataSource="{Binding DocumentTypes}" VerticalOptions="Start" ShowClearButton="False" Grid.Row="2" HeightRequest="40">
+                    <controls:CustomComboBox Placeholder="Dokumenttyp" ItemsSource="{Binding DocumentTypes}" Grid.Row="2">
+                        <controls:CustomComboBox.SelectedItem>
+                            <MultiBinding Converter="{StaticResource ComboboxConverter}">
+                                <Binding Path="Document.OcrDocumentType"/>
+                                <Binding Path="DocumentTypes"/>
+                            </MultiBinding>
+                        </controls:CustomComboBox.SelectedItem>
+                    </controls:CustomComboBox>
+                    <!--<cmb:SfComboBox DisplayMemberPath="Name" DataSource="{Binding DocumentTypes}" VerticalOptions="Start" ShowClearButton="False" Grid.Row="2" HeightRequest="40">
                         <cmb:SfComboBox.SelectedItem>
                             <MultiBinding Converter="{StaticResource ComboboxConverter}">
                                 <Binding Path="Document.OcrDocumentType"/>
                                 <Binding Path="DocumentTypes"/>
                             </MultiBinding>
                         </cmb:SfComboBox.SelectedItem>
-                    </cmb:SfComboBox>
-                    <Label Text="{Binding Document.Changed, Converter={StaticResource DateConverter}, StringFormat='{0:d}'}" Grid.Row="3"/>
+                    </cmb:SfComboBox>-->
+                    <Entry Placeholder="Datum" Text="{Binding Document.Changed, Converter={StaticResource DateConverter}, StringFormat='{0:d}', Mode=OneWay}" Grid.Row="3" IsEnabled="False"/>
                     <!--<buttons:SfChipGroup Type="Action" ItemsSource="{Binding Tags}" VerticalOptions="Start" Margin="0,16" ItemTemplate="{StaticResource tts}">
                         <buttons:SfChipGroup.ChipLayout>
                             <controls:CustomFlexLayout HorizontalOptions="Start" VerticalOptions="Center" Direction="Row" Wrap="Wrap" JustifyContent="Start" AlignContent="Start" AlignItems="Start"/>
                         </buttons:SfChipGroup.ChipLayout>
                     </buttons:SfChipGroup>-->
-                    <controls:CustomFlexLayout BindableLayout.ItemsSource="{Binding Tags}" Grid.Row="4" VerticalOptions="Start" Margin="0,16"
-                                                HorizontalOptions="Start" Direction="Row" Wrap="Wrap" JustifyContent="Start" AlignContent="Start" AlignItems="Start" BindableLayout.ItemTemplateSelector="{StaticResource tts}"/>
+                    <ScrollView HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Always" Margin="0,8" VerticalOptions="Start" HorizontalOptions="Start" Grid.Row="4">
+                        <controls:CustomFlexLayout BindableLayout.ItemsSource="{Binding Tags}"
+                                               Direction="Row" Wrap="Wrap" JustifyContent="Start" AlignContent="Start" AlignItems="Start" BindableLayout.ItemTemplateSelector="{StaticResource tts}"/>
+                    </ScrollView>
                     <Label FontFamily="{StaticResource UiFontSemiBold}" VerticalOptions="End" HorizontalOptions="Center" Grid.Row="5">
                         <Label.FormattedText>
                             <FormattedString>

@@ -2,9 +2,57 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MajaMobile.Controls"
+             xmlns:pages="clr-namespace:MajaMobile.Pages"
              x:Class="MajaMobile.Pages.Documents.DocumentPageBase">
     <controls:ActivityIndicatorLayout>
         <Image Source="background.png" Aspect="Fill" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All"/>
-        <ContentView x:Name="PageContent" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All"/>
+        <Grid AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
+            <ContentView x:Name="PageContent"/>
+            <Grid x:Name="MenuGrid" Padding="16" Opacity="0">
+                <Grid.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#DFF0F8" Offset="0.0"/>
+                        <GradientStop Color="#F1F7E3" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+                <Grid x:Name="InnerMenuGrid" Opacity="0" RowSpacing="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="{StaticResource StatusBarHeight}"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Button Style="{StaticResource CloseButton}" Command="{Binding CloseMenuCommand}" FontFamily="{StaticResource FontAwesomeLight}" FontSize="32" Grid.Row="1"/>
+                    <Label Text="majaAI" Grid.Row="2" HorizontalOptions="End" FontSize="Large" Margin="0,16,0,0">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateCommand}" CommandParameter="{x:Static pages:AppNavigation.Root}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="Meine Talente" Grid.Row="3" HorizontalOptions="End" FontSize="Large" Margin="0,16,0,0">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateCommand}" CommandParameter="{x:Static pages:AppNavigation.Talents}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="Dokumentenanalyse" Grid.Row="4" HorizontalOptions="End" FontSize="Large" Margin="0,16,0,0">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ExpandDocumentsMenu}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="Dokumente" Grid.Row="5" HorizontalOptions="End" FontSize="Medium" IsVisible="{Binding DocumentsMenuExpanded}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateCommand}" CommandParameter="{x:Static pages:AppNavigation.Documents}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="Dokument anlegen" Grid.Row="6" HorizontalOptions="End" FontSize="Medium" IsVisible="{Binding DocumentsMenuExpanded}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateCommand}" CommandParameter="{x:Static pages:AppNavigation.NewDocument}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
+            </Grid>
+        </Grid>
     </controls:ActivityIndicatorLayout>
 </ContentPage>

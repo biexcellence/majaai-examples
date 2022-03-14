@@ -2,18 +2,20 @@
 using BiExcellence.OpenBi.Api.Commands.Entities;
 using MajaMobile.Commands;
 using MajaMobile.Utilities;
+using Syncfusion.ListView.XForms;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
-using Xamarin.Forms.Extended;
 
 namespace MajaMobile.Pages.Documents
 {
     public partial class DocumentsListView : ContentView
     {
+        private DocumentsListViewModel _viewModel => BindingContext as DocumentsListViewModel;
+
         public DocumentsListView(DocumentsListViewModel vm)
         {
             InitializeComponent();
@@ -43,36 +45,64 @@ namespace MajaMobile.Pages.Documents
             });
         }
 
+        private async void ListView_ItemTapped(object sender, Syncfusion.ListView.XForms.ItemTappedEventArgs e)
+        {
+            if (DocumentsList.SelectedItems.Count == 0 && e.ItemData is OcrDocument document && BindingContext is DocumentViewModelBase vm)
+            {
+                await Navigation.PushAsync(new DocumentDetailPage(vm.SessionHandler, document.Id));
+            }
+        }
+
+        private void SfListView_SelectionChanged(object sender, ItemSelectionChangedEventArgs e)
+        {
+            if (DocumentsList.SelectedItems.Count > 0)
+            {
+                _viewModel.DeleteModeActive = true;
+                DocumentsList.SelectionGesture = TouchGesture.Tap;
+            }
+            else
+            {
+                _viewModel.DeleteModeActive = false;
+                DocumentsList.SelectionGesture = TouchGesture.Hold;
+            }
+        }
+
+        private void CancelDelete_Clicked(object sender, EventArgs e)
+        {
+            DocumentsList.SelectedItems.Clear();
+            _viewModel.DeleteModeActive = false;
+            DocumentsList.SelectionGesture = TouchGesture.Hold;
+        }
     }
 
     public class DocumentsListPage : DocumentPageBase
     {
         public ICommand DeleteCommand { get; }
-        public ICommand EditCommand { get; }
 
         public DocumentsListPage(SessionHandler sessionHandler) : base(new DocumentsListViewModel(sessionHandler))
         {
             DeleteCommand = new Command(DeleteDocument);
-            EditCommand = new Command(EditDocument);
-        }
-
-        private async void EditDocument(object obj)
-        {
-            if (obj is OcrDocument document)
-            {
-                await Navigation.PushAsync(new DocumentDetailPage(ViewModel.SessionHandler, document.Id));
-            }
+            OnPropertyChanged(nameof(DeleteCommand));
+            NavigationPage.SetHasNavigationBar(this, false);
         }
 
         private async void DeleteDocument(object obj)
         {
-            if (obj is OcrDocument document)
+            if (obj is SfListView listView)
             {
-                if (await DisplayAlert("Löschen", "Wollen Sie das Dokument: " + document.Name + " löschen?", "Ja", "Nein"))
+                if (await DisplayAlert("Löschen", "Wollen Sie die ausgewählten Dokumente löschen?", "Ja", "Nein"))
                 {
+                    listView.SelectionGesture = TouchGesture.Hold;
                     if (ViewModel is DocumentsListViewModel vm)
                     {
-                        vm.DeleteDocument(document);
+                        vm.DeleteModeActive = false;
+                        var list = new List<OcrDocument>();
+                        foreach (var item in listView.SelectedItems)
+                        {
+                            if (item is OcrDocument document)
+                                list.Add(document);
+                        }
+                        vm.DeleteDocuments(list);
                     }
                 }
             }
@@ -86,10 +116,20 @@ namespace MajaMobile.Pages.Documents
 
     public class DocumentsListViewModel : DocumentViewModelBase
     {
-        public InfiniteScrollCollection<OcrDocument> Documents { get; } = new InfiniteScrollCollection<OcrDocument>();
+        public ObservableCollection<OcrDocument> Documents { get; } = new ObservableCollection<OcrDocument>();
         private int? _maxItems;
         private Action<IEnumerable<IEntity>, IEnumerable<IEntity>> _setTags;
         private bool _tagsLoaded;
+
+        public bool DeleteModeActive
+        {
+            get => GetField<bool>();
+            set { SetField(value); OnPropertyChanged(nameof(DeleteModeInactive)); }
+        }
+
+        public bool DeleteModeInactive => !DeleteModeActive;
+
+        public ICommand LoadMoreCommand { get; }
 
         public string SearchText
         {
@@ -103,7 +143,7 @@ namespace MajaMobile.Pages.Documents
                     {
                         _maxItems = null;
                         Documents.Clear();
-                        Documents.LoadMoreAsync();
+                        LoadDocuments();
                     }
                     return false;
                 });
@@ -112,24 +152,19 @@ namespace MajaMobile.Pages.Documents
 
         public DocumentsListViewModel(SessionHandler sessionHandler) : base(sessionHandler)
         {
-            Documents.OnLoadMore = async () =>
-            {
-                using (Busy())
-                {
-                    return await LoadDocuments();
-                }
-            };
-            Documents.OnCanLoadMore = () => !_maxItems.HasValue || Documents.Count < _maxItems.Value;
+            LoadMoreCommand =new Command(LoadDocuments, () => IsIdle && !_maxItems.HasValue || Documents.Count < _maxItems.Value);
         }
 
         public void Initialize(Action<IEnumerable<IEntity>, IEnumerable<IEntity>> setTags)
         {
             _setTags = setTags;
-            Documents.LoadMoreAsync();
+            LoadDocuments();
         }
 
-        private async Task<IEnumerable<OcrDocument>> LoadDocuments(bool reset = false)
+        private async void LoadDocuments()
         {
+            if (IsBusy || (_maxItems.HasValue && Documents.Count>=_maxItems.Value))
+                return;
             try
             {
                 using (Busy())
@@ -162,29 +197,35 @@ namespace MajaMobile.Pages.Documents
                     });
 
                     _maxItems = documents.TotalCount;
-                    var list = new List<OcrDocument>();
 
-                    foreach (var doc in documents)
+                    await Device.InvokeOnMainThreadAsync(() =>
                     {
-                        list.Add(new OcrDocument(doc));
-                    }
-                    return list;
+                        foreach (var doc in documents)
+                        {
+                            Documents.Add(new OcrDocument(doc));
+                        }
+                    });
                 }
             }
             catch (Exception ex)
             {
                 DisplayException(ex);
             }
-            return new List<OcrDocument>();
         }
 
-        public async void DeleteDocument(OcrDocument document)
+        public async void DeleteDocuments(IEnumerable<OcrDocument> documents)
         {
             try
             {
-                await SessionHandler.ExecuteOpenbiCommand((s, t) => s.DeleteOcrDocument(document.Id));
-                _maxItems--;
-                Documents.Remove(document);
+                using (Busy())
+                {
+                    foreach (var document in documents)
+                    {
+                        await SessionHandler.ExecuteOpenbiCommand((s, t) => s.DeleteOcrDocument(document.Id));
+                        _maxItems--;
+                        Documents.Remove(document);
+                    }
+                }
             }
             catch (Exception e)
             {
