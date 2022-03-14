@@ -81,15 +81,15 @@ namespace MajaMobile.Pages.Documents
         private async void ViewModel_RequestMenuClose(object sender, EventArgs e)
         {
             InnerMenuGrid.FadeTo(0, 500);
-            await MenuGrid.LayoutTo(new Rectangle(0, 0, Width, 0), 700, Easing.CubicOut);
+            await MenuGrid.LayoutTo(new Rectangle(0, 0, Width, 0), 400, Easing.Linear);
             MenuGrid.FadeTo(0, 100);
         }
 
         private async void ViewModel_RequestMenuOpen(object sender, EventArgs e)
         {
-            InnerMenuGrid.FadeTo(1, 500);
+            InnerMenuGrid.FadeTo(1, 300);
             MenuGrid.FadeTo(1, 100);
-            await MenuGrid.LayoutTo(new Rectangle(0, 0, Width, Height*0.75), 700, Easing.CubicOut);
+            await MenuGrid.LayoutTo(new Rectangle(0, 0, Width, Height*0.75), 400, Easing.Linear);
         }
 
         protected override void OnDisappearing()

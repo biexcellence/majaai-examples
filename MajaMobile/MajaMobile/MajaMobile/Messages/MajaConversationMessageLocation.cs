@@ -67,7 +67,7 @@ namespace MajaMobile.Messages
             {
                 parameters.Add("zoom=9");
             }
-            parameters.Add("key=AIzaSyA8So_RPU4ipGFa1Qc9GZv3JaZjYlxHG5k");
+            parameters.Add("key="); //TODO:Your Google Maps key
             url += string.Join("&", parameters);
             return url;
         }
