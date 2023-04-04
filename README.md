@@ -117,9 +117,9 @@ static void Main(string[] args) => MainAsync(args).GetAwaiter().GetResult();
 
 static async Task MainAsync(string[] args)
 {
-    using (var action = new MajaAiWebSocketAction("ACTION ID", HandleMajaAiAction))
+    await using (var action = new MajaAiWebSocketAction("ACTION ID", HandleMajaAiAction))
     {
-        await action.Start();
+        await action.StartAsync();
 
         Console.ReadLine();
     }
